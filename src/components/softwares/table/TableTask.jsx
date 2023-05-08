@@ -1,22 +1,44 @@
+import { useState } from "react";
+
 export default function TableTask({ softwares, tasks }) {
-    return (
+  const [selectedSoftwareId, setSelectedSoftwareId] = useState("");
+
+  const filteredTasks = selectedSoftwareId
+    ? tasks.filter((task) => task.softwareId === selectedSoftwareId)
+    : tasks;
+
+  return (
+    <div>
+      <select
+        className="select_table"
+        value={selectedSoftwareId}
+        onChange={(e) => setSelectedSoftwareId(parseInt(e.target.value))}
+      >
+        <option value="">All</option>
+        {softwares.map((software) => (
+          <option key={software.id} value={software.id}>
+            {software.name}
+          </option>
+        ))}
+      </select>
       <div className="container_show">
         <table>
           <thead>
             <tr>
-              <th>Name</th>
               <th>Software</th>
+              <th>Name</th>
             </tr>
           </thead>
           <tbody>
-            {tasks ? (
-              tasks.map((task) => (
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
                 <tr key={task.id}>
-                  <td>{task.name}</td>
                   <td>
-                    {softwares.find((software) => software.id === task.softwareId)?.name ||
-                      "Unknown"}
+                    {softwares.find(
+                      (software) => software.id === task.softwareId
+                    )?.name || "Unknown"}
                   </td>
+                  <td>{task.name}</td>
                 </tr>
               ))
             ) : (
@@ -27,6 +49,6 @@ export default function TableTask({ softwares, tasks }) {
           </tbody>
         </table>
       </div>
-    );
-  }
-  
+    </div>
+  );
+}

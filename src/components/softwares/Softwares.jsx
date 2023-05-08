@@ -117,6 +117,7 @@ const softwareStyle = {
     flexDirection: "row",
     ".options-container": {
       width: "20%",
+      minWidth: "200px",
       backgroundColor: "rgb(230, 230, 230)",
       padding: "20px",
       display: "flex",
@@ -180,4 +181,7 @@ const softwareStyle = {
       textAlign: "center",
     },
   },
+  ".select_table": {
+    marginLeft: "20px"
+  }
 };
