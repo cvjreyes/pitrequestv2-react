@@ -7,20 +7,25 @@ import { Outlet } from "react-router-dom";
 import { client } from "../../helpers/config";
 
 import { useNotifications } from "reapop";
-import { Input } from "../general";
-import { Button } from "../general/Button";
+import CreateSoftware from "./create/CreateSoftware";
+import TableSoftware from "./table/TableSoftware";
 
 export default function Softwares() {
-  const [softwares, setSoftwares] = useState([]);
+  const { notify } = useNotifications();
   const [users, setUsers] = useState([]);
+  const [selectedOption, setSelectedOption] = useState("create-software");
+
+  const handleOptionSelect = (option) => {
+    setSelectedOption(option);
+  };
+
+  const [softwares, setSoftwares] = useState([]);
 
   const [formSoftware, setFormSoftware] = useState({
     name: "",
     code: "",
     adminId: 0,
   });
-
-  const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
@@ -48,7 +53,7 @@ export default function Softwares() {
     }
     if (formSoftware.code.length > 5)
       return notify("Code can't have more than 5 characters", "error");
-      
+
     await client.post("/software/create", formSoftware);
     notify("Software created successfully!", "success");
     getAllSoftwares();
@@ -70,58 +75,56 @@ export default function Softwares() {
 
   return (
     <div css={softwareStyle}>
-      <form className="container_create" onSubmit={createSubmit}>
-        <div className="inputs_software">
-          <Input
-            id="name"
-            name="name"
-            value={formSoftware.name}
-            placeholder="Software"
-            onChange={handleChange}
-            error={nameIsEmpty ? "Required" : null}
-          />
-          <Input
-            id="code"
-            name="code"
-            value={formSoftware.code}
-            placeholder="Code"
-            onChange={handleChange}
-            error={codeIsEmpty ? "Required" : null}
-          />
-          <div className="selectContainer">
-            <select
-              name="adminId"
-              value={formSoftware.adminId}
-              onChange={handleChange}
-            >
-              <option value="">-- Select Admin --</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </select>
+      <div className="container_create">
+        <div className="options-container">
+          <div
+            className={`option ${
+              selectedOption === "create-software" ? "selected" : ""
+            }`}
+            onClick={() => handleOptionSelect("create-software")}
+          >
+            Create Software
+          </div>
+          <div
+            className={`option ${
+              selectedOption === "create-task" ? "selected" : ""
+            }`}
+            onClick={() => handleOptionSelect("create-task")}
+          >
+            Create Task
+          </div>
+          <div
+            className={`option ${
+              selectedOption === "create-subtask" ? "selected" : ""
+            }`}
+            onClick={() => handleOptionSelect("create-subtask")}
+          >
+            Create SubTask
           </div>
         </div>
-        <div>
-          <Button type="submit" onClick={createSubmit}>
-            Create Software
-          </Button>
+        <div className="container-form">
+          {selectedOption === "create-software" && (
+            <CreateSoftware
+              createSubmit={createSubmit}
+              formSoftware={formSoftware}
+              handleChange={handleChange}
+              nameIsEmpty={nameIsEmpty}
+              codeIsEmpty={codeIsEmpty}
+              users={users}
+            />
+          )}
+          {/* {selectedOption === "create-task" && <CreateTask />}
+          {selectedOption === "create-subtask" && <CreateSubTask />} */}
         </div>
-      </form>
-      <div className="container_show">
-        {softwares ? (
-          softwares.map((software) => (
-            <div key={software.id} className="single_software">
-              <div>{software.name}</div>
-              <div>{software.code}</div>
-              <div>{software.adminId}</div>
-            </div>
-          ))
-        ) : (
-          <div>No hay resultados</div>
-        )}
       </div>
+      <div className="container-form">
+        {selectedOption === "create-software" && (
+          <TableSoftware softwares={softwares} users={users} />
+        )}
+        {/* {selectedOption === "create-task" && <CreateTask />}
+          {selectedOption === "create-subtask" && <CreateSubTask />} */}
+      </div>
+
       <Outlet />
     </div>
   );
@@ -134,17 +137,44 @@ const softwareStyle = {
   height: "100vh",
   ".container_create": {
     marginTop: "50px",
-    display: "flex",
-    alignItems: "start",
-    justifyContent: "space-around",
     width: "50vw",
-    height: "90vh",
+    height: "95vh",
     borderRight: "1px solid black",
-    ".inputs_software": {
+    display: "flex",
+    flexDirection: "row",
+    ".options-container": {
+      width: "20%",
+      backgroundColor: "rgb(230, 230, 230)",
+      padding: "20px",
       display: "flex",
       flexDirection: "column",
-      input: {
-        margin: "10px 0",
+      ".option": {
+        cursor: "pointer",
+        padding: "10px",
+        margin: "5px 0",
+        "&:hover": {
+          backgroundColor: "rgb(200, 200, 200)",
+        },
+        "&.selected": {
+          fontWeight: "bold",
+          backgroundColor: "rgb(200, 200, 200)",
+        },
+      },
+    },
+    ".container-form": {
+      flexGrow: 1,
+      padding: "20px",
+    },
+    ".create_software": {
+      display: "flex",
+      alignItems: "start",
+      justifyContent: "space-around",
+      ".inputs_software": {
+        display: "flex",
+        flexDirection: "column",
+        input: {
+          margin: "10px 0",
+        },
       },
     },
   },
@@ -152,5 +182,29 @@ const softwareStyle = {
     display: "flex",
     justifyContent: "center",
     width: "50vw",
+    margin: "20px",
+    table: {
+      borderCollapse: "collapse",
+      width: "100%",
+      "&:hover tbody tr": {
+        backgroundColor: "#f5f5f5",
+      },
+    },
+    th: {
+      backgroundColor: "#ddd",
+      fontWeight: "bold",
+      textAlign: "center",
+      padding: "12px",
+    },
+    tr: {
+      "&:nth-of-type(even)": {
+        backgroundColor: "#f2f2f2",
+      },
+    },
+    td: {
+      padding: "10px",
+      borderBottom: "1px solid #ddd",
+      textAlign: "center",
+    },
   },
 };
