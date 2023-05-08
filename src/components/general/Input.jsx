@@ -18,6 +18,7 @@ export default function Input({
   onBlur,
   padding,
   textAlign,
+  error
 }) {
   const InputStyle = {
     height: "40px",
@@ -29,19 +30,28 @@ export default function Input({
     width,
   };
   return (
-    <input
-      css={InputStyle}
-      id={id}
-      name={name}
-      value={value}
-      defaultValue={defaultValue}
-      type={type}
-      onChange={onChange}
-      className={className}
-      placeholder={placeholder}
-      onFocus={onFocus}
-      onKeyDown={onKeyDown}
-      onBlur={onBlur}
-    />
+    <div>
+      <input
+        css={InputStyle}
+        id={id}
+        name={name}
+        value={value}
+        defaultValue={defaultValue}
+        type={type}
+        onChange={onChange}
+        className={className}
+        placeholder={placeholder}
+        onFocus={onFocus}
+        onKeyDown={onKeyDown}
+        onBlur={onBlur}
+      />
+      {error ? (
+        <p
+          style={{ color: "#E44545", fontSize: "0.8rem", marginBottom: "0.2rem" }}
+        >
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }

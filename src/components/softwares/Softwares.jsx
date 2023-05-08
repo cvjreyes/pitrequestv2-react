@@ -24,7 +24,6 @@ export default function Softwares() {
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
-  const [adminIsEmpty, setAdminIsEmpty] = useState(false);
 
   const getAllSoftwares = async () => {
     const software = await client.get("/software/get_all");
@@ -42,33 +41,29 @@ export default function Softwares() {
 
   const createSubmit = async (event) => {
     event.preventDefault();
-    console.log(formSoftware);
     if (!formSoftware.name || !formSoftware.code || !formSoftware.adminId) {
       setNameIsEmpty(!formSoftware.name);
       setCodeIsEmpty(!formSoftware.code);
-      setAdminIsEmpty(!formSoftware.adminId);
       return notify("Please, fill all fields", "error");
     }
+    if (formSoftware.code.length > 5)
+      return notify("Code can't have more than 5 characters", "error");
+      
     await client.post("/software/create", formSoftware);
     notify("Software created successfully!", "success");
     getAllSoftwares();
     setFormSoftware({ name: "", code: "", adminId: 0 });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
-    setAdminIsEmpty(false);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormSoftware((prev) => ({ ...prev, [name]: value }));
-    console.log("name: ", name);
     if (name === "name") {
       setNameIsEmpty(!value);
     } else if (name === "code") {
       setCodeIsEmpty(!value);
-    } else if (name === "adminId") {
-      console.log("entra");
-      setAdminIsEmpty(!value);
     }
     console.log(formSoftware);
   };
@@ -98,7 +93,6 @@ export default function Softwares() {
               name="adminId"
               value={formSoftware.adminId}
               onChange={handleChange}
-              error={adminIsEmpty ? "Required" : null}
             >
               <option value="">-- Select Admin --</option>
               {users.map((user) => (
@@ -151,79 +145,6 @@ const softwareStyle = {
       flexDirection: "column",
       input: {
         margin: "10px 0",
-      },
-      ".selectContainer": {
-        display: "flex",
-        flexDirection: "column",
-      },
-      ".SelectTrigger": {
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: "4px",
-        padding: "0 15px",
-        fontSize: "13px",
-        lineHeight: "1",
-        height: "35px",
-        gap: "5px",
-        backgroundColor: "white",
-        marginTop: "10px",
-        ":hover": {
-          backgroundColor: "lightblue",
-        },
-        ":focus": {
-          boxShadow: "0 0 0 2px solid black",
-        },
-      },
-      ".SelectContent": {
-        overflow: "hidden",
-        position: "fixed",
-        backgroundColor: "white",
-        borderRadius: "6px",
-        boxShadow:
-          "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
-      },
-      ".SelectViewport": {
-        padding: "5px",
-      },
-      ".SelectItem": {
-        fontSize: "13px",
-        lineHeight: "1",
-        color: "violet",
-        borderRadius: "3px",
-        display: "flex",
-        alignItems: "center",
-        height: "25px",
-        padding: "0 35px 0 25px",
-        position: "relative",
-        userSelect: "none",
-        "[data-disabled]": {
-          pointerEvents: "none",
-        },
-        "[data-highlighted]": {
-          outline: "none",
-        },
-      },
-      ".SelectLabel": {
-        padding: "0 25px",
-        fontSize: "12px",
-        lineHeight: "25px",
-      },
-      ".SelectItemIndicator": {
-        position: "absolute",
-        left: "0",
-        width: "25px",
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-      },
-      ".SelectScrollButton": {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "25px",
-        backgroundColor: "white",
-        cursor: "default",
       },
     },
   },
