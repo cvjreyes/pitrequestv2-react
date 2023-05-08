@@ -3,7 +3,7 @@ import { Button, Input } from "../../general";
 import { useNotifications } from "reapop";
 import { client } from "../../../helpers/config";
 
-export default function CreateSoftware({ users }) {
+export default function CreateSoftware({ users, getAllSoftwares }) {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
@@ -26,6 +26,7 @@ export default function CreateSoftware({ users }) {
 
     await client.post("/software/create", formSoftware);
     notify("Software created successfully!", "success");
+    getAllSoftwares();
     setFormSoftware({ name: "", code: "", adminId: 0 });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);

@@ -3,66 +3,66 @@ import { Button, Input } from "../../general";
 import { useNotifications } from "reapop";
 import { client } from "../../../helpers/config";
 
-export default function CreateTask({ softwares, getAllTasks }) {
+export default function CreateSubTask({ tasks, getAllSubTasks }) {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [formTask, setFormTask] = useState({
+  const [formSubTask, setFormSubTask] = useState({
     name: "",
-    softwareId: 0,
+    taskId: 0,
   });
 
-  const createSubmitTask = async (event) => {
+  const createSubmitSubTask = async (event) => {
     event.preventDefault();
-    if (!formTask.name || !formTask.softwareId) {
-      setNameIsEmpty(!formTask.name);
+    if (!formSubTask.name || !formSubTask.taskId) {
+      setNameIsEmpty(!formSubTask.name);
       return notify("Please, fill all fields", "error");
     }
 
-    await client.post("/software/create/task", formTask);
-    notify("Task created successfully!", "success");
-    getAllTasks();
-    setFormTask({ name: "", softwareId: 0 });
+    await client.post("/software/create/task/subtask", formSubTask);
+    notify("SubTask created successfully!", "success");
+    getAllSubTasks();
+    setFormSubTask({ name: "", taskId: 0 });
     setNameIsEmpty(false);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormTask((prev) => ({ ...prev, [name]: value }));
+    setFormSubTask((prev) => ({ ...prev, [name]: value }));
     if (name === "name") {
       setNameIsEmpty(!value);
     }
   };
 
   return (
-    <form className="create_software" onSubmit={createSubmitTask}>
+    <form className="create_software" onSubmit={createSubmitSubTask}>
       <div className="inputs_software">
         <Input
           id="name"
           name="name"
-          value={formTask.name}
-          placeholder="Task"
+          value={formSubTask.name}
+          placeholder="SubTask"
           onChange={handleChange}
           error={nameIsEmpty ? "Required" : null}
         />
         <div className="selectContainer">
           <select
-            name="softwareId"
-            value={formTask.softwareId}
+            name="taskId"
+            value={formSubTask.SubTaskId}
             onChange={handleChange}
           >
-            <option value="">-- Select Software --</option>
-            {softwares.map((software) => (
-              <option key={software.id} value={software.id}>
-                {software.name}
+            <option value="">-- Select SubTask --</option>
+            {tasks.map((task) => (
+              <option key={task.id} value={task.id}>
+                {task.name}
               </option>
             ))}
           </select>
         </div>
       </div>
       <div>
-        <Button type="submit" onClick={createSubmitTask}>
-          Create Task
+        <Button type="submit" onClick={createSubmitSubTask}>
+          Create SubTask
         </Button>
       </div>
     </form>

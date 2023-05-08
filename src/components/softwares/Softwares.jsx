@@ -10,11 +10,14 @@ import CreateSoftware from "./create/CreateSoftware";
 import CreateTask from "./create/CreateTask";
 import TableSoftware from "./table/TableSoftware";
 import TableTask from "./table/TableTask";
+import CreateSubTask from "./create/CreateSubTask";
+import TableSubTask from "./table/TableSubTask";
 
 export default function Softwares() {
   const [users, setUsers] = useState([]);
   const [softwares, setSoftwares] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [subtasks, setSubtasks] = useState([]);
   const [selectedOption, setSelectedOption] = useState("create-software");
 
   const handleOptionSelect = (option) => {
@@ -31,6 +34,11 @@ export default function Softwares() {
     setTasks(tasks.data.Tasks);
   };
 
+  const getAllSubTasks = async () => {
+    const subtasks = await client.get("/software/get_all/subtasks");
+    setSubtasks(subtasks.data.Subtasks);
+  };
+
   useEffect(() => {
     const getAllUsers = async () => {
       const users = await client.get("/user/get_all");
@@ -38,16 +46,9 @@ export default function Softwares() {
     };
     getAllSoftwares();
     getAllTasks();
+    getAllSubTasks();
     getAllUsers();
   }, []);
-
-  useEffect(() => {
-    getAllSoftwares();
-  }, [softwares]);
-
-  useEffect(() => {
-    getAllTasks();
-  }, [tasks]);
 
   return (
     <div css={softwareStyle}>
@@ -80,12 +81,14 @@ export default function Softwares() {
         </div>
         <div className="container-form">
           {selectedOption === "create-software" && (
-            <CreateSoftware users={users} />
+            <CreateSoftware users={users} getAllSoftwares={getAllSoftwares} />
           )}
           {selectedOption === "create-task" && (
-            <CreateTask softwares={softwares} />
+            <CreateTask softwares={softwares} getAllTasks={getAllTasks} />
           )}
-          {/* {selectedOption === "create-subtask" && <CreateSubTask />} */}
+          {selectedOption === "create-subtask" && (
+            <CreateSubTask tasks={tasks} getAllSubTasks={getAllSubTasks} />
+          )}
         </div>
       </div>
       <div className="container-form">
@@ -95,7 +98,9 @@ export default function Softwares() {
         {selectedOption === "create-task" && (
           <TableTask softwares={softwares} tasks={tasks} />
         )}
-        {/* {selectedOption === "create-subtask" && <CreateSubTask />} */}
+        {selectedOption === "create-subtask" && (
+          <TableSubTask tasks={tasks} subtasks={subtasks} />
+        )}
       </div>
 
       <Outlet />
@@ -182,6 +187,6 @@ const softwareStyle = {
     },
   },
   ".select_table": {
-    marginLeft: "20px"
-  }
+    marginLeft: "20px",
+  },
 };
