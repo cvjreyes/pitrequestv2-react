@@ -1,23 +1,18 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from "@emotion/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import { client } from "../../helpers/config";
 
-import { notify } from "reapop";
+import { useNotifications } from "reapop";
 import { Input } from "../general";
 import { Button } from "../general/Button";
-import * as Select from "@radix-ui/react-select";
-import { AiOutlineArrowDown } from "react-icons/ai";
 
 export default function Softwares() {
   const [softwares, setSoftwares] = useState([]);
   const [users, setUsers] = useState([]);
-  // const [dataSoftware, setDataSoftware] = useState({});
-  // const [tasks, setTasks] = useState([]);
-  // const [subtask, setSubtask] = useState([]);
 
   const [formSoftware, setFormSoftware] = useState({
     name: "",
@@ -25,19 +20,17 @@ export default function Softwares() {
     adminId: 0,
   });
 
+  const { notify } = useNotifications();
+
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
   const [adminIsEmpty, setAdminIsEmpty] = useState(false);
-
-  // const getInfoSoftware = async (id) => {
-  //   const software = await client.get(`/software/get_all/${id}`);
-  //   setDataSoftware(software.data);
-  // };
 
   const getAllSoftwares = async () => {
     const software = await client.get("/software/get_all");
     setSoftwares(software.data.Softwares);
   };
+
   useEffect(() => {
     const getAllUsers = async () => {
       const users = await client.get("/user/get_all");
@@ -47,13 +40,9 @@ export default function Softwares() {
     getAllUsers();
   }, []);
 
-  useEffect(() => {
-    console.log("Softwares", softwares);
-    console.log("Users: ", users);
-  }, [softwares, users]);
-
   const createSubmit = async (event) => {
     event.preventDefault();
+    console.log(formSoftware);
     if (!formSoftware.name || !formSoftware.code || !formSoftware.adminId) {
       setNameIsEmpty(!formSoftware.name);
       setCodeIsEmpty(!formSoftware.code);
@@ -61,8 +50,8 @@ export default function Softwares() {
       return notify("Please, fill all fields", "error");
     }
     await client.post("/software/create", formSoftware);
-    getAllSoftwares();
     notify("Software created successfully!", "success");
+    getAllSoftwares();
     setFormSoftware({ name: "", code: "", adminId: 0 });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
@@ -72,11 +61,13 @@ export default function Softwares() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormSoftware((prev) => ({ ...prev, [name]: value }));
+    console.log("name: ", name);
     if (name === "name") {
       setNameIsEmpty(!value);
     } else if (name === "code") {
       setCodeIsEmpty(!value);
     } else if (name === "adminId") {
+      console.log("entra");
       setAdminIsEmpty(!value);
     }
     console.log(formSoftware);
@@ -92,7 +83,7 @@ export default function Softwares() {
             value={formSoftware.name}
             placeholder="Software"
             onChange={handleChange}
-            error={nameIsEmpty && "Required"}
+            error={nameIsEmpty ? "Required" : null}
           />
           <Input
             id="code"
@@ -100,41 +91,23 @@ export default function Softwares() {
             value={formSoftware.code}
             placeholder="Code"
             onChange={handleChange}
-            error={codeIsEmpty && "Required"}
+            error={codeIsEmpty ? "Required" : null}
           />
-          <Select.Root>
-            <Select.Trigger className="SelectTrigger" aria-label="Food">
-              <Select.Value placeholder="Select an Admin…" />
-              <Select.Icon>
-                <AiOutlineArrowDown />
-              </Select.Icon>
-            </Select.Trigger>
-            <Select.Portal className="SelectPortal">
-              <Select.Content sideOffset={10} side="bottom">
-                <Select.ScrollUpButton className="SelectScrollButton">
-                  <AiOutlineArrowDown />
-                </Select.ScrollUpButton>
-                <Select.Viewport className="SelectViewport">
-                  <Select.Group>
-                    {users.map((user) => (
-                      <SelectItem
-                        id="adminId"
-                        name="adminId"
-                        key={user.id}
-                        value={formSoftware.adminId}
-                        onChange={handleChange}
-                      >
-                        <div>{user.name}</div>
-                      </SelectItem>
-                    ))}
-                  </Select.Group>
-                </Select.Viewport>
-                <Select.ScrollDownButton className="SelectScrollButton">
-                  <AiOutlineArrowDown />
-                </Select.ScrollDownButton>
-              </Select.Content>
-            </Select.Portal>
-          </Select.Root>
+          <div className="selectContainer">
+            <select
+              name="adminId"
+              value={formSoftware.adminId}
+              onChange={handleChange}
+              error={adminIsEmpty ? "Required" : null}
+            >
+              <option value="">-- Select Admin --</option>
+              {users.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div>
           <Button type="submit" onClick={createSubmit}>
@@ -160,23 +133,6 @@ export default function Softwares() {
   );
 }
 
-const SelectItem = React.forwardRef(
-  ({ children, className, ...props }, forwardedRef) => {
-    return (
-      <Select.Item
-        // className={classnames("SelectItem", className)}
-        {...props}
-        ref={forwardedRef}
-      >
-        <Select.ItemText>{children}</Select.ItemText>
-        <Select.ItemIndicator className="SelectItemIndicator">
-          <AiOutlineArrowDown />
-        </Select.ItemIndicator>
-      </Select.Item>
-    );
-  }
-);
-
 const softwareStyle = {
   display: "flex",
   justifyContent: "center",
@@ -195,6 +151,79 @@ const softwareStyle = {
       flexDirection: "column",
       input: {
         margin: "10px 0",
+      },
+      ".selectContainer": {
+        display: "flex",
+        flexDirection: "column",
+      },
+      ".SelectTrigger": {
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "4px",
+        padding: "0 15px",
+        fontSize: "13px",
+        lineHeight: "1",
+        height: "35px",
+        gap: "5px",
+        backgroundColor: "white",
+        marginTop: "10px",
+        ":hover": {
+          backgroundColor: "lightblue",
+        },
+        ":focus": {
+          boxShadow: "0 0 0 2px solid black",
+        },
+      },
+      ".SelectContent": {
+        overflow: "hidden",
+        position: "fixed",
+        backgroundColor: "white",
+        borderRadius: "6px",
+        boxShadow:
+          "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
+      },
+      ".SelectViewport": {
+        padding: "5px",
+      },
+      ".SelectItem": {
+        fontSize: "13px",
+        lineHeight: "1",
+        color: "violet",
+        borderRadius: "3px",
+        display: "flex",
+        alignItems: "center",
+        height: "25px",
+        padding: "0 35px 0 25px",
+        position: "relative",
+        userSelect: "none",
+        "[data-disabled]": {
+          pointerEvents: "none",
+        },
+        "[data-highlighted]": {
+          outline: "none",
+        },
+      },
+      ".SelectLabel": {
+        padding: "0 25px",
+        fontSize: "12px",
+        lineHeight: "25px",
+      },
+      ".SelectItemIndicator": {
+        position: "absolute",
+        left: "0",
+        width: "25px",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      ".SelectScrollButton": {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "25px",
+        backgroundColor: "white",
+        cursor: "default",
       },
     },
   },
