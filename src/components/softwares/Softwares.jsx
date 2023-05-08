@@ -6,33 +6,29 @@ import { Outlet } from "react-router-dom";
 
 import { client } from "../../helpers/config";
 
-import { useNotifications } from "reapop";
 import CreateSoftware from "./create/CreateSoftware";
+import CreateTask from "./create/CreateTask";
 import TableSoftware from "./table/TableSoftware";
+import TableTask from "./table/TableTask";
 
 export default function Softwares() {
-  const { notify } = useNotifications();
   const [users, setUsers] = useState([]);
+  const [softwares, setSoftwares] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [selectedOption, setSelectedOption] = useState("create-software");
 
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
   };
 
-  const [softwares, setSoftwares] = useState([]);
-
-  const [formSoftware, setFormSoftware] = useState({
-    name: "",
-    code: "",
-    adminId: 0,
-  });
-
-  const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [codeIsEmpty, setCodeIsEmpty] = useState(false);
-
   const getAllSoftwares = async () => {
     const software = await client.get("/software/get_all");
     setSoftwares(software.data.Softwares);
+  };
+
+  const getAllTasks = async () => {
+    const tasks = await client.get("/software/get_all/tasks");
+    setTasks(tasks.data.Tasks);
   };
 
   useEffect(() => {
@@ -41,37 +37,17 @@ export default function Softwares() {
       setUsers(users.data.Users);
     };
     getAllSoftwares();
+    getAllTasks();
     getAllUsers();
   }, []);
 
-  const createSubmit = async (event) => {
-    event.preventDefault();
-    if (!formSoftware.name || !formSoftware.code || !formSoftware.adminId) {
-      setNameIsEmpty(!formSoftware.name);
-      setCodeIsEmpty(!formSoftware.code);
-      return notify("Please, fill all fields", "error");
-    }
-    if (formSoftware.code.length > 5)
-      return notify("Code can't have more than 5 characters", "error");
-
-    await client.post("/software/create", formSoftware);
-    notify("Software created successfully!", "success");
+  useEffect(() => {
     getAllSoftwares();
-    setFormSoftware({ name: "", code: "", adminId: 0 });
-    setNameIsEmpty(false);
-    setCodeIsEmpty(false);
-  };
+  }, [softwares]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormSoftware((prev) => ({ ...prev, [name]: value }));
-    if (name === "name") {
-      setNameIsEmpty(!value);
-    } else if (name === "code") {
-      setCodeIsEmpty(!value);
-    }
-    console.log(formSoftware);
-  };
+  useEffect(() => {
+    getAllTasks();
+  }, [tasks]);
 
   return (
     <div css={softwareStyle}>
@@ -104,25 +80,22 @@ export default function Softwares() {
         </div>
         <div className="container-form">
           {selectedOption === "create-software" && (
-            <CreateSoftware
-              createSubmit={createSubmit}
-              formSoftware={formSoftware}
-              handleChange={handleChange}
-              nameIsEmpty={nameIsEmpty}
-              codeIsEmpty={codeIsEmpty}
-              users={users}
-            />
+            <CreateSoftware users={users} />
           )}
-          {/* {selectedOption === "create-task" && <CreateTask />}
-          {selectedOption === "create-subtask" && <CreateSubTask />} */}
+          {selectedOption === "create-task" && (
+            <CreateTask softwares={softwares} />
+          )}
+          {/* {selectedOption === "create-subtask" && <CreateSubTask />} */}
         </div>
       </div>
       <div className="container-form">
         {selectedOption === "create-software" && (
           <TableSoftware softwares={softwares} users={users} />
         )}
-        {/* {selectedOption === "create-task" && <CreateTask />}
-          {selectedOption === "create-subtask" && <CreateSubTask />} */}
+        {selectedOption === "create-task" && (
+          <TableTask softwares={softwares} tasks={tasks} />
+        )}
+        {/* {selectedOption === "create-subtask" && <CreateSubTask />} */}
       </div>
 
       <Outlet />
