@@ -142,6 +142,7 @@ const softwareStyle = {
     backgroundColor: "rgb(230, 230, 230)",
     padding: "20px",
     display: "flex",
+    marginRight: "auto",
     flexDirection: "column",
     ".option": {
       cursor: "pointer",
@@ -156,6 +157,12 @@ const softwareStyle = {
       },
     },
   },
+  ".container-form": {
+    flexGrow: 1,
+    padding: "20px",
+    alignSelf: "flex-start",
+    marginTop: "50px",
+  },
   ".container_create": {
     marginTop: "50px",
     width: "50vw",
@@ -163,10 +170,6 @@ const softwareStyle = {
     borderRight: "1px solid black",
     display: "flex",
     flexDirection: "row",
-    ".container-form": {
-      flexGrow: 1,
-      padding: "20px",
-    },
     ".create_software": {
       display: "flex",
       alignItems: "start",
