@@ -56,7 +56,11 @@ export default function Softwares() {
         <CreateSubTask tasks={tasks} getAllSubTasks={getAllSubTasks} />
       </div>
       <div className="container-tree">
-        <SoftwareTree softwareTree={softwareTree} users={users} getSoftwareTree={getSoftwareTree} />
+        <SoftwareTree
+          softwareTree={softwareTree}
+          users={users}
+          getSoftwareTree={getSoftwareTree}
+        />
       </div>
       <Outlet />
     </div>
@@ -108,4 +112,5 @@ const softwareStyle = {
       },
     },
   },
+  
 };

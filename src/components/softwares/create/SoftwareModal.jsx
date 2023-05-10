@@ -12,8 +12,9 @@ import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
 
 import { client } from "../../../helpers/config";
+import { Input } from "../../general";
 
-export default function SoftwareModal({ users, getAllSoftwares }) {
+export default function SoftwareModal({ users, getSoftwareTree }) {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
@@ -36,7 +37,7 @@ export default function SoftwareModal({ users, getAllSoftwares }) {
 
     await client.post("/software/create", formSoftware);
     notify("Software created successfully!", "success");
-    getAllSoftwares();
+    getSoftwareTree();
     setFormSoftware({ name: "", code: "", adminId: 0 });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
@@ -70,7 +71,7 @@ export default function SoftwareModal({ users, getAllSoftwares }) {
               <label className="Label" htmlFor="name">
                 Software
               </label>
-              <input
+              <Input
                 className="Input"
                 id="name"
                 name="name"
@@ -84,7 +85,7 @@ export default function SoftwareModal({ users, getAllSoftwares }) {
               <label className="Label" htmlFor="code">
                 Code
               </label>
-              <input
+              <Input
                 className="Input"
                 id="code"
                 name="code"
@@ -117,9 +118,10 @@ export default function SoftwareModal({ users, getAllSoftwares }) {
                 marginTop: 25,
                 justifyContent: "flex-end",
               }}
+              onClick={createSubmitSoftware}
             >
               <Dialog.Close asChild>
-                <button onClick={createSubmitSoftware} className="Button green" >Create Software</button>
+                <button className="Button green">Create Software</button>
               </Dialog.Close>
             </div>
           </form>
@@ -268,6 +270,7 @@ const contentStyle = {
     color: "var(--violet11)",
     boxShadow: "0 0 0 1px var(--violet7)",
     height: "35px",
+    marginBottom: "5px",
     ":focus": {
       boxShadow: "0 0 0 2px var(--violet8)",
     },
