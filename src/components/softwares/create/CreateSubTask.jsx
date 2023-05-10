@@ -38,6 +38,7 @@ export default function CreateSubTask({ tasks, getAllSubTasks }) {
     <form className="create_software" onSubmit={createSubmitSubTask}>
       <div className="inputs_software">
         <Input
+          className="margin_added"
           id="name"
           name="name"
           value={formSubTask.name}
@@ -47,6 +48,7 @@ export default function CreateSubTask({ tasks, getAllSubTasks }) {
         />
         <div className="selectContainer">
           <select
+            className="margin_added"
             name="taskId"
             value={formSubTask.SubTaskId}
             onChange={handleChange}
@@ -61,7 +63,11 @@ export default function CreateSubTask({ tasks, getAllSubTasks }) {
         </div>
       </div>
       <div>
-        <Button type="submit" onClick={createSubmitSubTask}>
+        <Button
+          type="submit"
+          onClick={createSubmitSubTask}
+          className="margin_added"
+        >
           Create SubTask
         </Button>
       </div>

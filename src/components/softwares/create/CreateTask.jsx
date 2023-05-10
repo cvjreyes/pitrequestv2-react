@@ -40,6 +40,7 @@ export default function CreateTask({ softwares, getAllTasks }) {
         <Input
           id="name"
           name="name"
+          className="margin_added"
           value={formTask.name}
           placeholder="Task"
           onChange={handleChange}
@@ -50,6 +51,7 @@ export default function CreateTask({ softwares, getAllTasks }) {
             name="softwareId"
             value={formTask.softwareId}
             onChange={handleChange}
+            className="margin_added"
           >
             <option value="">-- Select Software --</option>
             {softwares.map((software) => (
@@ -61,7 +63,11 @@ export default function CreateTask({ softwares, getAllTasks }) {
         </div>
       </div>
       <div>
-        <Button type="submit" onClick={createSubmitTask}>
+        <Button
+          type="submit"
+          onClick={createSubmitTask}
+          className="margin_added"
+        >
           Create Task
         </Button>
       </div>

@@ -6,12 +6,8 @@ import { Outlet } from "react-router-dom";
 
 import { client } from "../../helpers/config";
 
-import CreateSoftware from "./create/CreateSoftware";
-import CreateTask from "./create/CreateTask";
-import TableSoftware from "./table/TableSoftware";
-import TableTask from "./table/TableTask";
 import CreateSubTask from "./create/CreateSubTask";
-import TableSubTask from "./table/TableSubTask";
+import CreateTask from "./create/CreateTask";
 import SoftwareTree from "./table/SoftwareTree";
 
 export default function Softwares() {
@@ -20,11 +16,6 @@ export default function Softwares() {
   const [tasks, setTasks] = useState([]);
   const [subtasks, setSubtasks] = useState([]);
   const [softwareTree, setSoftwareTree] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("create-software");
-
-  const handleOptionSelect = (option) => {
-    setSelectedOption(option);
-  };
 
   const getAllSoftwares = async () => {
     const software = await client.get("/software/get_all");
@@ -60,70 +51,13 @@ export default function Softwares() {
 
   return (
     <div css={softwareStyle}>
-      <div className="options-container">
-        <div
-          className={`option ${
-            selectedOption === "create-software" ? "selected" : ""
-          }`}
-          onClick={() => handleOptionSelect("create-software")}
-        >
-          Create Software
-        </div>
-        <div
-          className={`option ${
-            selectedOption === "create-task" ? "selected" : ""
-          }`}
-          onClick={() => handleOptionSelect("create-task")}
-        >
-          Create Task
-        </div>
-        <div
-          className={`option ${
-            selectedOption === "create-subtask" ? "selected" : ""
-          }`}
-          onClick={() => handleOptionSelect("create-subtask")}
-        >
-          Create SubTask
-        </div>
-        <div
-          className={`option ${
-            selectedOption === "software-tree" ? "selected" : ""
-          }`}
-          onClick={() => handleOptionSelect("software-tree")}
-        >
-          Software Tree
-        </div>
-      </div>
-      {selectedOption !== "software-tree" && (
-        <div className="container_create">
-          <div className="container-form">
-            {selectedOption === "create-software" && (
-              <CreateSoftware users={users} getAllSoftwares={getAllSoftwares} />
-            )}
-            {selectedOption === "create-task" && (
-              <CreateTask softwares={softwares} getAllTasks={getAllTasks} />
-            )}
-            {selectedOption === "create-subtask" && (
-              <CreateSubTask tasks={tasks} getAllSubTasks={getAllSubTasks} />
-            )}
-          </div>
-        </div>
-      )}
       <div className="container-form">
-        {selectedOption === "create-software" && (
-          <TableSoftware softwares={softwares} users={users} />
-        )}
-        {selectedOption === "create-task" && (
-          <TableTask softwares={softwares} tasks={tasks} />
-        )}
-        {selectedOption === "create-subtask" && (
-          <TableSubTask tasks={tasks} subtasks={subtasks} />
-        )}
-        {selectedOption === "software-tree" && (
-          <SoftwareTree softwareTree={softwareTree} />
-        )}
+        <CreateTask softwares={softwares} getAllTasks={getAllTasks} />
+        <CreateSubTask tasks={tasks} getAllSubTasks={getAllSubTasks} />
       </div>
-
+      <div className="container-tree">
+        <SoftwareTree softwareTree={softwareTree} users={users} getSoftwareTree={getSoftwareTree} />
+      </div>
       <Outlet />
     </div>
   );
@@ -134,34 +68,25 @@ const softwareStyle = {
   justifyContent: "center",
   alignItems: "center",
   height: "100vh",
-  ".options-container": {
-    marginTop: "50px",
-    width: "20%",
-    minWidth: "200px",
-    height: "95vh",
-    backgroundColor: "rgb(230, 230, 230)",
-    padding: "20px",
+  ".container-form": {
+    flexGrow: 1,
     display: "flex",
-    marginRight: "auto",
-    flexDirection: "column",
-    ".option": {
-      cursor: "pointer",
-      padding: "10px",
-      margin: "5px 0",
-      "&:hover": {
-        backgroundColor: "rgb(200, 200, 200)",
-      },
-      "&.selected": {
-        fontWeight: "bold",
-        backgroundColor: "rgb(200, 200, 200)",
-      },
+    height: "94vh",
+    padding: "20px",
+    alignSelf: "flex-start",
+    marginTop: "50px",
+    width: "-webkit-fill-available",
+    borderRight: "1px solid #ccc", // línea divisoria vertical
+    ".margin_added": {
+      margin: "10px",
     },
   },
-  ".container-form": {
+  ".container-tree": {
     flexGrow: 1,
     padding: "20px",
     alignSelf: "flex-start",
     marginTop: "50px",
+    width: "-webkit-fill-available",
   },
   ".container_create": {
     marginTop: "50px",
@@ -182,37 +107,5 @@ const softwareStyle = {
         },
       },
     },
-  },
-  ".container_show": {
-    display: "flex",
-    justifyContent: "center",
-    width: "50vw",
-    margin: "20px",
-    table: {
-      borderCollapse: "collapse",
-      width: "100%",
-      "&:hover tbody tr": {
-        backgroundColor: "#f5f5f5",
-      },
-    },
-    th: {
-      backgroundColor: "#ddd",
-      fontWeight: "bold",
-      textAlign: "center",
-      padding: "12px",
-    },
-    tr: {
-      "&:nth-of-type(even)": {
-        backgroundColor: "#f2f2f2",
-      },
-    },
-    td: {
-      padding: "10px",
-      borderBottom: "1px solid #ddd",
-      textAlign: "center",
-    },
-  },
-  ".select_table": {
-    marginLeft: "20px",
   },
 };
