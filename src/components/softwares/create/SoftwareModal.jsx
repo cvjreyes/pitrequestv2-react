@@ -14,7 +14,7 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-export default function SoftwareModal({ users, getSoftwareTree }) {
+export default function SoftwareModal({ getSoftwareTree }) {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);

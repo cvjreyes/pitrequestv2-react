@@ -38,15 +38,10 @@ export default function Softwares() {
   };
 
   useEffect(() => {
-    const getAllUsers = async () => {
-      const users = await client.get("/user/get_all");
-      setUsers(users.data.Users);
-    };
     getAllSoftwares();
     getAllTasks();
     getAllSubTasks();
     getSoftwareTree();
-    getAllUsers();
   }, []);
 
   return (
@@ -58,7 +53,6 @@ export default function Softwares() {
       <div className="container-tree">
         <SoftwareTree
           softwareTree={softwareTree}
-          users={users}
           getSoftwareTree={getSoftwareTree}
         />
       </div>

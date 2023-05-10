@@ -16,7 +16,7 @@ import {
 import SoftwareModal from "../create/SoftwareModal";
 import DropdownMenuSoftware from "../create/DropdownMenuSoftware";
 
-export default function SoftwareTree({ softwareTree, users, getSoftwareTree }) {
+export default function SoftwareTree({ softwareTree, getSoftwareTree }) {
   const [checked, setChecked] = useState([]);
   const [expanded, setExpanded] = useState([]);
 
@@ -49,7 +49,7 @@ export default function SoftwareTree({ softwareTree, users, getSoftwareTree }) {
 
   return (
     <div>
-      <SoftwareModal users={users} getSoftwareTree={getSoftwareTree} />
+      <SoftwareModal getSoftwareTree={getSoftwareTree} />
       <CheckboxTree
         nodes={prepareData(softwareTree)}
         checked={checked}
