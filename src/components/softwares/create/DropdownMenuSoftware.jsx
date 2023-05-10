@@ -7,7 +7,7 @@ import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
 
-export default function DropdownMenuTree({}) {
+export default function DropdownMenuSoftware({}) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>

@@ -14,7 +14,7 @@ import {
   MdRemoveCircle,
 } from "react-icons/md";
 import SoftwareModal from "../create/SoftwareModal";
-import DropdownMenu from "../create/DropdownMenuTree";
+import DropdownMenu from "../create/DropdownMenuSoftware";
 
 export default function SoftwareTree({ softwareTree, users, getSoftwareTree }) {
   const [checked, setChecked] = useState([]);
