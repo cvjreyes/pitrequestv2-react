@@ -14,7 +14,7 @@ import {
   MdRemoveCircle,
 } from "react-icons/md";
 import SoftwareModal from "../create/SoftwareModal";
-import DropdownMenu from "../create/DropdownMenuSoftware";
+import DropdownMenuSoftware from "../create/DropdownMenuSoftware";
 
 export default function SoftwareTree({ softwareTree, users, getSoftwareTree }) {
   const [checked, setChecked] = useState([]);
@@ -26,14 +26,11 @@ export default function SoftwareTree({ softwareTree, users, getSoftwareTree }) {
       value: software.id,
       label: (
         <>
-          {`${software.name} (${software.code}) => Admin: ${users.map(
-            (user) => {
-              if (user.id == software.adminId) {
-                return user.name;
-              } else return "No admin";
-            }
-          )}`}
-          <DropdownMenu />
+          {`${software.name} (${software.code})`}
+          <DropdownMenuSoftware
+            id={software.id}
+            getSoftwareTree={getSoftwareTree}
+          />
         </>
       ),
       children: software.Task

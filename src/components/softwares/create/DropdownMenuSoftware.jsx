@@ -3,11 +3,14 @@
 import { jsx, keyframes } from "@emotion/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { useRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import TaskModal from "./TaskModal";
 
-export default function DropdownMenuSoftware({}) {
+export default function DropdownMenuSoftware({ id, getSoftwareTree }) {
+  const ref = useRef(null);
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -17,11 +20,8 @@ export default function DropdownMenuSoftware({}) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-          <DropdownMenu.Item className="DropdownMenuItem">
-            Add Task
-          </DropdownMenu.Item>
-          <DropdownMenu.Item className="DropdownMenuItem">
-            Asign Admin
+          <DropdownMenu.Item className="DropdownMenuItem" asChild>
+            <TaskModal ref={ref} id={id} getSoftwareTree={getSoftwareTree} />
           </DropdownMenu.Item>
           <DropdownMenu.Item className="DropdownMenuItem" disabled>
             Delete
@@ -79,7 +79,7 @@ const dropdownMenuStyle = {
   borderRadius: "6px",
   padding: "5px",
   boxShadow:
-  "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
+    "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
   animationDuration: "400ms",
   animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
   willChange: "transform, opacity",

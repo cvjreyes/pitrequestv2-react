@@ -5,7 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useNotifications } from "reapop";
-import { MdPlaylistAdd } from "react-icons/md";
+import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
@@ -14,109 +14,85 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-export default function SoftwareModal({ users, getSoftwareTree }) {
+const TaskModal = forwardRef(({ id, getSoftwareTree }, ref) => {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [codeIsEmpty, setCodeIsEmpty] = useState(false);
-  const [formSoftware, setFormSoftware] = useState({
+  const [formTask, setFormTask] = useState({
     name: "",
-    code: "",
+    softwareId: id,
   });
 
-  const createSubmitSoftware = async (event) => {
+  const createSubmitTask = async (event) => {
     event.preventDefault();
-    if (!formSoftware.name || !formSoftware.code) {
-      setNameIsEmpty(!formSoftware.name);
-      setCodeIsEmpty(!formSoftware.code);
+    if (!formTask.name) {
+      setNameIsEmpty(!formTask.name);
       return notify("Please, fill all fields", "error");
     }
-    if (formSoftware.code.length > 5)
-      return notify("Code can't have more than 5 characters", "error");
-
-    await client.post("/software/create", formSoftware);
-    notify("Software created successfully!", "success");
+    await client.post("/software/create/task", formTask);
+    notify("Task created successfully!", "success");
     getSoftwareTree();
-    setFormSoftware({ name: "", code: ""});
+    setFormTask({ name: "", softwareId: id });
     setNameIsEmpty(false);
-    setCodeIsEmpty(false);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormSoftware((prev) => ({ ...prev, [name]: value }));
+    setFormTask((prev) => ({ ...prev, [name]: value }));
     if (name === "name") {
       setNameIsEmpty(!value);
-    } else if (name === "code") {
-      setCodeIsEmpty(!value);
     }
   };
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <MdPlaylistAdd fontSize="25px" />
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay css={overlayStyle} />
-        <Dialog.Content css={contentStyle}>
-          <Dialog.Title className="DialogTitle">Create Software</Dialog.Title>
-          <Dialog.Description className="DialogDescription">
-            Make sure the software is correct, you will not be available to
-            change name of software
-          </Dialog.Description>
-          <form onSubmit={createSubmitSoftware}>
-            <fieldset className="Fieldset">
-              <label className="Label" htmlFor="name">
-                Software
-              </label>
-              <Input
-                className="Input"
-                id="name"
-                name="name"
-                value={formSoftware.name}
-                placeholder="Name"
-                onChange={handleChange}
-                error={nameIsEmpty ? "Required" : null}
-              />
-            </fieldset>
-            <fieldset className="Fieldset">
-              <label className="Label" htmlFor="code">
-                Code
-              </label>
-              <Input
-                className="Input"
-                id="code"
-                name="code"
-                value={formSoftware.code}
-                placeholder="Code"
-                onChange={handleChange}
-                error={codeIsEmpty ? "Required" : null}
-              />
-            </fieldset>
-            <div
-              style={{
-                display: "flex",
-                marginTop: 25,
-                justifyContent: "flex-end",
-              }}
-              onClick={createSubmitSoftware}
-            >
-              <Dialog.Close asChild>
-                <button className="Button green">Create Software</button>
-              </Dialog.Close>
-            </div>
-          </form>
-          <Dialog.Close asChild>
-            <button className="IconButton" aria-label="Close">
-              <RxCross2 />
-            </button>
-          </Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+    <div ref={ref}>
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <div>Add Task</div>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay css={overlayStyle} />
+          <Dialog.Content css={contentStyle}>
+            <Dialog.Title className="DialogTitle">Create Task</Dialog.Title>
+            <form onSubmit={createSubmitTask}>
+              <fieldset className="Fieldset">
+                <label className="Label" htmlFor="name">
+                  Task
+                </label>
+                <Input
+                  className="Input"
+                  id="name"
+                  name="name"
+                  value={formTask.name}
+                  placeholder="Name"
+                  onChange={handleChange}
+                  error={nameIsEmpty ? "Required" : null}
+                />
+              </fieldset>
+              <div
+                style={{
+                  display: "flex",
+                  marginTop: 25,
+                  justifyContent: "flex-end",
+                }}
+                onClick={createSubmitTask}
+              >
+                <Dialog.Close asChild>
+                  <button className="Button green">Create Task</button>
+                </Dialog.Close>
+              </div>
+            </form>
+            <Dialog.Close asChild>
+              <button className="IconButton" aria-label="Close">
+                <RxCross2 />
+              </button>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
   );
-}
+});
 
 const overlayShow = keyframes`
 from {
@@ -163,7 +139,7 @@ const contentStyle = {
   },
 
   ".DialogTitle": {
-    margin: 0,
+    marginBottom:"5px",
     fontWeight: "500",
     color: "var(--mauve12)",
     fontSize: "17px",
@@ -258,3 +234,5 @@ const contentStyle = {
     },
   },
 };
+
+export default TaskModal;
