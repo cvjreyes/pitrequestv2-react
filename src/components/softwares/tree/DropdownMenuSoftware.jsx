@@ -2,16 +2,38 @@
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useNotifications } from "reapop";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
-import TaskModal from "./TaskModal";
-import SubTaskModal from "./SubTaskModal";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import SoftwareSettingsModal from "../create/SoftwareSettingsModal";
+import TaskSettingsModal from "../create/TaskSettingsModal";
+import DeleteNodeTree from "../delete/DeleteNodeTree";
+import { client } from "../../../helpers/config";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
-  const ref = useRef(null);
+  const { notify } = useNotifications();
+
+  const deleteSoftware = async () => {
+    await client.delete(`/software/delete/${id}`);
+    notify("Software deleted successfully!", "success");
+    getSoftwareTree();
+  };
+
+  const deleteTask = async () => {
+    await client.delete(`/software/delete/task/${id}`);
+    notify("Task deleted successfully!", "success");
+    getSoftwareTree();
+  };
+
+  const deleteSubtask = async () => {
+    await client.delete(`/software/delete/task/subtask/${id}`);
+    notify("Subtask deleted successfully!", "success");
+    getSoftwareTree();
+  };
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -21,20 +43,31 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-          <DropdownMenu.Item className="DropdownMenuItem" asChild>
-            {node === "software" ? (
-              <TaskModal ref={ref} id={id} getSoftwareTree={getSoftwareTree} />
-            ) : (
-              <SubTaskModal
-                ref={ref}
-                id={id}
-                getSoftwareTree={getSoftwareTree}
-              />
-            )}
-          </DropdownMenu.Item>
-          <DropdownMenu.Item className="DropdownMenuItem" disabled>
-            Delete
-          </DropdownMenu.Item>
+          {node !== "subtask" && (
+            <DropdownMenu.Item className="DropdownMenuItem" asChild>
+              {node === "software" ? (
+                <SoftwareSettingsModal
+                  id={id}
+                  getSoftwareTree={getSoftwareTree}
+                />
+              ) : (
+                <TaskSettingsModal id={id} getSoftwareTree={getSoftwareTree} />
+              )}
+            </DropdownMenu.Item>
+          )}
+          {node === "software" ? (
+            <DropdownMenu.Item className="DropdownMenuItem" asChild>
+              <DeleteNodeTree deleteNode={deleteSoftware} />
+            </DropdownMenu.Item>
+          ) : node === "task" ? (
+            <DropdownMenu.Item className="DropdownMenuItem" asChild>
+              <DeleteNodeTree deleteNode={deleteTask} />
+            </DropdownMenu.Item>
+          ) : (
+            <DropdownMenu.Item className="DropdownMenuItem" asChild>
+              <DeleteNodeTree deleteNode={deleteSubtask} />
+            </DropdownMenu.Item>
+          )}
           <DropdownMenu.Arrow className="DropdownMenuArrow" />
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

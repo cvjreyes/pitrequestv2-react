@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CheckboxTree from "react-checkbox-tree";
 import "react-checkbox-tree/lib/react-checkbox-tree.css";
 import {
@@ -13,12 +13,25 @@ import {
   MdKeyboardArrowRight,
   MdRemoveCircle,
 } from "react-icons/md";
-import SoftwareModal from "../create/SoftwareModal";
-import DropdownMenuSoftware from "../create/DropdownMenuSoftware";
 
-export default function SoftwareTree({ softwareTree, getSoftwareTree }) {
+import SoftwareModal from "../create/SoftwareModal";
+import DropdownMenuSoftware from "./DropdownMenuSoftware";
+
+import { client } from "../../../helpers/config";
+
+export default function SoftwareTree() {
   const [checked, setChecked] = useState([]);
   const [expanded, setExpanded] = useState([]);
+  const [softwareTree, setSoftwareTree] = useState([]);
+
+  const getSoftwareTree = async () => {
+    const softwareTree = await client.get("/software/get_tree");
+    setSoftwareTree(softwareTree.data);
+  };
+
+  useEffect(() => {
+    getSoftwareTree();
+  }, []);
 
   // Preparar los datos de entrada en el formato aceptado por react-checkbox-tree
   const prepareData = (data) =>
@@ -43,13 +56,23 @@ export default function SoftwareTree({ softwareTree, getSoftwareTree }) {
                 <DropdownMenuSoftware
                   id={task.id}
                   getSoftwareTree={getSoftwareTree}
+                  node={"task"}
                 />
               </>
             ),
             children: task.Subtask
               ? task.Subtask.map((subtask) => ({
                   value: subtask.id + 10000,
-                  label: subtask.name,
+                  label: (
+                    <>
+                      {subtask.name}
+                      <DropdownMenuSoftware
+                        id={subtask.id}
+                        getSoftwareTree={getSoftwareTree}
+                        node={"subtask"}
+                      />
+                    </>
+                  ),
                 }))
               : [],
           }))
@@ -57,7 +80,7 @@ export default function SoftwareTree({ softwareTree, getSoftwareTree }) {
     }));
 
   return (
-    <div>
+    <div className="container-tree">
       <SoftwareModal getSoftwareTree={getSoftwareTree} />
       <CheckboxTree
         nodes={prepareData(softwareTree)}
@@ -89,7 +112,6 @@ export default function SoftwareTree({ softwareTree, getSoftwareTree }) {
           ),
           leaf: <MdInsertDriveFile className="rct-icon rct-icon-leaf" />,
         }}
-        showNodeIcon={false}
         showExpandAll
         onlyLeafCheckboxes
       />

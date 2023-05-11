@@ -14,31 +14,31 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-const SubTaskModal = forwardRef(({ id, getSoftwareTree }, ref) => {
+const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree }, ref) => {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [formSubtask, setFormSubtask] = useState({
+  const [formTask, setFormTask] = useState({
     name: "",
-    taskId: id,
+    softwareId: id,
   });
 
-  const createSubmitSubTask = async (event) => {
+  const createSubmitTask = async (event) => {
     event.preventDefault();
-    if (!formSubtask.name) {
-      setNameIsEmpty(!formSubtask.name);
+    if (!formTask.name) {
+      setNameIsEmpty(!formTask.name);
       return notify("Please, fill all fields", "error");
     }
-    await client.post("/software/create/task/subtask", formSubtask);
+    await client.post("/software/create/task", formTask);
     notify("Task created successfully!", "success");
     getSoftwareTree();
-    setFormSubtask({ name: "", taskId: id });
+    setFormTask({ name: "", softwareId: id });
     setNameIsEmpty(false);
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormSubtask((prev) => ({ ...prev, [name]: value }));
+    setFormTask((prev) => ({ ...prev, [name]: value }));
     if (name === "name") {
       setNameIsEmpty(!value);
     }
@@ -48,22 +48,22 @@ const SubTaskModal = forwardRef(({ id, getSoftwareTree }, ref) => {
     <div ref={ref}>
       <Dialog.Root>
         <Dialog.Trigger>
-          <div className="DropdownMenuItem">Add SubTask</div>
+          <div className="DropdownMenuItem">Add Task</div>
         </Dialog.Trigger>
         <Dialog.Portal>
           <Dialog.Overlay css={overlayStyle} />
           <Dialog.Content css={contentStyle}>
-            <Dialog.Title className="DialogTitle">Create SubTask</Dialog.Title>
-            <form onSubmit={createSubmitSubTask}>
+            <Dialog.Title className="DialogTitle">Create Task</Dialog.Title>
+            <form onSubmit={createSubmitTask}>
               <fieldset className="Fieldset">
                 <label className="Label" htmlFor="name">
-                  SubTask
+                  Task
                 </label>
                 <Input
                   className="Input"
                   id="name"
                   name="name"
-                  value={formSubtask.name}
+                  value={formTask.name}
                   placeholder="Name"
                   onChange={handleChange}
                   error={nameIsEmpty ? "Required" : null}
@@ -75,10 +75,10 @@ const SubTaskModal = forwardRef(({ id, getSoftwareTree }, ref) => {
                   marginTop: 25,
                   justifyContent: "flex-end",
                 }}
-                onClick={createSubmitSubTask}
+                onClick={createSubmitTask}
               >
                 <Dialog.Close asChild>
-                  <button className="Button green">Create SubTask</button>
+                  <button className="Button green">Create Task</button>
                 </Dialog.Close>
               </div>
             </form>
@@ -139,7 +139,7 @@ const contentStyle = {
   },
 
   ".DialogTitle": {
-    marginBottom: "5px",
+    marginBottom:"5px",
     fontWeight: "500",
     color: "var(--mauve12)",
     fontSize: "17px",
@@ -235,4 +235,4 @@ const contentStyle = {
   },
 };
 
-export default SubTaskModal;
+export default SoftwareSettingsModal;
