@@ -5,7 +5,7 @@ import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { forwardRef } from "react";
 
 import "@radix-ui/colors/blackA.css";
-import "@radix-ui/colors/green.css";
+import "@radix-ui/colors/red.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
 

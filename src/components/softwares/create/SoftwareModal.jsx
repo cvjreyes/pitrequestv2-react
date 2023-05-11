@@ -5,7 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useNotifications } from "reapop";
-import { MdPlaylistAdd } from "react-icons/md";
+import { ImFolderPlus } from "react-icons/im";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
@@ -55,7 +55,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <MdPlaylistAdd fontSize="25px" />
+        <ImFolderPlus fontSize="20px" color="gray"/>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay css={overlayStyle} />
