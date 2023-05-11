@@ -30,13 +30,22 @@ export default function SoftwareTree({ softwareTree, getSoftwareTree }) {
           <DropdownMenuSoftware
             id={software.id}
             getSoftwareTree={getSoftwareTree}
+            node={"software"}
           />
         </>
       ),
       children: software.Task
         ? software.Task.map((task) => ({
             value: task.id + 1000,
-            label: task.name,
+            label: (
+              <>
+                {task.name}
+                <DropdownMenuSoftware
+                  id={task.id}
+                  getSoftwareTree={getSoftwareTree}
+                />
+              </>
+            ),
             children: task.Subtask
               ? task.Subtask.map((subtask) => ({
                   value: subtask.id + 10000,

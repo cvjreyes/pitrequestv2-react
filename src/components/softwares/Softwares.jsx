@@ -46,10 +46,10 @@ export default function Softwares() {
 
   return (
     <div css={softwareStyle}>
-      <div className="container-form">
+      {/* <div className="container-form">
         <CreateTask softwares={softwares} getAllTasks={getAllTasks} />
         <CreateSubTask tasks={tasks} getAllSubTasks={getAllSubTasks} />
-      </div>
+      </div> */}
       <div className="container-tree">
         <SoftwareTree
           softwareTree={softwareTree}
@@ -66,19 +66,19 @@ const softwareStyle = {
   justifyContent: "center",
   alignItems: "center",
   height: "100vh",
-  ".container-form": {
-    flexGrow: 1,
-    display: "flex",
-    height: "94vh",
-    padding: "20px",
-    alignSelf: "flex-start",
-    marginTop: "50px",
-    width: "-webkit-fill-available",
-    borderRight: "1px solid #ccc", // línea divisoria vertical
-    ".margin_added": {
-      margin: "10px",
-    },
-  },
+  // ".container-form": {
+  //   flexGrow: 1,
+  //   display: "flex",
+  //   height: "94vh",
+  //   padding: "20px",
+  //   alignSelf: "flex-start",
+  //   marginTop: "50px",
+  //   width: "-webkit-fill-available",
+  //   borderRight: "1px solid #ccc", // línea divisoria vertical
+  //   ".margin_added": {
+  //     margin: "10px",
+  //   },
+  // },
   ".container-tree": {
     flexGrow: 1,
     padding: "20px",

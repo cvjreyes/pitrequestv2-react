@@ -8,8 +8,9 @@ import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
 import TaskModal from "./TaskModal";
+import SubTaskModal from "./SubTaskModal";
 
-export default function DropdownMenuSoftware({ id, getSoftwareTree }) {
+export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const ref = useRef(null);
   return (
     <DropdownMenu.Root>
@@ -21,7 +22,15 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree }) {
       <DropdownMenu.Portal>
         <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
           <DropdownMenu.Item className="DropdownMenuItem" asChild>
-            <TaskModal ref={ref} id={id} getSoftwareTree={getSoftwareTree} />
+            {node === "software" ? (
+              <TaskModal ref={ref} id={id} getSoftwareTree={getSoftwareTree} />
+            ) : (
+              <SubTaskModal
+                ref={ref}
+                id={id}
+                getSoftwareTree={getSoftwareTree}
+              />
+            )}
           </DropdownMenu.Item>
           <DropdownMenu.Item className="DropdownMenuItem" disabled>
             Delete
