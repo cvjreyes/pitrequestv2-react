@@ -1,4 +1,3 @@
-
 import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -15,19 +14,21 @@ export function useAuth() {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [roles, setRoles] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const getUserInfo = async () => {
     setIsLoading(true);
     const res = await client.get("/auth/get_user_info");
     setIsLoading(false);
+    setRoles(res.data.user.roles);
     return res.data.user;
   };
 
   const updateUserInfo = async () => {
-    const res = await getUserInfo();
-    delete res.token;
-    setUser(res);
+    const resUser = await getUserInfo();
+    delete resUser.token;
+    setUser(resUser);
   };
 
   useEffect(() => {
@@ -57,14 +58,16 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsLoading(false);
     setUser(null);
+    setRoles(null)
     Cookies.remove("access_token");
   };
-
 
   if (isLoading) return <Loading />;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUserInfo }}>
+    <AuthContext.Provider
+      value={{ user, roles, login, logout, updateUserInfo }}
+    >
       {children}
     </AuthContext.Provider>
   );
