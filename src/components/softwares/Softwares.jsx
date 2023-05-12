@@ -20,7 +20,7 @@ const softwareStyle = {
   justifyContent: "center",
   alignItems: "center",
   flexDirection: "column",
-  height: "100vh",
+  height: "85vh",
   marginTop: "100px",
   ".container-tree": {
     display: "flex",
