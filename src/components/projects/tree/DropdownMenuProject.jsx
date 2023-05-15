@@ -10,9 +10,17 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 
-export default function DropdownMenuProject({ id, getProjectTree, node }) {
+export default function DropdownMenuProject({
+  id,
+  adminId,
+  softwareId,
+  projectId,
+  getProjectTree,
+  node,
+}) {
   const { notify } = useNotifications();
 
+  console.log(id);
   const deleteProject = async () => {
     await client.delete(`/project/delete/${id}`);
     notify("Project deleted successfully!", "success");
@@ -22,6 +30,16 @@ export default function DropdownMenuProject({ id, getProjectTree, node }) {
   const deleteCharter = async () => {
     await client.delete(`/project/delete/charter/${id}`);
     notify("Charter deleted successfully!", "success");
+    getProjectTree();
+  };
+
+  const removeAdmin = async () => {
+    const id = await client.get(
+      `/project/get_admin_software/${adminId}/${softwareId}/${projectId}`
+    );
+    console.log("Result id:", id.data[0].id);
+    await client.delete(`/project/remove/admin/software/${id.data[0].id}`);
+    notify("Admin deleted successfully!", "success");
     getProjectTree();
   };
 
@@ -48,6 +66,10 @@ export default function DropdownMenuProject({ id, getProjectTree, node }) {
           ) : node === "charter" ? (
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
               <DeleteNodeTree deleteNode={deleteCharter} />
+            </DropdownMenu.Item>
+          ) : node === "admin" ? (
+            <DropdownMenu.Item className="DropdownMenuItem" asChild>
+              <DeleteNodeTree deleteNode={removeAdmin} />
             </DropdownMenu.Item>
           ) : (
             <></>

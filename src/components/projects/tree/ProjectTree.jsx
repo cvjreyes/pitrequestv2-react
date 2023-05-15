@@ -86,12 +86,22 @@ export default function ProjectTree() {
                       value: `psoftuser-${i}-${j}`,
                       label: "Admins",
                       showCheckbox: false,
-
                       children: [
                         ...(projectSoftware.users
                           ? projectSoftware.users.map((user, k) => ({
                               value: `psuser-${i}-${j}-${k}`,
-                              label: user.name,
+                              label: (
+                                <>
+                                  {`${user.name}`}
+                                  <DropdownMenuProject
+                                    adminId={user.id}
+                                    softwareId={projectSoftware.software.id}
+                                    projectId={project.id}
+                                    getProjectTree={getProjectTree}
+                                    node={"admin"}
+                                  />
+                                </>
+                              ),
                               showCheckbox: false,
                             }))
                           : []),
