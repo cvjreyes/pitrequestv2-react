@@ -7,30 +7,22 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
-import SoftwareSettingsModal from "../create/SoftwareSettingsModal";
-import TaskSettingsModal from "../create/TaskSettingsModal";
-import DeleteNodeTree from "../delete/DeleteNodeTree";
 import { client } from "../../../helpers/config";
+import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 
-export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
+export default function DropdownMenuProject({ id, getProjectTree, node }) {
   const { notify } = useNotifications();
 
-  const deleteSoftware = async () => {
-    await client.delete(`/software/delete/${id}`);
-    notify("Software deleted successfully!", "success");
-    getSoftwareTree();
+  const deleteProject = async () => {
+    await client.delete(`/project/delete/${id}`);
+    notify("Project deleted successfully!", "success");
+    getProjectTree();
   };
 
-  const deleteTask = async () => {
-    await client.delete(`/software/delete/task/${id}`);
-    notify("Task deleted successfully!", "success");
-    getSoftwareTree();
-  };
-
-  const deleteSubtask = async () => {
-    await client.delete(`/software/delete/task/subtask/${id}`);
-    notify("Subtask deleted successfully!", "success");
-    getSoftwareTree();
+  const deleteCharter = async () => {
+    await client.delete(`/project/delete/charter/${id}`);
+    notify("Charter deleted successfully!", "success");
+    getProjectTree();
   };
 
   return (
@@ -42,30 +34,23 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-          {node !== "subtask" && (
+          {/* <DropdownMenu.Item className="DropdownMenuItem" asChild>
+            {node === "project" ? (
+              <ProjectSettingsModal id={id} getProjectTree={getProjectTree} />
+            ) : (
+              <TaskSettingsModal id={id} getProjectTree={getProjectTree} />
+            )}
+          </DropdownMenu.Item> */}
+          {node === "project" ? (
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              {node === "software" ? (
-                <SoftwareSettingsModal
-                  id={id}
-                  getSoftwareTree={getSoftwareTree}
-                />
-              ) : (
-                <TaskSettingsModal id={id} getSoftwareTree={getSoftwareTree} />
-              )}
+              <DeleteNodeTree deleteNode={deleteProject} />
             </DropdownMenu.Item>
-          )}
-          {node === "software" ? (
+          ) : node === "charter" ? (
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteSoftware} />
-            </DropdownMenu.Item>
-          ) : node === "task" ? (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteTask} />
+              <DeleteNodeTree deleteNode={deleteCharter} />
             </DropdownMenu.Item>
           ) : (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteSubtask} />
-            </DropdownMenu.Item>
+            <></>
           )}
           <DropdownMenu.Arrow className="DropdownMenuArrow" />
         </DropdownMenu.Content>

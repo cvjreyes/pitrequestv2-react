@@ -14,9 +14,10 @@ import {
   MdRemoveCircle,
 } from "react-icons/md";
 
-import SoftwareModal from "../../softwares/create/SoftwareModal";
+import ProjectModal from "../create/ProjectModal";
 
 import { client } from "../../../helpers/config";
+import DropdownMenuProject from "./DropdownMenuProject";
 
 export default function ProjectTree() {
   const [checked, setChecked] = useState([]);
@@ -33,33 +34,40 @@ export default function ProjectTree() {
     getProjectTree();
   }, []);
 
-
-  // Preparar los datos de entrada en el formato aceptado por react-checkbox-tree
   const prepareData = (data) =>
-    data.map((project) => ({
+    data.map((project, i) => ({
       value: `p-${project.id}`,
-      label: `${project.name} (${project.code})`,
+      label: (
+        <>
+          {`${project.name} (${project.code}) => ${project.estimatedHours}h`}
+          <DropdownMenuProject
+            id={project.id}
+            getProjectTree={getProjectTree}
+            node={"project"}
+          />
+        </>
+      ),
+      showCheckbox: false,
       children: [
         {
           value: `pc-${project.id}`,
           label: "Charter",
+          showCheckbox: false,
           children: [
             ...(project.Charter
               ? project.Charter.map((charter) => ({
                   value: `ch-${charter.id}`,
-                  label: charter.name,
-                }))
-              : []),
-          ],
-        },
-        {
-          value: `pu-${project.id}`,
-          label: "Users From Project",
-          children: [
-            ...(project.ProjectUsers
-              ? project.ProjectUsers.map((projectUsers) => ({
-                  value: `pus-${projectUsers.user.id}`,
-                  label: projectUsers.user.name,
+                  label: (
+                    <>
+                      {`${charter.name}`}
+                      <DropdownMenuProject
+                        id={charter.id}
+                        getProjectTree={getProjectTree}
+                        node={"charter"}
+                      />
+                    </>
+                  ),
+                  showCheckbox: false,
                 }))
               : []),
           ],
@@ -67,23 +75,41 @@ export default function ProjectTree() {
         {
           value: `psoft-${project.id}`,
           label: "Softwares",
+          showCheckbox: false,
           children: [
             ...(project.ProjectSoftwares
-              ? project.ProjectSoftwares.map((projectSoftware) => ({
-                  value: `ps-${projectSoftware.software.id}`,
+              ? project.ProjectSoftwares.map((projectSoftware, j) => ({
+                  value: `ps-${projectSoftware.software.id}-${i}-${j}`,
                   label: `${projectSoftware.software.name} (${projectSoftware.software.code})`,
-                  children: projectSoftware.software.Task
-                    ? projectSoftware.software.Task.map((task) => ({
-                        value: `t-${task.id}`,
-                        label: task.name,
-                        children: task.Subtask
-                          ? task.Subtask.map((subtask) => ({
-                              value: `st-${subtask.id}`,
-                              label: subtask.name,
+                  children: [
+                    {
+                      value: `psoftuser-${i}-${j}`,
+                      label: "Admins",
+                      showCheckbox: false,
+
+                      children: [
+                        ...(projectSoftware.users
+                          ? projectSoftware.users.map((user, k) => ({
+                              value: `psuser-${i}-${j}-${k}`,
+                              label: user.name,
+                              showCheckbox: false,
                             }))
-                          : [],
-                      }))
-                    : [],
+                          : []),
+                      ],
+                    },
+                    ...(projectSoftware.software.Task
+                      ? projectSoftware.software.Task.map((task) => ({
+                          value: `t-${task.id}-${i}-${j}`,
+                          label: task.name,
+                          children: task.Subtask
+                            ? task.Subtask.map((subtask) => ({
+                                value: `st-${subtask.id}-${i}-${j}`,
+                                label: subtask.name,
+                              }))
+                            : [],
+                        }))
+                      : []),
+                  ],
                 }))
               : []),
           ],
@@ -91,9 +117,10 @@ export default function ProjectTree() {
       ],
     }));
 
+  // Renderizar solo los nodos con la propiedad showCheckbox definida como true
   return (
     <div className="container-tree">
-      {/* <SoftwareModal getSoftwareTree={getSoftwareTree} /> */}
+      <ProjectModal getProjectTree={getProjectTree} />
       <CheckboxTree
         nodes={prepareData(projectTree)}
         checked={checked}
@@ -101,31 +128,19 @@ export default function ProjectTree() {
         onCheck={(checked) => setChecked(checked)}
         onExpand={(expanded) => setExpanded(expanded)}
         icons={{
-          check: <MdCheckBox className="rct-icon rct-icon-check" />,
-          uncheck: (
-            <MdCheckBoxOutlineBlank className="rct-icon rct-icon-uncheck" />
-          ),
-          halfCheck: (
-            <MdIndeterminateCheckBox className="rct-icon rct-icon-half-check" />
-          ),
-          expandClose: (
-            <MdKeyboardArrowRight className="rct-icon rct-icon-expand-close" />
-          ),
-          expandOpen: (
-            <MdKeyboardArrowDown className="rct-icon rct-icon-expand-open" />
-          ),
-          expandAll: <MdAddCircle className="rct-icon rct-icon-expand-all" />,
-          collapseAll: (
-            <MdRemoveCircle className="rct-icon rct-icon-collapse-all" />
-          ),
-          parentClose: <MdFolder className="rct-icon rct-icon-parent-close" />,
-          parentOpen: (
-            <MdFolderOpen className="rct-icon rct-icon-parent-open" />
-          ),
-          leaf: <MdInsertDriveFile className="rct-icon rct-icon-leaf" />,
+          check: <MdCheckBox />,
+          uncheck: <MdCheckBoxOutlineBlank />,
+          halfCheck: <MdIndeterminateCheckBox />,
+          expandClose: <MdKeyboardArrowRight />,
+          expandOpen: <MdKeyboardArrowDown />,
+          expandAll: <MdAddCircle />,
+          collapseAll: <MdRemoveCircle />,
+          parentClose: <MdFolder />,
+          parentOpen: <MdFolderOpen />,
+          leaf: <MdInsertDriveFile />,
         }}
         showExpandAll
-        onlyLeafCheckboxes
+        showNodeIcon={false}
       />
     </div>
   );

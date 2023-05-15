@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthContext";
 export default function Navbar() {
   const { roles } = useAuth();
 
-  const hasAdminToolRole = roles.map((role) => role.includes("ADMINTOOL"));
+  const hasAdminToolRole = roles?.map((role) => role.includes("ADMINTOOL"));
 
   return (
     <>
