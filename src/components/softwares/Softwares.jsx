@@ -23,12 +23,14 @@ const softwareStyle = {
   height: "85vh",
   marginTop: "100px",
   ".container-tree": {
+    overflow: "auto",
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
     padding: "20px",
     alignItems: "flex-start",
-    marginTop: "50px",
+    marginTop: "25px",
     width: "50vw",
+    maxHeight: "75vh",
   },
 };

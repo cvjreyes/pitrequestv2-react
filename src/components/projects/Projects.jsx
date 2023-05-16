@@ -15,19 +15,21 @@ export default function Projects() {
 }
 
 const projectStyle = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+  height: "85vh",
+  marginTop: "100px",
+  ".container-tree": {
+    overflow: "auto",
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
     flexDirection: "column",
-    height: "85vh",
-    marginTop: "100px",
-    ".container-tree": {
-      display: "flex",
-      flexDirection: "column",
-      flexGrow: 1,
-      padding: "20px",
-      alignItems: "flex-start",
-      marginTop: "50px",
-      width: "50vw",
-    },
+    flexGrow: 1,
+    padding: "20px",
+    alignItems: "flex-start",
+    marginTop: "25px",
+    width: "50vw",
+    maxHeight: "75vh",
+  },
 };
