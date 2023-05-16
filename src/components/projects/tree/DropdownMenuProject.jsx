@@ -7,8 +7,11 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+
 import { client } from "../../../helpers/config";
+
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
+import CharterSettingsModal from "../create/CharterSettingsModal";
 
 export default function DropdownMenuProject({
   id,
@@ -20,7 +23,6 @@ export default function DropdownMenuProject({
 }) {
   const { notify } = useNotifications();
 
-  console.log(id);
   const deleteProject = async () => {
     await client.delete(`/project/delete/${id}`);
     notify("Project deleted successfully!", "success");
@@ -37,7 +39,6 @@ export default function DropdownMenuProject({
     const id = await client.get(
       `/project/get_admin_software/${adminId}/${softwareId}/${projectId}`
     );
-    console.log("Result id:", id.data[0].id);
     await client.delete(`/project/remove/admin/software/${id.data[0].id}`);
     notify("Admin deleted successfully!", "success");
     getProjectTree();
@@ -52,13 +53,11 @@ export default function DropdownMenuProject({
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-          {/* <DropdownMenu.Item className="DropdownMenuItem" asChild>
-            {node === "project" ? (
-              <ProjectSettingsModal id={id} getProjectTree={getProjectTree} />
-            ) : (
-              <TaskSettingsModal id={id} getProjectTree={getProjectTree} />
+          <DropdownMenu.Item className="DropdownMenuItem" asChild>
+            {node === "charterfolder" && (
+              <CharterSettingsModal id={id} getProjectTree={getProjectTree} />
             )}
-          </DropdownMenu.Item> */}
+          </DropdownMenu.Item>
           {node === "project" ? (
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
               <DeleteNodeTree deleteNode={deleteProject} />
@@ -72,7 +71,7 @@ export default function DropdownMenuProject({
               <DeleteNodeTree deleteNode={removeAdmin} />
             </DropdownMenu.Item>
           ) : (
-            <></>
+            <div></div>
           )}
           <DropdownMenu.Arrow className="DropdownMenuArrow" />
         </DropdownMenu.Content>

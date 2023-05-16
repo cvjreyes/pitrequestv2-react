@@ -51,7 +51,16 @@ export default function ProjectTree() {
       children: [
         {
           value: `pc-${project.id}`,
-          label: "Charter",
+          label: (
+            <>
+              {`Charter`}
+              <DropdownMenuProject
+                id={project.id}
+                getProjectTree={getProjectTree}
+                node={"charterfolder"}
+              />
+            </>
+          ),
           showCheckbox: false,
           children: [
             ...(project.Charter
@@ -82,6 +91,18 @@ export default function ProjectTree() {
                   value: `ps-${projectSoftware.software.id}-${i}-${j}`,
                   label: `${projectSoftware.software.name} (${projectSoftware.software.code})`,
                   children: [
+                    ...(projectSoftware.software.Task
+                      ? projectSoftware.software.Task.map((task) => ({
+                          value: `t-${task.id}-${i}-${j}`,
+                          label: task.name,
+                          children: task.Subtask
+                            ? task.Subtask.map((subtask) => ({
+                                value: `st-${subtask.id}-${i}-${j}`,
+                                label: subtask.name,
+                              }))
+                            : [],
+                        }))
+                      : []),
                     {
                       value: `psoftuser-${i}-${j}`,
                       label: "Admins",
@@ -107,18 +128,6 @@ export default function ProjectTree() {
                           : []),
                       ],
                     },
-                    ...(projectSoftware.software.Task
-                      ? projectSoftware.software.Task.map((task) => ({
-                          value: `t-${task.id}-${i}-${j}`,
-                          label: task.name,
-                          children: task.Subtask
-                            ? task.Subtask.map((subtask) => ({
-                                value: `st-${subtask.id}-${i}-${j}`,
-                                label: subtask.name,
-                              }))
-                            : [],
-                        }))
-                      : []),
                   ],
                 }))
               : []),
