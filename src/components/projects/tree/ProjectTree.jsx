@@ -27,7 +27,6 @@ export default function ProjectTree() {
   const getProjectTree = async () => {
     const projectTree = await client.get("/project/get_tree");
     setProjectTree(projectTree.data);
-    console.log(projectTree.data);
   };
 
   useEffect(() => {
@@ -114,7 +113,17 @@ export default function ProjectTree() {
                       : []),
                     {
                       value: `psoftuser-${i}-${j}`,
-                      label: "Admins",
+                      label: (
+                        <>
+                          {`Admins`}
+                          <DropdownMenuProject
+                            id={project.id}
+                            getProjectTree={getProjectTree}
+                            softwareId={projectSoftware.software.id}
+                            node={"adminfolder"}
+                          />
+                        </>
+                      ),
                       showCheckbox: false,
                       children: [
                         ...(projectSoftware.users
@@ -168,7 +177,7 @@ export default function ProjectTree() {
           leaf: <MdInsertDriveFile />,
         }}
         showExpandAll
-        showNodeIcon={false}
+        // showNodeIcon={false}
       />
     </div>
   );

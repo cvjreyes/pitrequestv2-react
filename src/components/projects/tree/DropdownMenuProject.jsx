@@ -14,6 +14,7 @@ import { client } from "../../../helpers/config";
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import CharterSettingsModal from "../create/CharterSettingsModal";
 import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
+import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
 
 export default function DropdownMenuProject({
   id,
@@ -28,7 +29,9 @@ export default function DropdownMenuProject({
   const [softwares, setSoftwares] = useState([]);
 
   const getSoftwares = async () => {
-    const softwares = await client.get(`/software/get_unselected_softwares/${id}`);
+    const softwares = await client.get(
+      `/software/get_unselected_softwares/${id}`
+    );
     setSoftwares(softwares.data);
   };
 
@@ -65,13 +68,19 @@ export default function DropdownMenuProject({
           <DropdownMenu.Item className="DropdownMenuItem" asChild>
             {node === "charterfolder" ? (
               <CharterSettingsModal id={id} getProjectTree={getProjectTree} />
+            ) : node === "softwarefolder" ? (
+              <AddSoftwareSettingsModal
+                id={id}
+                getProjectTree={getProjectTree}
+                getSoftwares={getSoftwares}
+                softwares={softwares}
+              />
             ) : (
-              node === "softwarefolder" && (
-                <AddSoftwareSettingsModal
+              node === "adminfolder" && (
+                <AddAdminSoftwareSettingsModal
                   id={id}
                   getProjectTree={getProjectTree}
-                  getSoftwares={getSoftwares}
-                  softwares={softwares}
+                  softwareId={softwareId}
                 />
               )
             )}
