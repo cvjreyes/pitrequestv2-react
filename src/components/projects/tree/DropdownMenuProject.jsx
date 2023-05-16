@@ -1,6 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
+import { useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNotifications } from "reapop";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -12,6 +13,7 @@ import { client } from "../../../helpers/config";
 
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import CharterSettingsModal from "../create/CharterSettingsModal";
+import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 
 export default function DropdownMenuProject({
   id,
@@ -22,6 +24,13 @@ export default function DropdownMenuProject({
   node,
 }) {
   const { notify } = useNotifications();
+
+  const [softwares, setSoftwares] = useState([]);
+
+  const getSoftwares = async () => {
+    const softwares = await client.get(`/software/get_unselected_softwares/${id}`);
+    setSoftwares(softwares.data);
+  };
 
   const deleteProject = async () => {
     await client.delete(`/project/delete/${id}`);
@@ -54,8 +63,17 @@ export default function DropdownMenuProject({
       <DropdownMenu.Portal>
         <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
           <DropdownMenu.Item className="DropdownMenuItem" asChild>
-            {node === "charterfolder" && (
+            {node === "charterfolder" ? (
               <CharterSettingsModal id={id} getProjectTree={getProjectTree} />
+            ) : (
+              node === "softwarefolder" && (
+                <AddSoftwareSettingsModal
+                  id={id}
+                  getProjectTree={getProjectTree}
+                  getSoftwares={getSoftwares}
+                  softwares={softwares}
+                />
+              )
             )}
           </DropdownMenu.Item>
           {node === "project" ? (
@@ -66,12 +84,12 @@ export default function DropdownMenuProject({
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
               <DeleteNodeTree deleteNode={deleteCharter} />
             </DropdownMenu.Item>
-          ) : node === "admin" ? (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={removeAdmin} />
-            </DropdownMenu.Item>
           ) : (
-            <div></div>
+            node === "admin" && (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <DeleteNodeTree deleteNode={removeAdmin} />
+              </DropdownMenu.Item>
+            )
           )}
           <DropdownMenu.Arrow className="DropdownMenuArrow" />
         </DropdownMenu.Content>

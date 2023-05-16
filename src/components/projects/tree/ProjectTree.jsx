@@ -83,7 +83,16 @@ export default function ProjectTree() {
         },
         {
           value: `psoft-${project.id}`,
-          label: "Softwares",
+          label: (
+            <>
+              {`Softwares`}
+              <DropdownMenuProject
+                id={project.id}
+                getProjectTree={getProjectTree}
+                node={"softwarefolder"}
+              />
+            </>
+          ),
           showCheckbox: false,
           children: [
             ...(project.ProjectSoftwares
