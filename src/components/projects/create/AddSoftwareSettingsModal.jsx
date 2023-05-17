@@ -42,6 +42,7 @@ const AddSoftwareSettingsModal = forwardRef(
       notify("Software added successfully!", "success");
       getProjectTree();
       setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
+      setOpen(false);
     };
 
     const handleChange = (event) => {

@@ -43,6 +43,7 @@ const AddAdminSoftwareSettingsModal = forwardRef(
       notify("Software added successfully!", "success");
       getProjectTree();
       setformAddAdmin({ projectId: id, adminId: 0, softwareId: softwareId });
+      setOpen(false);
     };
 
     const handleChange = (event) => {

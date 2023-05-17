@@ -19,6 +19,7 @@ const CharterSettingsModal = forwardRef(
     const { notify } = useNotifications();
 
     const [nameIsEmpty, setNameIsEmpty] = useState(false);
+
     const [formCharter, setFormCharter] = useState({
       name: "",
       projectId: id,
@@ -35,6 +36,7 @@ const CharterSettingsModal = forwardRef(
       getProjectTree();
       setFormCharter({ name: "", projectId: id });
       setNameIsEmpty(false);
+      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {
