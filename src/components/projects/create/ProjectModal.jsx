@@ -19,6 +19,8 @@ export default function ProjectModal({ getProjectTree }) {
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
+  const [hoursIsEmpty, setHoursIsEmpty] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formProject, setFormProject] = useState({
     name: "",
     code: "",
@@ -27,13 +29,19 @@ export default function ProjectModal({ getProjectTree }) {
 
   const createSubmitProject = async (event) => {
     event.preventDefault();
-    if (!formProject.name || !formProject.code) {
+    if (!formProject.name || !formProject.code || !formProject.estimatedHours) {
       setNameIsEmpty(!formProject.name);
       setCodeIsEmpty(!formProject.code);
+      setHoursIsEmpty(!formProject.estimatedHours);
       return notify("Please, fill all fields", "error");
     }
     if (formProject.code.length > 5)
       return notify("Code can't have more than 5 characters", "error");
+
+    if (!Number(formProject.estimatedHours)) {
+      console.log("entra");
+      return notify("The estimated hours only accept numbers", "error");
+    }
 
     await client.post("/project/create", formProject);
     notify("Project created successfully!", "success");
@@ -41,6 +49,8 @@ export default function ProjectModal({ getProjectTree }) {
     setFormProject({ name: "", code: "", estimatedHours: 500 });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
+    setHoursIsEmpty(false);
+    setIsModalOpen(false); // Cerrar el modal al crear el proyecto
   };
 
   const handleChange = (event) => {
@@ -50,11 +60,20 @@ export default function ProjectModal({ getProjectTree }) {
       setNameIsEmpty(!value);
     } else if (name === "code") {
       setCodeIsEmpty(!value);
+    } else if (name === "estimatedHours") {
+      setHoursIsEmpty(!value);
+    }
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      createSubmitProject(event);
     }
   };
 
   return (
-    <Dialog.Root>
+    <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
         <ImFolderPlus fontSize="20px" color="gray" />
       </Dialog.Trigger>
@@ -78,6 +97,7 @@ export default function ProjectModal({ getProjectTree }) {
                 value={formProject.name}
                 placeholder="Name"
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 error={nameIsEmpty ? "Required" : null}
               />
             </fieldset>
@@ -92,6 +112,7 @@ export default function ProjectModal({ getProjectTree }) {
                 value={formProject.code}
                 placeholder="Code"
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 error={codeIsEmpty ? "Required" : null}
               />
             </fieldset>
@@ -106,6 +127,8 @@ export default function ProjectModal({ getProjectTree }) {
                 value={formProject.estimatedHours}
                 placeholder="Hours"
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                error={hoursIsEmpty ? "Required" : null}
               />
             </fieldset>
             <div
@@ -114,11 +137,13 @@ export default function ProjectModal({ getProjectTree }) {
                 marginTop: 25,
                 justifyContent: "flex-end",
               }}
-              onClick={createSubmitProject}
             >
-              <Dialog.Close asChild>
-                <button className="Button green">Create Project</button>
-              </Dialog.Close>
+              <button
+                type="submit"
+                className="Button green"
+              >
+                Create Project
+              </button>
             </div>
           </form>
           <Dialog.Close asChild>

@@ -8,7 +8,7 @@ import SoftwareTree from "./tree/SoftwareTree";
 export default function Softwares() {
   return (
     <div css={softwareStyle}>
-      <div>Softwares</div>
+      <h1>Softwares</h1>
       <SoftwareTree />
       <Outlet />
     </div>

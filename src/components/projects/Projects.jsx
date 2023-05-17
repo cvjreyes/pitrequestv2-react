@@ -7,7 +7,7 @@ import ProjectTree from "./tree/ProjectTree";
 export default function Projects() {
   return (
     <div css={projectStyle}>
-      <div>Projects</div>
+      <h1>Projects</h1>
       <ProjectTree />
       <Outlet />
     </div>
