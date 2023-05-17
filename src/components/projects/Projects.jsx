@@ -30,6 +30,5 @@ const projectStyle = {
     alignItems: "flex-start",
     marginTop: "25px",
     width: "50vw",
-    maxHeight: "75vh",
   },
 };

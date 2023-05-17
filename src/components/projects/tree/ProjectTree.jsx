@@ -37,7 +37,7 @@ export default function ProjectTree() {
     data.map((project, i) => ({
       value: `p-${project.id}`,
       label: (
-        <div style={{display: "flex", height: "auto", alignItems: "center"}}>
+        <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
           {`${project.name} (${project.code}) => ${project.estimatedHours}h`}
           <DropdownMenuProject
             id={project.id}
@@ -51,7 +51,7 @@ export default function ProjectTree() {
         {
           value: `pc-${project.id}`,
           label: (
-            <div style={{display: "flex", height: 0, alignItems: "center"}}>
+            <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
               {`Charter`}
               <DropdownMenuProject
                 id={project.id}
@@ -66,7 +66,7 @@ export default function ProjectTree() {
               ? project.Charter.map((charter) => ({
                   value: `ch-${charter.id}`,
                   label: (
-                    <div style={{display: "flex", height: 0, alignItems: "center"}}>
+                    <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
                       {`${charter.name}`}
                       <DropdownMenuProject
                         id={charter.id}
@@ -83,7 +83,7 @@ export default function ProjectTree() {
         {
           value: `psoft-${project.id}`,
           label: (
-            <div style={{display: "flex", height: 0, alignItems: "center"}}>
+            <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
               {`Softwares`}
               <DropdownMenuProject
                 id={project.id}
@@ -114,7 +114,7 @@ export default function ProjectTree() {
                     {
                       value: `psoftuser-${i}-${j}`,
                       label: (
-                        <div style={{display: "flex", height: 0, alignItems: "center"}}>
+                        <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
                           {`Admins`}
                           <DropdownMenuProject
                             id={project.id}
@@ -130,7 +130,7 @@ export default function ProjectTree() {
                           ? projectSoftware.users.map((user, k) => ({
                               value: `psuser-${i}-${j}-${k}`,
                               label: (
-                                <div style={{display: "flex", height: 0, alignItems: "center"}}>
+                                <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
                                   {`${user.name}`}
                                   <DropdownMenuProject
                                     adminId={user.id}
