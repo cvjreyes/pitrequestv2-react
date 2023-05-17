@@ -37,28 +37,28 @@ export default function ProjectTree() {
     data.map((project, i) => ({
       value: `p-${project.id}`,
       label: (
-        <>
+        <div style={{display: "flex", height: "auto", alignItems: "center"}}>
           {`${project.name} (${project.code}) => ${project.estimatedHours}h`}
           <DropdownMenuProject
             id={project.id}
             getProjectTree={getProjectTree}
             node={"project"}
           />
-        </>
+        </div>
       ),
       showCheckbox: false,
       children: [
         {
           value: `pc-${project.id}`,
           label: (
-            <>
+            <div style={{display: "flex", height: 0, alignItems: "center"}}>
               {`Charter`}
               <DropdownMenuProject
                 id={project.id}
                 getProjectTree={getProjectTree}
                 node={"charterfolder"}
               />
-            </>
+            </div>
           ),
           showCheckbox: false,
           children: [
@@ -66,14 +66,14 @@ export default function ProjectTree() {
               ? project.Charter.map((charter) => ({
                   value: `ch-${charter.id}`,
                   label: (
-                    <>
+                    <div style={{display: "flex", height: 0, alignItems: "center"}}>
                       {`${charter.name}`}
                       <DropdownMenuProject
                         id={charter.id}
                         getProjectTree={getProjectTree}
                         node={"charter"}
                       />
-                    </>
+                    </div>
                   ),
                   showCheckbox: false,
                 }))
@@ -83,14 +83,14 @@ export default function ProjectTree() {
         {
           value: `psoft-${project.id}`,
           label: (
-            <>
+            <div style={{display: "flex", height: 0, alignItems: "center"}}>
               {`Softwares`}
               <DropdownMenuProject
                 id={project.id}
                 getProjectTree={getProjectTree}
                 node={"softwarefolder"}
               />
-            </>
+            </div>
           ),
           showCheckbox: false,
           children: [
@@ -114,7 +114,7 @@ export default function ProjectTree() {
                     {
                       value: `psoftuser-${i}-${j}`,
                       label: (
-                        <>
+                        <div style={{display: "flex", height: 0, alignItems: "center"}}>
                           {`Admins`}
                           <DropdownMenuProject
                             id={project.id}
@@ -122,7 +122,7 @@ export default function ProjectTree() {
                             softwareId={projectSoftware.software.id}
                             node={"adminfolder"}
                           />
-                        </>
+                        </div>
                       ),
                       showCheckbox: false,
                       children: [
@@ -130,7 +130,7 @@ export default function ProjectTree() {
                           ? projectSoftware.users.map((user, k) => ({
                               value: `psuser-${i}-${j}-${k}`,
                               label: (
-                                <>
+                                <div style={{display: "flex", height: 0, alignItems: "center"}}>
                                   {`${user.name}`}
                                   <DropdownMenuProject
                                     adminId={user.id}
@@ -139,7 +139,7 @@ export default function ProjectTree() {
                                     getProjectTree={getProjectTree}
                                     node={"admin"}
                                   />
-                                </>
+                                </div>
                               ),
                               showCheckbox: false,
                             }))
@@ -177,7 +177,7 @@ export default function ProjectTree() {
           leaf: <MdInsertDriveFile />,
         }}
         showExpandAll
-        // showNodeIcon={false}
+        showNodeIcon={false}
       />
     </div>
   );

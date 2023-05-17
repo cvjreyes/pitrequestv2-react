@@ -26,6 +26,10 @@ export default function DropdownMenuProject({
 }) {
   const { notify } = useNotifications();
 
+  const [openCharter, setOpenCharter] = useState(false);
+  const [openSoftware, setOpenSoftware] = useState(false);
+  const [openAdmin, setOpenAdmin] = useState(false);
+
   const [softwares, setSoftwares] = useState([]);
 
   const getSoftwares = async () => {
@@ -57,53 +61,72 @@ export default function DropdownMenuProject({
   };
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <button aria-label="Customise options">
-          <BsThreeDotsVertical className="icon" />
-        </button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-          <DropdownMenu.Item className="DropdownMenuItem" asChild>
-            {node === "charterfolder" ? (
-              <CharterSettingsModal id={id} getProjectTree={getProjectTree} />
-            ) : node === "softwarefolder" ? (
-              <AddSoftwareSettingsModal
-                id={id}
-                getProjectTree={getProjectTree}
-                getSoftwares={getSoftwares}
-                softwares={softwares}
-              />
+    <div>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <button aria-label="Customise options">
+            <BsThreeDotsVertical className="icon" />
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
+            <DropdownMenu.Item className="DropdownMenuItem" asChild>
+              {node === "charterfolder" ? (
+                <button onClick={() => setOpenCharter(true)}>
+                  Add Charter
+                </button>
+              ) : node === "softwarefolder" ? (
+                <button onClick={() => setOpenSoftware(true)}>
+                  Add Software
+                </button>
+              ) : (
+                node === "adminfolder" && (
+                  <button onClick={() => setOpenAdmin(true)}>Add Admin</button>
+                )
+              )}
+            </DropdownMenu.Item>
+            {node === "project" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <DeleteNodeTree deleteNode={deleteProject} />
+              </DropdownMenu.Item>
+            ) : node === "charter" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <DeleteNodeTree deleteNode={deleteCharter} />
+              </DropdownMenu.Item>
             ) : (
-              node === "adminfolder" && (
-                <AddAdminSoftwareSettingsModal
-                  id={id}
-                  getProjectTree={getProjectTree}
-                  softwareId={softwareId}
-                />
+              node === "admin" && (
+                <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                  <DeleteNodeTree deleteNode={removeAdmin} />
+                </DropdownMenu.Item>
               )
             )}
-          </DropdownMenu.Item>
-          {node === "project" ? (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteProject} />
-            </DropdownMenu.Item>
-          ) : node === "charter" ? (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteCharter} />
-            </DropdownMenu.Item>
-          ) : (
-            node === "admin" && (
-              <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <DeleteNodeTree deleteNode={removeAdmin} />
-              </DropdownMenu.Item>
-            )
-          )}
-          <DropdownMenu.Arrow className="DropdownMenuArrow" />
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+            <DropdownMenu.Arrow className="DropdownMenuArrow" />
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      {/* Modales para crear y se separan para ocultar el dropdownMenu.Portal */}
+      <CharterSettingsModal
+        id={id}
+        getProjectTree={getProjectTree}
+        open={openCharter}
+        setOpen={setOpenCharter}
+      />
+      <AddSoftwareSettingsModal
+        id={id}
+        getProjectTree={getProjectTree}
+        getSoftwares={getSoftwares}
+        softwares={softwares}
+        open={openSoftware}
+        setOpen={setOpenSoftware}
+      />
+      <AddAdminSoftwareSettingsModal
+        id={id}
+        getProjectTree={getProjectTree}
+        softwareId={softwareId}
+        open={openAdmin}
+        setOpen={setOpenAdmin}
+      />
+    </div>
   );
 }
 

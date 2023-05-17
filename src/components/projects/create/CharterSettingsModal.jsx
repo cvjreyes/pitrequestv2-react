@@ -14,85 +14,91 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-const CharterSettingsModal = forwardRef(({ id, getProjectTree }, ref) => {
-  const { notify } = useNotifications();
+const CharterSettingsModal = forwardRef(
+  ({ id, getProjectTree, open, setOpen }, ref) => {
+    const { notify } = useNotifications();
 
-  const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [formCharter, setFormCharter] = useState({
-    name: "",
-    projectId: id,
-  });
+    const [nameIsEmpty, setNameIsEmpty] = useState(false);
+    const [formCharter, setFormCharter] = useState({
+      name: "",
+      projectId: id,
+    });
 
-  const createSubmitCharter = async (event) => {
-    event.preventDefault();
-    if (!formCharter.name) {
-      setNameIsEmpty(!formCharter.name);
-      return notify("Please, fill all fields", "error");
-    }
-    await client.post("/project/create/charter", formCharter);
-    notify("Task created successfully!", "success");
-    getProjectTree();
-    setFormCharter({ name: "", projectId: id });
-    setNameIsEmpty(false);
-  };
+    const createSubmitCharter = async (event) => {
+      event.preventDefault();
+      if (!formCharter.name) {
+        setNameIsEmpty(!formCharter.name);
+        return notify("Please, fill all fields", "error");
+      }
+      await client.post("/project/create/charter", formCharter);
+      notify("Task created successfully!", "success");
+      getProjectTree();
+      setFormCharter({ name: "", projectId: id });
+      setNameIsEmpty(false);
+    };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormCharter((prev) => ({ ...prev, [name]: value }));
-    if (name === "name") {
-      setNameIsEmpty(!value);
-    }
-  };
+    const handleChange = (event) => {
+      const { name, value } = event.target;
+      setFormCharter((prev) => ({ ...prev, [name]: value }));
+      if (name === "name") {
+        setNameIsEmpty(!value);
+      }
+    };
 
-  return (
-    <div ref={ref}>
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <div className="DropdownMenuItem">Add Charter</div>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay css={overlayStyle} />
-          <Dialog.Content css={contentStyle}>
-            <Dialog.Title className="DialogTitle">Create Charter</Dialog.Title>
-            <form onSubmit={createSubmitCharter}>
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="name">
-                  Charter
-                </label>
-                <Input
-                  className="Input"
-                  id="name"
-                  name="name"
-                  value={formCharter.name}
-                  placeholder="Name"
-                  onChange={handleChange}
-                  error={nameIsEmpty ? "Required" : null}
-                />
-              </fieldset>
-              <div
-                style={{
-                  display: "flex",
-                  marginTop: 25,
-                  justifyContent: "flex-end",
-                }}
-                onClick={createSubmitCharter}
-              >
-                <Dialog.Close asChild>
-                  <button className="Button green">Create Charter</button>
-                </Dialog.Close>
-              </div>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <RxCross2 />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
-  );
-});
+    return (
+      <div ref={ref}>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay css={overlayStyle} />
+            <Dialog.Content css={contentStyle}>
+              <Dialog.Title className="DialogTitle">
+                Create Charter
+              </Dialog.Title>
+              <form onSubmit={createSubmitCharter}>
+                <fieldset className="Fieldset">
+                  <label className="Label" htmlFor="name">
+                    Charter
+                  </label>
+                  <Input
+                    className="Input"
+                    id="name"
+                    name="name"
+                    value={formCharter.name}
+                    placeholder="Name"
+                    onChange={handleChange}
+                    error={nameIsEmpty ? "Required" : null}
+                  />
+                </fieldset>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: 25,
+                    justifyContent: "flex-end",
+                  }}
+                  onClick={createSubmitCharter}
+                >
+                  <Dialog.Close asChild>
+                    <button
+                      className="Button green"
+                      // onClick={() => setOpen(false)}
+                    >
+                      Create Charter
+                    </button>
+                  </Dialog.Close>
+                </div>
+              </form>
+              <Dialog.Close asChild>
+                <button className="IconButton" aria-label="Close">
+                  <RxCross2 />
+                </button>
+              </Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
+    );
+  }
+);
 
 const overlayShow = keyframes`
 from {

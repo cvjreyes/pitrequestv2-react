@@ -13,113 +13,111 @@ import "@radix-ui/colors/violet.css";
 
 import { client } from "../../../helpers/config";
 
-const AddSoftwareSettingsModal = forwardRef(({ id, getProjectTree, getSoftwares, softwares }, ref) => {
-  const { notify } = useNotifications();
+const AddSoftwareSettingsModal = forwardRef(
+  ({ id, getProjectTree, getSoftwares, softwares, open, setOpen }, ref) => {
+    const { notify } = useNotifications();
 
-  const [admins, setAdmins] = useState([]);
-  const [formAddSoftware, setFormAddSoftware] = useState({
-    projectId: id,
-    adminId: 0,
-    softwareId: 0,
-  });
+    const [admins, setAdmins] = useState([]);
+    const [formAddSoftware, setFormAddSoftware] = useState({
+      projectId: id,
+      adminId: 0,
+      softwareId: 0,
+    });
 
-  useEffect(() => {
-    
-    const getAdmins = async () => {
-      const admins = await client.get("/user/get_admins");
-      setAdmins(admins.data.Admins);
+    useEffect(() => {
+      const getAdmins = async () => {
+        const admins = await client.get("/user/get_admins");
+        setAdmins(admins.data.Admins);
+      };
+      getSoftwares();
+      getAdmins();
+    }, []);
+
+    const submitAddSoftware = async (event) => {
+      event.preventDefault();
+      if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
+        return notify("Please, fill all fields", "error");
+      }
+      await client.post("/project/add_software_admin", formAddSoftware);
+      notify("Software added successfully!", "success");
+      getProjectTree();
+      setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
     };
-    getSoftwares();
-    getAdmins();
-  }, []);
 
-  const submitAddSoftware = async (event) => {
-    event.preventDefault();
-    if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
-      return notify("Please, fill all fields", "error");
-    }
-    await client.post("/project/add_software_admin", formAddSoftware);
-    notify("Software added successfully!", "success");
-    getProjectTree();
-    setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
-  };
+    const handleChange = (event) => {
+      const { name, value } = event.target;
+      setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
+    };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
-  };
-
-  return (
-    <div ref={ref}>
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <div className="DropdownMenuItem">Add Software</div>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay css={overlayStyle} />
-          <Dialog.Content css={contentStyle}>
-            <Dialog.Title className="DialogTitle">
-              Add Software and Admin
-            </Dialog.Title>
-            <form onSubmit={submitAddSoftware}>
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="software">
-                  Software
-                </label>
-                <select
-                  name="softwareId"
-                  value={formAddSoftware.softwareId}
-                  onChange={handleChange}
+    return (
+      <div ref={ref}>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay css={overlayStyle} />
+            <Dialog.Content css={contentStyle}>
+              <Dialog.Title className="DialogTitle">
+                Add Software and Admin
+              </Dialog.Title>
+              <form onSubmit={submitAddSoftware}>
+                <fieldset className="Fieldset">
+                  <label className="Label" htmlFor="software">
+                    Software
+                  </label>
+                  <select
+                    name="softwareId"
+                    value={formAddSoftware.softwareId}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select a software...</option>
+                    {softwares.map((software) => (
+                      <option key={software.id} value={software.id}>
+                        {software.name}
+                      </option>
+                    ))}
+                  </select>
+                </fieldset>
+                <fieldset className="Fieldset">
+                  <label className="Label" htmlFor="admin">
+                    Admin
+                  </label>
+                  <select
+                    name="adminId"
+                    value={formAddSoftware.adminId}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select an admin...</option>
+                    {admins.map((admin) => (
+                      <option key={admin.id} value={admin.id}>
+                        {admin.name}
+                      </option>
+                    ))}
+                  </select>
+                </fieldset>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: 25,
+                    justifyContent: "flex-end",
+                  }}
+                  onClick={submitAddSoftware}
                 >
-                  <option value="">Select a software...</option>
-                  {softwares.map((software) => (
-                    <option key={software.id} value={software.id}>
-                      {software.name}
-                    </option>
-                  ))}
-                </select>
-              </fieldset>
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="admin">
-                  Admin
-                </label>
-                <select
-                  name="adminId"
-                  value={formAddSoftware.adminId}
-                  onChange={handleChange}
-                >
-                  <option value="">Select an admin...</option>
-                  {admins.map((admin) => (
-                    <option key={admin.id} value={admin.id}>
-                      {admin.name}
-                    </option>
-                  ))}
-                </select>
-              </fieldset>
-              <div
-                style={{
-                  display: "flex",
-                  marginTop: 25,
-                  justifyContent: "flex-end",
-                }}
-                onClick={submitAddSoftware}
-              >
-                <Dialog.Close asChild>
-                  <button className="Button green">Add Software</button>
-                </Dialog.Close>
-              </div>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <RxCross2 />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
-  );
-});
+                  <Dialog.Close asChild>
+                    <button className="Button green">Add Software</button>
+                  </Dialog.Close>
+                </div>
+              </form>
+              <Dialog.Close asChild>
+                <button className="IconButton" aria-label="Close">
+                  <RxCross2 />
+                </button>
+              </Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
+    );
+  }
+);
 
 const overlayShow = keyframes`
 from {

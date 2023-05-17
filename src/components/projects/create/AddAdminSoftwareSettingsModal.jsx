@@ -14,7 +14,7 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 
 const AddAdminSoftwareSettingsModal = forwardRef(
-  ({ id, softwareId, getProjectTree }, ref) => {
+  ({ id, softwareId, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
     const [admins, setAdmins] = useState([]);
@@ -30,7 +30,6 @@ const AddAdminSoftwareSettingsModal = forwardRef(
           `/user/get_unassigned_admins/${id}/${softwareId}`
         );
         setAdmins(admins.data.admins);
-        console.log(admins.data.admins);
       };
       getAdmins();
     }, []);
@@ -53,10 +52,7 @@ const AddAdminSoftwareSettingsModal = forwardRef(
 
     return (
       <div ref={ref}>
-        <Dialog.Root>
-          <Dialog.Trigger>
-            <div className="DropdownMenuItem">Add Admin</div>
-          </Dialog.Trigger>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
           <Dialog.Portal>
             <Dialog.Overlay css={overlayStyle} />
             <Dialog.Content css={contentStyle}>
