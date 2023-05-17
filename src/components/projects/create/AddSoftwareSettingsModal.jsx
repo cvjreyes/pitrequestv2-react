@@ -14,9 +14,10 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 
 const AddSoftwareSettingsModal = forwardRef(
-  ({ id, getProjectTree, getSoftwares, softwares, open, setOpen }, ref) => {
+  ({ id, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
+    const [softwares, setSoftwares] = useState([]);
     const [admins, setAdmins] = useState([]);
     const [formAddSoftware, setFormAddSoftware] = useState({
       projectId: id,
@@ -24,14 +25,23 @@ const AddSoftwareSettingsModal = forwardRef(
       softwareId: 0,
     });
 
+    const updateUnselectedSoftwares = async () => {
+      const unselectedSoftwares = await client.get(
+        `/software/get_unselected_softwares/${id}`
+      );
+      setSoftwares(unselectedSoftwares.data);
+    };
+
     useEffect(() => {
       const getAdmins = async () => {
         const admins = await client.get("/user/get_admins");
         setAdmins(admins.data.Admins);
       };
-      getSoftwares();
+      if (!open) {
+        updateUnselectedSoftwares();
+      }
       getAdmins();
-    }, []);
+    }, [open]);
 
     const submitAddSoftware = async (event) => {
       event.preventDefault();
@@ -43,6 +53,7 @@ const AddSoftwareSettingsModal = forwardRef(
       getProjectTree();
       setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
       setOpen(false);
+      updateUnselectedSoftwares(); // Actualizar la lista de softwares no seleccionados
     };
 
     const handleChange = (event) => {

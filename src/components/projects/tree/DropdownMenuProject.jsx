@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useNotifications } from "reapop";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -29,15 +29,6 @@ export default function DropdownMenuProject({
   const [openCharter, setOpenCharter] = useState(false);
   const [openSoftware, setOpenSoftware] = useState(false);
   const [openAdmin, setOpenAdmin] = useState(false);
-
-  const [softwares, setSoftwares] = useState([]);
-
-  const getSoftwares = async () => {
-    const softwares = await client.get(
-      `/software/get_unselected_softwares/${id}`
-    );
-    setSoftwares(softwares.data);
-  };
 
   const deleteProject = async () => {
     await client.delete(`/project/delete/${id}`);
@@ -114,8 +105,6 @@ export default function DropdownMenuProject({
       <AddSoftwareSettingsModal
         id={id}
         getProjectTree={getProjectTree}
-        getSoftwares={getSoftwares}
-        softwares={softwares}
         open={openSoftware}
         setOpen={setOpenSoftware}
       />

@@ -39,7 +39,6 @@ export default function ProjectModal({ getProjectTree }) {
       return notify("Code can't have more than 5 characters", "error");
 
     if (!Number(formProject.estimatedHours)) {
-      console.log("entra");
       return notify("The estimated hours only accept numbers", "error");
     }
 
@@ -121,6 +120,7 @@ export default function ProjectModal({ getProjectTree }) {
                 Estimated Hours
               </label>
               <Input
+                type="number"
                 className="Input"
                 id="estimatedHours"
                 name="estimatedHours"
@@ -138,10 +138,7 @@ export default function ProjectModal({ getProjectTree }) {
                 justifyContent: "flex-end",
               }}
             >
-              <button
-                type="submit"
-                className="Button green"
-              >
+              <button type="submit" className="Button green">
                 Create Project
               </button>
             </div>
