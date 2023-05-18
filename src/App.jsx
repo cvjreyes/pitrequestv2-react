@@ -23,6 +23,7 @@ import Home from "./components/home/Home";
 import CheckLogin from "./components/authentication/CheckLogin";
 import Signin from "./components/authentication/Signin";
 import Softwares from "./components/softwares/Softwares";
+import Projects from "./components/projects/Projects";
 
 export default function App() {
   const { notifications, dismissNotification } = useNotifications();
@@ -52,6 +53,7 @@ export default function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/" element={<Home />} />
               <Route path="/softwares" element={<Softwares />} />
+              <Route path="/projects" element={<Projects />} />
             </Route>
             <Route element={<PublicRoute />}>
               <Route path="/log_in/:user_id/:token" element={<CheckLogin />} />

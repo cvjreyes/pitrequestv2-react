@@ -2,20 +2,19 @@
 /** @jsx jsx */
 import { jsx } from "@emotion/react";
 import { Outlet } from "react-router-dom";
+import ProjectTree from "./tree/ProjectTree";
 
-import SoftwareTree from "./tree/SoftwareTree";
-
-export default function Softwares() {
+export default function Projects() {
   return (
-    <div css={softwareStyle}>
-      <h1>Softwares</h1>
-      <SoftwareTree />
+    <div css={projectStyle}>
+      <h1>Projects</h1>
+      <ProjectTree />
       <Outlet />
     </div>
   );
 }
 
-const softwareStyle = {
+const projectStyle = {
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -31,6 +30,5 @@ const softwareStyle = {
     alignItems: "flex-start",
     marginTop: "25px",
     width: "50vw",
-    maxHeight: "75vh",
   },
 };

@@ -4,14 +4,19 @@ import { jsx } from "@emotion/react";
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { ProfileNavbar } from "./ProfileNavbar";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
+  const { roles } = useAuth();
+
+  const hasAdminToolRole = roles?.map((role) => role.includes("ADMINTOOL"));
+
   return (
     <>
       <div css={navbarStyle}>
         <div className="containerNavbar">
           <div className="menu">
-          <NavLink
+            <NavLink
               to="/"
               style={({ isActive }) => (isActive ? { color: "white" } : null)}
             >
@@ -23,6 +28,16 @@ export default function Navbar() {
             >
               Softwares
             </NavLink>
+            {hasAdminToolRole ? (
+              <NavLink
+                to="/projects"
+                style={({ isActive }) => (isActive ? { color: "white" } : null)}
+              >
+                Projects
+              </NavLink>
+            ) : (
+              <></>
+            )}
             <NavLink
               to="/requestdashboard"
               style={({ isActive }) => (isActive ? { color: "white" } : null)}
