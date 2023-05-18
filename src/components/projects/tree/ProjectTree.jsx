@@ -53,7 +53,7 @@ export default function ProjectTree() {
           />
         </div>
       ),
-      title: "Project Details",
+      title: `${project.userProjectId}`,
       showCheckbox: false,
       children: [
         {
