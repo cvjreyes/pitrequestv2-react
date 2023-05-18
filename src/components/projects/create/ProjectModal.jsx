@@ -35,8 +35,8 @@ export default function ProjectModal({ getProjectTree }) {
       setHoursIsEmpty(!formProject.estimatedHours);
       return notify("Please, fill all fields", "error");
     }
-    if (formProject.code.length > 5)
-      return notify("Code can't have more than 5 characters", "error");
+    if (formProject.code.length > 10)
+      return notify("Code can't have more than 10 characters", "error");
 
     if (!Number(formProject.estimatedHours)) {
       return notify("The estimated hours only accept numbers", "error");

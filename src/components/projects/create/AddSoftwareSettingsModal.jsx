@@ -37,9 +37,7 @@ const AddSoftwareSettingsModal = forwardRef(
         const admins = await client.get("/user/get_admins");
         setAdmins(admins.data.Admins);
       };
-      if (!open) {
-        updateUnselectedSoftwares();
-      }
+      updateUnselectedSoftwares();
       getAdmins();
     }, [open]);
 

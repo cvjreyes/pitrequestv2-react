@@ -32,8 +32,8 @@ export default function SoftwareModal({ getSoftwareTree }) {
       setCodeIsEmpty(!formSoftware.code);
       return notify("Please, fill all fields", "error");
     }
-    if (formSoftware.code.length > 5)
-      return notify("Code can't have more than 5 characters", "error");
+    if (formSoftware.code.length > 10)
+      return notify("Code can't have more than 10 characters", "error");
 
     await client.post("/software/create", formSoftware);
     notify("Software created successfully!", "success");
