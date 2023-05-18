@@ -14,12 +14,15 @@ import {
   MdRemoveCircle,
 } from "react-icons/md";
 
+import { client } from "../../../helpers/config";
+import { useAuth } from "../../../context/AuthContext";
+
+import DropdownMenuProject from "./DropdownMenuProject";
 import ProjectModal from "../create/ProjectModal";
 
-import { client } from "../../../helpers/config";
-import DropdownMenuProject from "./DropdownMenuProject";
-
 export default function ProjectTree() {
+  const { user } = useAuth();
+
   const [checked, setChecked] = useState([]);
   const [expanded, setExpanded] = useState([]);
   const [projectTree, setProjectTree] = useState([]);
@@ -131,15 +134,18 @@ export default function ProjectTree() {
               ? project.ProjectSoftwares.map((projectSoftware, j) => ({
                   value: `ps-${projectSoftware.software.id}-${i}-${j}`,
                   label: `${projectSoftware.software.name} (${projectSoftware.software.code})`,
+                  disabled: user.id !== project.userProjectId,
                   children: [
                     ...(projectSoftware.software.Task
                       ? projectSoftware.software.Task.map((task) => ({
                           value: `t-${task.id}-${i}-${j}`,
                           label: task.name,
+                          disabled: user.id !== project.userProjectId,
                           children: task.Subtask
                             ? task.Subtask.map((subtask) => ({
                                 value: `st-${subtask.id}-${i}-${j}`,
                                 label: subtask.name,
+                                disabled: user.id !== project.userProjectId,
                               }))
                             : [],
                         }))
