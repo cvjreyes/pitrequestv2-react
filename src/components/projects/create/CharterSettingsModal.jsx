@@ -80,12 +80,7 @@ const CharterSettingsModal = forwardRef(
                   onClick={createSubmitCharter}
                 >
                   <Dialog.Close asChild>
-                    <button
-                      className="Button green"
-                      // onClick={() => setOpen(false)}
-                    >
-                      Create Charter
-                    </button>
+                    <button className="Button green">Create Charter</button>
                   </Dialog.Close>
                 </div>
               </form>

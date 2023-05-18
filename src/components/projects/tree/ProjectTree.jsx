@@ -38,7 +38,7 @@ export default function ProjectTree() {
       value: `p-${project.id}`,
       label: (
         <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-          {`${project.name} (${project.code}) => ${project.estimatedHours}h`}
+          <b>{`${project.name} (${project.code}) => ${project.estimatedHours}h`}</b>
           <DropdownMenuProject
             id={project.id}
             getProjectTree={getProjectTree}
@@ -52,7 +52,7 @@ export default function ProjectTree() {
           value: `pc-${project.id}`,
           label: (
             <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-              {`Charter`}
+              <b><i>Charter</i></b>
               <DropdownMenuProject
                 id={project.id}
                 getProjectTree={getProjectTree}
@@ -84,7 +84,7 @@ export default function ProjectTree() {
           value: `psoft-${project.id}`,
           label: (
             <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-              {`Softwares`}
+              <b><i>Softwares</i></b>
               <DropdownMenuProject
                 id={project.id}
                 getProjectTree={getProjectTree}
@@ -115,7 +115,7 @@ export default function ProjectTree() {
                       value: `psoftuser-${i}-${j}`,
                       label: (
                         <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-                          {`Admins`}
+                          <i>Admins</i>
                           <DropdownMenuProject
                             id={project.id}
                             getProjectTree={getProjectTree}

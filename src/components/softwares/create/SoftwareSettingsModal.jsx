@@ -14,7 +14,7 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree }, ref) => {
+const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree, open, setOpen }, ref) => {
   const { notify } = useNotifications();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
@@ -34,6 +34,7 @@ const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree }, ref) => {
     getSoftwareTree();
     setFormTask({ name: "", softwareId: id });
     setNameIsEmpty(false);
+    setOpen(false); // Cerrar el modal al crear el proyecto
   };
 
   const handleChange = (event) => {
@@ -46,10 +47,7 @@ const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree }, ref) => {
 
   return (
     <div ref={ref}>
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <div className="DropdownMenuItem">Add Task</div>
-        </Dialog.Trigger>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
           <Dialog.Overlay css={overlayStyle} />
           <Dialog.Content css={contentStyle}>

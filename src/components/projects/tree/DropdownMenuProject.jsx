@@ -1,20 +1,20 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import { useEffect, useState } from "react";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useNotifications } from "reapop";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
-import CharterSettingsModal from "../create/CharterSettingsModal";
-import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
+import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
+import CharterSettingsModal from "../create/CharterSettingsModal";
 
 export default function DropdownMenuProject({
   id,

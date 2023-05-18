@@ -14,85 +14,87 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-const TaskSettingsModal = forwardRef(({ id, getSoftwareTree }, ref) => {
-  const { notify } = useNotifications();
+const TaskSettingsModal = forwardRef(
+  ({ id, getSoftwareTree, open, setOpen }, ref) => {
+    const { notify } = useNotifications();
 
-  const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [formSubtask, setFormSubtask] = useState({
-    name: "",
-    taskId: id,
-  });
+    const [nameIsEmpty, setNameIsEmpty] = useState(false);
+    const [formSubtask, setFormSubtask] = useState({
+      name: "",
+      taskId: id,
+    });
 
-  const createSubmitSubTask = async (event) => {
-    event.preventDefault();
-    if (!formSubtask.name) {
-      setNameIsEmpty(!formSubtask.name);
-      return notify("Please, fill all fields", "error");
-    }
-    await client.post("/software/create/task/subtask", formSubtask);
-    notify("Task created successfully!", "success");
-    getSoftwareTree();
-    setFormSubtask({ name: "", taskId: id });
-    setNameIsEmpty(false);
-  };
+    const createSubmitSubTask = async (event) => {
+      event.preventDefault();
+      if (!formSubtask.name) {
+        setNameIsEmpty(!formSubtask.name);
+        return notify("Please, fill all fields", "error");
+      }
+      await client.post("/software/create/task/subtask", formSubtask);
+      notify("Task created successfully!", "success");
+      getSoftwareTree();
+      setFormSubtask({ name: "", taskId: id });
+      setNameIsEmpty(false);
+      setOpen(false); // Cerrar el modal al crear el proyecto
+    };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormSubtask((prev) => ({ ...prev, [name]: value }));
-    if (name === "name") {
-      setNameIsEmpty(!value);
-    }
-  };
+    const handleChange = (event) => {
+      const { name, value } = event.target;
+      setFormSubtask((prev) => ({ ...prev, [name]: value }));
+      if (name === "name") {
+        setNameIsEmpty(!value);
+      }
+    };
 
-  return (
-    <div ref={ref}>
-      <Dialog.Root>
-        <Dialog.Trigger>
-          <div className="DropdownMenuItem">Add SubTask</div>
-        </Dialog.Trigger>
-        <Dialog.Portal>
-          <Dialog.Overlay css={overlayStyle} />
-          <Dialog.Content css={contentStyle}>
-            <Dialog.Title className="DialogTitle">Create SubTask</Dialog.Title>
-            <form onSubmit={createSubmitSubTask}>
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="name">
-                  SubTask
-                </label>
-                <Input
-                  className="Input"
-                  id="name"
-                  name="name"
-                  value={formSubtask.name}
-                  placeholder="Name"
-                  onChange={handleChange}
-                  error={nameIsEmpty ? "Required" : null}
-                />
-              </fieldset>
-              <div
-                style={{
-                  display: "flex",
-                  marginTop: 25,
-                  justifyContent: "flex-end",
-                }}
-                onClick={createSubmitSubTask}
-              >
-                <Dialog.Close asChild>
-                  <button className="Button green">Create SubTask</button>
-                </Dialog.Close>
-              </div>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <RxCross2 />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
-  );
-});
+    return (
+      <div ref={ref}>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay css={overlayStyle} />
+            <Dialog.Content css={contentStyle}>
+              <Dialog.Title className="DialogTitle">
+                Create SubTask
+              </Dialog.Title>
+              <form onSubmit={createSubmitSubTask}>
+                <fieldset className="Fieldset">
+                  <label className="Label" htmlFor="name">
+                    SubTask
+                  </label>
+                  <Input
+                    className="Input"
+                    id="name"
+                    name="name"
+                    value={formSubtask.name}
+                    placeholder="Name"
+                    onChange={handleChange}
+                    error={nameIsEmpty ? "Required" : null}
+                  />
+                </fieldset>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: 25,
+                    justifyContent: "flex-end",
+                  }}
+                  onClick={createSubmitSubTask}
+                >
+                  <Dialog.Close asChild>
+                    <button className="Button green">Create SubTask</button>
+                  </Dialog.Close>
+                </div>
+              </form>
+              <Dialog.Close asChild>
+                <button className="IconButton" aria-label="Close">
+                  <RxCross2 />
+                </button>
+              </Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
+    );
+  }
+);
 
 const overlayShow = keyframes`
 from {
