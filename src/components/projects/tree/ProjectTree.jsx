@@ -28,7 +28,7 @@ export default function ProjectTree() {
   const [projectTree, setProjectTree] = useState([]);
 
   const getProjectTree = async () => {
-    const projectTree = await client.get("/project/get_tree");
+    const projectTree = await client.get("/projects/tree");
     setProjectTree(projectTree.data);
   };
 

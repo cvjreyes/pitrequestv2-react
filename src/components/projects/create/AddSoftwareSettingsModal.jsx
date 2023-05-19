@@ -27,14 +27,14 @@ const AddSoftwareSettingsModal = forwardRef(
 
     const updateUnselectedSoftwares = async () => {
       const unselectedSoftwares = await client.get(
-        `/software/get_unselected_softwares/${id}`
+        `/projects/${id}/softwares/unselected`
       );
       setSoftwares(unselectedSoftwares.data);
     };
 
     useEffect(() => {
       const getAdmins = async () => {
-        const admins = await client.get("/user/get_admins");
+        const admins = await client.get("/users/admins");
         setAdmins(admins.data.Admins);
       };
       updateUnselectedSoftwares();
@@ -46,7 +46,7 @@ const AddSoftwareSettingsModal = forwardRef(
       if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
         return notify("Please, fill all fields", "error");
       }
-      await client.post("/project/add_software_admin", formAddSoftware);
+      await client.post("/projects/softwares", formAddSoftware);
       notify("Software added successfully!", "success");
       getProjectTree();
       setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });

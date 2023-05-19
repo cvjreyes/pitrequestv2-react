@@ -25,7 +25,7 @@ export default function SoftwareTree() {
   const [softwareTree, setSoftwareTree] = useState([]);
 
   const getSoftwareTree = async () => {
-    const softwareTree = await client.get("/software/get_tree");
+    const softwareTree = await client.get("/softwares/tree");
     setSoftwareTree(softwareTree.data);
   };
 

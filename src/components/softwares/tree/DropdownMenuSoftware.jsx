@@ -20,19 +20,19 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const [openSubtask, setOpenSubtask] = useState(false);
 
   const deleteSoftware = async () => {
-    await client.delete(`/software/delete/${id}`);
+    await client.delete(`/softwares/${id}`);
     notify("Software deleted successfully!", "success");
     getSoftwareTree();
   };
 
   const deleteTask = async () => {
-    await client.delete(`/software/delete/task/${id}`);
+    await client.delete(`/tasks/${id}`);
     notify("Task deleted successfully!", "success");
     getSoftwareTree();
   };
 
   const deleteSubtask = async () => {
-    await client.delete(`/software/delete/task/subtask/${id}`);
+    await client.delete(`/subtasks/${id}`);
     notify("Subtask deleted successfully!", "success");
     getSoftwareTree();
   };

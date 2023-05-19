@@ -46,7 +46,7 @@ export default function ProjectModal({ getProjectTree }) {
       return notify("The estimated hours only accept numbers", "error");
     }
 
-    await client.post("/project/create", formProject);
+    await client.post("/projects/", formProject);
     notify("Project created successfully!", "success");
     getProjectTree();
     setFormProject({

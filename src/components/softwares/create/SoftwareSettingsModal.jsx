@@ -29,7 +29,7 @@ const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree, open, setOpen }
       setNameIsEmpty(!formTask.name);
       return notify("Please, fill all fields", "error");
     }
-    await client.post("/software/create/task", formTask);
+    await client.post("/tasks/", formTask);
     notify("Task created successfully!", "success");
     getSoftwareTree();
     setFormTask({ name: "", softwareId: id });

@@ -31,7 +31,7 @@ const CharterSettingsModal = forwardRef(
         setNameIsEmpty(!formCharter.name);
         return notify("Please, fill all fields", "error");
       }
-      await client.post("/project/create/charter", formCharter);
+      await client.post("/charters/", formCharter);
       notify("Task created successfully!", "success");
       getProjectTree();
       setFormCharter({ name: "", projectId: id });

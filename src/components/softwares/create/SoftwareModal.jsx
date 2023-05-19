@@ -35,7 +35,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
     if (formSoftware.code.length > 10)
       return notify("Code can't have more than 10 characters", "error");
 
-    await client.post("/software/create", formSoftware);
+    await client.post("/softwares/", formSoftware);
     notify("Software created successfully!", "success");
     getSoftwareTree();
     setFormSoftware({ name: "", code: ""});

@@ -31,22 +31,22 @@ export default function DropdownMenuProject({
   const [openAdmin, setOpenAdmin] = useState(false);
 
   const deleteProject = async () => {
-    await client.delete(`/project/delete/${id}`);
+    await client.delete(`/projects/${id}`);
     notify("Project deleted successfully!", "success");
     getProjectTree();
   };
 
   const deleteCharter = async () => {
-    await client.delete(`/project/delete/charter/${id}`);
+    await client.delete(`/charters/${id}`);
     notify("Charter deleted successfully!", "success");
     getProjectTree();
   };
 
   const removeAdmin = async () => {
     const id = await client.get(
-      `/project/get_admin_software/${adminId}/${softwareId}/${projectId}`
+      `/projects/${projectId}/admins/${adminId}/softwares/${softwareId}`
     );
-    await client.delete(`/project/remove/admin/software/${id.data[0].id}`);
+    await client.delete(`/projects/admin/softwares/${id.data[0].id}`);
     notify("Admin deleted successfully!", "success");
     getProjectTree();
   };

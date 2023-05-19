@@ -30,7 +30,7 @@ const TaskSettingsModal = forwardRef(
         setNameIsEmpty(!formSubtask.name);
         return notify("Please, fill all fields", "error");
       }
-      await client.post("/software/create/task/subtask", formSubtask);
+      await client.post("/subtasks", formSubtask);
       notify("Task created successfully!", "success");
       getSoftwareTree();
       setFormSubtask({ name: "", taskId: id });
