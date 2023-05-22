@@ -135,16 +135,19 @@ export default function ProjectTree() {
                   value: `ps-${projectSoftware.software.id}-${i}-${j}`,
                   label: `${projectSoftware.software.name} (${projectSoftware.software.code})`,
                   disabled: user.id !== project.userProjectId,
+                  showCheckbox: false,
                   children: [
                     ...(projectSoftware.software.Task
                       ? projectSoftware.software.Task.map((task) => ({
                           value: `t-${task.id}-${i}-${j}`,
                           label: task.name,
+                          showCheckbox: false,
                           disabled: user.id !== project.userProjectId,
                           children: task.Subtask
                             ? task.Subtask.map((subtask) => ({
                                 value: `st-${subtask.id}-${i}-${j}`,
                                 label: subtask.name,
+                                showCheckbox: false,
                                 disabled: user.id !== project.userProjectId,
                               }))
                             : [],
@@ -161,7 +164,7 @@ export default function ProjectTree() {
                             margin: "-10px 0",
                           }}
                         >
-                          <i>Admins</i>
+                          <u><i>Admins</i></u>
                           <DropdownMenuProject
                             id={project.id}
                             getProjectTree={getProjectTree}
