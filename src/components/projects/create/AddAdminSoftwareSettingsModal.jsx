@@ -24,16 +24,21 @@ const AddAdminSoftwareSettingsModal = forwardRef(
       softwareId: softwareId,
     });
 
+    const getAdmins = async () => {
+      const admins = await client.get(
+        `/projects/${id}/softwares/${softwareId}/admins/unassigned`
+      );
+      setAdmins(admins.data.admins);
+    };
+
     useEffect(() => {
-      const getAdmins = async () => {
-        const admins = await client.get(
-          `/projects/${id}/softwares/${softwareId}/admins/unassigned`
-        );
-        setAdmins(admins.data.admins);
-      };
       getAdmins();
     }, []);
 
+    useEffect(() => {
+      getAdmins();
+    }, [open]);
+    
     const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
       if (!formAddAdmin.adminId) {
