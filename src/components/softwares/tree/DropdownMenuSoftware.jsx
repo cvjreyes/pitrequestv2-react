@@ -132,7 +132,7 @@ to {
 }`;
 
 const dropdownMenuStyle = {
-  minWidth: "140px",
+  minWidth: "auto",
   backgroundColor: "white",
   borderRadius: "6px",
   padding: "5px",
@@ -154,17 +154,17 @@ const dropdownMenuStyle = {
     animationName: `${slideRightAndFade}`,
   },
   ".DropdownMenuItem": {
-    fontSize: "13px",
+    fontSize: "15px",
     lineHeight: "1",
     color: "var(--violet11)",
     borderRadius: "3px",
     display: "flex",
     alignItems: "center",
+    justifyContent: "center",
     textAlign: "center",
     height: "25px",
     padding: "0 5px",
     position: "relative",
-    paddingLeft: "25px",
     userSelect: "none",
     outline: "none",
     margin: "5px 0",
