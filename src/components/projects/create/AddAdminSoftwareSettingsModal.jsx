@@ -27,7 +27,7 @@ const AddAdminSoftwareSettingsModal = forwardRef(
     useEffect(() => {
       const getAdmins = async () => {
         const admins = await client.get(
-          `/user/get_unassigned_admins/${id}/${softwareId}`
+          `/projects/${id}/softwares/${softwareId}/admins/unassigned`
         );
         setAdmins(admins.data.admins);
       };
@@ -39,7 +39,7 @@ const AddAdminSoftwareSettingsModal = forwardRef(
       if (!formAddAdmin.adminId) {
         return notify("Please, fill all fields", "error");
       }
-      await client.post("/project/add_software_admin", formAddAdmin);
+      await client.post("/projects/softwares", formAddAdmin);
       notify("Software added successfully!", "success");
       getProjectTree();
       setformAddAdmin({ projectId: id, adminId: 0, softwareId: softwareId });

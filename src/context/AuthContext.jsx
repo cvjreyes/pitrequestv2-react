@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   const getUserInfo = async () => {
     setIsLoading(true);
-    const res = await client.get("/auth/get_user_info");
+    const res = await client.get("/auth/user");
     setIsLoading(false);
     setRoles(res.data.user.roles);
     return res.data.user;

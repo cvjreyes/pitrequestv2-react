@@ -14,7 +14,7 @@ export default function CheckLogin() {
   useEffect(() => {
     const validateCredentials = async () => {
       try {
-        const res = await client.post("/auth/validate_credentials", {
+        const res = await client.post("/auth/validate-credentials", {
           user_id,
           token,
         });

@@ -25,7 +25,7 @@ export default function SoftwareTree() {
   const [softwareTree, setSoftwareTree] = useState([]);
 
   const getSoftwareTree = async () => {
-    const softwareTree = await client.get("/software/get_tree");
+    const softwareTree = await client.get("/softwares/tree");
     setSoftwareTree(softwareTree.data);
   };
 
@@ -38,41 +38,65 @@ export default function SoftwareTree() {
     data.map((software) => ({
       value: software.id,
       label: (
-        <>
-          {`${software.name} (${software.code})`}
+        <div
+          style={{
+            display: "flex",
+            height: 0,
+            alignItems: "center",
+            margin: "-10px 0",
+          }}
+        >
+          <b>{`${software.name} (${software.code})`}</b>
           <DropdownMenuSoftware
             id={software.id}
             getSoftwareTree={getSoftwareTree}
             node={"software"}
           />
-        </>
+        </div>
       ),
+      showCheckbox: false,
       children: software.Task
         ? software.Task.map((task) => ({
             value: task.id + 1000,
             label: (
-              <>
+              <div
+                style={{
+                  display: "flex",
+                  height: 0,
+                  alignItems: "center",
+                  margin: "-10px 0",
+                }}
+              >
                 {task.name}
                 <DropdownMenuSoftware
                   id={task.id}
                   getSoftwareTree={getSoftwareTree}
                   node={"task"}
                 />
-              </>
+              </div>
             ),
+            showCheckbox: false,
             children: task.Subtask
               ? task.Subtask.map((subtask) => ({
                   value: subtask.id + 10000,
                   label: (
-                    <>
-                      {subtask.name}
+                    <div
+                      style={{
+                        display: "flex",
+                        height: 0,
+                        alignItems: "center",
+                        margin: "-10px 0",
+                      }}
+                    >
+                      <i>{subtask.name}</i>
                       <DropdownMenuSoftware
                         id={subtask.id}
                         getSoftwareTree={getSoftwareTree}
                         node={"subtask"}
                       />
-                    </>
+                    </div>
                   ),
+                  showCheckbox: false,
                 }))
               : [],
           }))
@@ -89,31 +113,19 @@ export default function SoftwareTree() {
         onCheck={(checked) => setChecked(checked)}
         onExpand={(expanded) => setExpanded(expanded)}
         icons={{
-          check: <MdCheckBox className="rct-icon rct-icon-check" />,
-          uncheck: (
-            <MdCheckBoxOutlineBlank className="rct-icon rct-icon-uncheck" />
-          ),
-          halfCheck: (
-            <MdIndeterminateCheckBox className="rct-icon rct-icon-half-check" />
-          ),
-          expandClose: (
-            <MdKeyboardArrowRight className="rct-icon rct-icon-expand-close" />
-          ),
-          expandOpen: (
-            <MdKeyboardArrowDown className="rct-icon rct-icon-expand-open" />
-          ),
-          expandAll: <MdAddCircle className="rct-icon rct-icon-expand-all" />,
-          collapseAll: (
-            <MdRemoveCircle className="rct-icon rct-icon-collapse-all" />
-          ),
-          parentClose: <MdFolder className="rct-icon rct-icon-parent-close" />,
-          parentOpen: (
-            <MdFolderOpen className="rct-icon rct-icon-parent-open" />
-          ),
-          leaf: <MdInsertDriveFile className="rct-icon rct-icon-leaf" />,
+          check: <MdCheckBox />,
+          uncheck: <MdCheckBoxOutlineBlank />,
+          halfCheck: <MdIndeterminateCheckBox />,
+          expandClose: <MdKeyboardArrowRight />,
+          expandOpen: <MdKeyboardArrowDown />,
+          expandAll: <MdAddCircle />,
+          collapseAll: <MdRemoveCircle />,
+          parentClose: <MdFolder />,
+          parentOpen: <MdFolderOpen />,
+          leaf: <MdInsertDriveFile />,
         }}
         showExpandAll
-        onlyLeafCheckboxes
+        showNodeIcon={false}
       />
     </div>
   );

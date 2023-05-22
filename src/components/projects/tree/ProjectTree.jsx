@@ -14,18 +14,21 @@ import {
   MdRemoveCircle,
 } from "react-icons/md";
 
+import { client } from "../../../helpers/config";
+import { useAuth } from "../../../context/AuthContext";
+
+import DropdownMenuProject from "./DropdownMenuProject";
 import ProjectModal from "../create/ProjectModal";
 
-import { client } from "../../../helpers/config";
-import DropdownMenuProject from "./DropdownMenuProject";
-
 export default function ProjectTree() {
+  const { user } = useAuth();
+
   const [checked, setChecked] = useState([]);
   const [expanded, setExpanded] = useState([]);
   const [projectTree, setProjectTree] = useState([]);
 
   const getProjectTree = async () => {
-    const projectTree = await client.get("/project/get_tree");
+    const projectTree = await client.get("/projects/tree");
     setProjectTree(projectTree.data);
   };
 
@@ -37,8 +40,15 @@ export default function ProjectTree() {
     data.map((project, i) => ({
       value: `p-${project.id}`,
       label: (
-        <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-          {`${project.name} (${project.code}) => ${project.estimatedHours}h`}
+        <div
+          style={{
+            display: "flex",
+            height: 0,
+            alignItems: "center",
+            margin: "-10px 0",
+          }}
+        >
+          <b>{`${project.name} (${project.code}) => ${project.estimatedHours}h`}</b>
           <DropdownMenuProject
             id={project.id}
             getProjectTree={getProjectTree}
@@ -46,13 +56,23 @@ export default function ProjectTree() {
           />
         </div>
       ),
+      title: `${project.userProjectId}`,
       showCheckbox: false,
       children: [
         {
           value: `pc-${project.id}`,
           label: (
-            <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-              {`Charter`}
+            <div
+              style={{
+                display: "flex",
+                height: 0,
+                alignItems: "center",
+                margin: "-10px 0",
+              }}
+            >
+              <b>
+                <i>Charter</i>
+              </b>
               <DropdownMenuProject
                 id={project.id}
                 getProjectTree={getProjectTree}
@@ -66,7 +86,14 @@ export default function ProjectTree() {
               ? project.Charter.map((charter) => ({
                   value: `ch-${charter.id}`,
                   label: (
-                    <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
+                    <div
+                      style={{
+                        display: "flex",
+                        height: 0,
+                        alignItems: "center",
+                        margin: "-10px 0",
+                      }}
+                    >
                       {`${charter.name}`}
                       <DropdownMenuProject
                         id={charter.id}
@@ -83,8 +110,17 @@ export default function ProjectTree() {
         {
           value: `psoft-${project.id}`,
           label: (
-            <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-              {`Softwares`}
+            <div
+              style={{
+                display: "flex",
+                height: 0,
+                alignItems: "center",
+                margin: "-10px 0",
+              }}
+            >
+              <b>
+                <i>Softwares</i>
+              </b>
               <DropdownMenuProject
                 id={project.id}
                 getProjectTree={getProjectTree}
@@ -98,15 +134,21 @@ export default function ProjectTree() {
               ? project.ProjectSoftwares.map((projectSoftware, j) => ({
                   value: `ps-${projectSoftware.software.id}-${i}-${j}`,
                   label: `${projectSoftware.software.name} (${projectSoftware.software.code})`,
+                  disabled: user.id !== project.userProjectId,
+                  showCheckbox: false,
                   children: [
                     ...(projectSoftware.software.Task
                       ? projectSoftware.software.Task.map((task) => ({
                           value: `t-${task.id}-${i}-${j}`,
                           label: task.name,
+                          showCheckbox: false,
+                          disabled: user.id !== project.userProjectId,
                           children: task.Subtask
                             ? task.Subtask.map((subtask) => ({
                                 value: `st-${subtask.id}-${i}-${j}`,
                                 label: subtask.name,
+                                showCheckbox: false,
+                                disabled: user.id !== project.userProjectId,
                               }))
                             : [],
                         }))
@@ -114,8 +156,15 @@ export default function ProjectTree() {
                     {
                       value: `psoftuser-${i}-${j}`,
                       label: (
-                        <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
-                          {`Admins`}
+                        <div
+                          style={{
+                            display: "flex",
+                            height: 0,
+                            alignItems: "center",
+                            margin: "-10px 0",
+                          }}
+                        >
+                          <u><i>Admins</i></u>
                           <DropdownMenuProject
                             id={project.id}
                             getProjectTree={getProjectTree}
@@ -130,7 +179,14 @@ export default function ProjectTree() {
                           ? projectSoftware.users.map((user, k) => ({
                               value: `psuser-${i}-${j}-${k}`,
                               label: (
-                                <div style={{display: "flex", height: 0, alignItems: "center", margin:"-10px 0"}}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    height: 0,
+                                    alignItems: "center",
+                                    margin: "-10px 0",
+                                  }}
+                                >
                                   {`${user.name}`}
                                   <DropdownMenuProject
                                     adminId={user.id}

@@ -11,66 +11,83 @@ import SoftwareSettingsModal from "../create/SoftwareSettingsModal";
 import TaskSettingsModal from "../create/TaskSettingsModal";
 import DeleteNodeTree from "../delete/DeleteNodeTree";
 import { client } from "../../../helpers/config";
+import { useState } from "react";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const { notify } = useNotifications();
 
+  const [openTask, setOpenTask] = useState(false);
+  const [openSubtask, setOpenSubtask] = useState(false);
+
   const deleteSoftware = async () => {
-    await client.delete(`/software/delete/${id}`);
+    await client.delete(`/softwares/${id}`);
     notify("Software deleted successfully!", "success");
     getSoftwareTree();
   };
 
   const deleteTask = async () => {
-    await client.delete(`/software/delete/task/${id}`);
+    await client.delete(`/tasks/${id}`);
     notify("Task deleted successfully!", "success");
     getSoftwareTree();
   };
 
   const deleteSubtask = async () => {
-    await client.delete(`/software/delete/task/subtask/${id}`);
+    await client.delete(`/subtasks/${id}`);
     notify("Subtask deleted successfully!", "success");
     getSoftwareTree();
   };
 
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <button aria-label="Customise options">
-          <BsThreeDotsVertical className="icon" />
-        </button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-          {node !== "subtask" && (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              {node === "software" ? (
-                <SoftwareSettingsModal
-                  id={id}
-                  getSoftwareTree={getSoftwareTree}
-                />
-              ) : (
-                <TaskSettingsModal id={id} getSoftwareTree={getSoftwareTree} />
-              )}
-            </DropdownMenu.Item>
-          )}
-          {node === "software" ? (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteSoftware} />
-            </DropdownMenu.Item>
-          ) : node === "task" ? (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteTask} />
-            </DropdownMenu.Item>
-          ) : (
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              <DeleteNodeTree deleteNode={deleteSubtask} />
-            </DropdownMenu.Item>
-          )}
-          <DropdownMenu.Arrow className="DropdownMenuArrow" />
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+    <div>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <button aria-label="Customise options">
+            <BsThreeDotsVertical className="icon" />
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Portal>
+          <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
+            {node !== "subtask" && (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                {node === "software" ? (
+                  <button onClick={() => setOpenTask(true)}>Add Task</button>
+                ) : (
+                  <button onClick={() => setOpenSubtask(true)}>
+                    Add SubTask
+                  </button>
+                )}
+              </DropdownMenu.Item>
+            )}
+            {node === "software" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <DeleteNodeTree deleteNode={deleteSoftware} />
+              </DropdownMenu.Item>
+            ) : node === "task" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <DeleteNodeTree deleteNode={deleteTask} />
+              </DropdownMenu.Item>
+            ) : (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <DeleteNodeTree deleteNode={deleteSubtask} />
+              </DropdownMenu.Item>
+            )}
+            <DropdownMenu.Arrow className="DropdownMenuArrow" />
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <SoftwareSettingsModal
+        id={id}
+        getSoftwareTree={getSoftwareTree}
+        open={openTask}
+        setOpen={setOpenTask}
+      />
+      <TaskSettingsModal
+        id={id}
+        getSoftwareTree={getSoftwareTree}
+        open={openSubtask}
+        setOpen={setOpenSubtask}
+      />
+    </div>
   );
 }
 

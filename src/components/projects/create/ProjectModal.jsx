@@ -13,9 +13,12 @@ import "@radix-ui/colors/violet.css";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function ProjectModal({ getProjectTree }) {
   const { notify } = useNotifications();
+
+  const { user } = useAuth();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
@@ -25,6 +28,7 @@ export default function ProjectModal({ getProjectTree }) {
     name: "",
     code: "",
     estimatedHours: 500,
+    userProjectId: user.id,
   });
 
   const createSubmitProject = async (event) => {
@@ -35,17 +39,22 @@ export default function ProjectModal({ getProjectTree }) {
       setHoursIsEmpty(!formProject.estimatedHours);
       return notify("Please, fill all fields", "error");
     }
-    if (formProject.code.length > 5)
-      return notify("Code can't have more than 5 characters", "error");
+    if (formProject.code.length > 10)
+      return notify("Code can't have more than 10 characters", "error");
 
     if (!Number(formProject.estimatedHours)) {
       return notify("The estimated hours only accept numbers", "error");
     }
 
-    await client.post("/project/create", formProject);
+    await client.post("/projects/", formProject);
     notify("Project created successfully!", "success");
     getProjectTree();
-    setFormProject({ name: "", code: "", estimatedHours: 500 });
+    setFormProject({
+      name: "",
+      code: "",
+      estimatedHours: 500,
+      userProjectId: user.id,
+    });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
     setHoursIsEmpty(false);

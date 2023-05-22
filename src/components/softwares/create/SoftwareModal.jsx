@@ -19,6 +19,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formSoftware, setFormSoftware] = useState({
     name: "",
     code: "",
@@ -31,15 +32,16 @@ export default function SoftwareModal({ getSoftwareTree }) {
       setCodeIsEmpty(!formSoftware.code);
       return notify("Please, fill all fields", "error");
     }
-    if (formSoftware.code.length > 5)
-      return notify("Code can't have more than 5 characters", "error");
+    if (formSoftware.code.length > 10)
+      return notify("Code can't have more than 10 characters", "error");
 
-    await client.post("/software/create", formSoftware);
+    await client.post("/softwares/", formSoftware);
     notify("Software created successfully!", "success");
     getSoftwareTree();
     setFormSoftware({ name: "", code: ""});
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
+    setIsModalOpen(false); // Cerrar el modal al crear el proyecto
   };
 
   const handleChange = (event) => {
@@ -52,8 +54,15 @@ export default function SoftwareModal({ getSoftwareTree }) {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      createSubmitSoftware(event);
+    }
+  };
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
         <ImFolderPlus fontSize="20px" color="gray"/>
       </Dialog.Trigger>
@@ -77,6 +86,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
                 value={formSoftware.name}
                 placeholder="Name"
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 error={nameIsEmpty ? "Required" : null}
               />
             </fieldset>
@@ -91,6 +101,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
                 value={formSoftware.code}
                 placeholder="Code"
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 error={codeIsEmpty ? "Required" : null}
               />
             </fieldset>
