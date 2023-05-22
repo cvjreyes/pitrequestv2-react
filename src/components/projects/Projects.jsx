@@ -29,6 +29,6 @@ const projectStyle = {
     padding: "20px",
     alignItems: "flex-start",
     marginTop: "25px",
-    width: "50vw",
+    width: "80vw",
   },
 };

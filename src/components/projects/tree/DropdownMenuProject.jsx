@@ -15,6 +15,8 @@ import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
 import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 import CharterSettingsModal from "../create/CharterSettingsModal";
+import ProjectEditModal from "../edit/ProjectEditModal";
+import CharterEditModal from "../edit/CharterEditModal";
 
 export default function DropdownMenuProject({
   id,
@@ -26,9 +28,14 @@ export default function DropdownMenuProject({
 }) {
   const { notify } = useNotifications();
 
+  // create modal
   const [openCharter, setOpenCharter] = useState(false);
   const [openSoftware, setOpenSoftware] = useState(false);
   const [openAdmin, setOpenAdmin] = useState(false);
+
+  // edit modal
+  const [openEditProject, setOpenEditProject] = useState(false);
+  const [openEditCharter, setOpenEditCharter] = useState(false);
 
   const deleteProject = async () => {
     await client.delete(`/projects/${id}`);
@@ -61,6 +68,7 @@ export default function DropdownMenuProject({
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
+            {/* Create and add actions */}
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
               {node === "charterfolder" ? (
                 <button onClick={() => setOpenCharter(true)}>
@@ -76,6 +84,19 @@ export default function DropdownMenuProject({
                 )
               )}
             </DropdownMenu.Item>
+            {/* Edit actions */}
+            {node === "project" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenEditProject(true)}>Edit</button>
+              </DropdownMenu.Item>
+            ) : (
+              node === "charter" && (
+                <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                  <button onClick={() => setOpenEditCharter(true)}>Edit</button>
+                </DropdownMenu.Item>
+              )
+            )}
+            {/* Delete actions */}
             {node === "project" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
                 <DeleteNodeTree deleteNode={deleteProject} />
@@ -114,6 +135,19 @@ export default function DropdownMenuProject({
         softwareId={softwareId}
         open={openAdmin}
         setOpen={setOpenAdmin}
+      />
+      {/* Modales para editar */}
+      <ProjectEditModal
+        id={id}
+        getProjectTree={getProjectTree}
+        open={openEditProject}
+        setOpen={setOpenEditProject}
+      />
+      <CharterEditModal
+        id={id}
+        getProjectTree={getProjectTree}
+        open={openEditCharter}
+        setOpen={setOpenEditCharter}
       />
     </div>
   );
