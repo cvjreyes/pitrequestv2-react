@@ -13,6 +13,8 @@ import DeleteNodeTree from "../delete/DeleteNodeTree";
 import { client } from "../../../helpers/config";
 import { useState } from "react";
 import SoftwareEditModal from "../edit/SoftwareEditModal";
+import TaskEditModal from "../edit/TaskEditModal";
+import SubTaskEditModal from "../edit/SubTaskEditModal";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const { notify } = useNotifications();
@@ -117,6 +119,18 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
         open={openEditSoftware}
         setOpen={setOpenEditSoftware}
         id={id}
+      />
+      <TaskEditModal
+        id={id}
+        getSoftwareTree={getSoftwareTree}
+        open={openEditTask}
+        setOpen={setOpenEditTask}
+      />
+      <SubTaskEditModal
+        id={id}
+        getSoftwareTree={getSoftwareTree}
+        open={openEditSubtask}
+        setOpen={setOpenEditSubtask}
       />
     </div>
   );
