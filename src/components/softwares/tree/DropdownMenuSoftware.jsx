@@ -12,12 +12,19 @@ import TaskSettingsModal from "../create/TaskSettingsModal";
 import DeleteNodeTree from "../delete/DeleteNodeTree";
 import { client } from "../../../helpers/config";
 import { useState } from "react";
+import SoftwareEditModal from "../edit/SoftwareEditModal";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const { notify } = useNotifications();
 
+  // Create
   const [openTask, setOpenTask] = useState(false);
   const [openSubtask, setOpenSubtask] = useState(false);
+
+  // Updates
+  const [openEditSoftware, setOpenEditSoftware] = useState(false);
+  const [openEditTask, setOpenEditTask] = useState(false);
+  const [openEditSubtask, setOpenEditSubtask] = useState(false);
 
   const deleteSoftware = async () => {
     await client.delete(`/softwares/${id}`);
@@ -47,6 +54,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
+            {/* ADD */}
             {node !== "subtask" && (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
                 {node === "software" ? (
@@ -58,6 +66,21 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
                 )}
               </DropdownMenu.Item>
             )}
+            {/* EDIT */}
+            {node === "software" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenEditSoftware(true)}>Edit</button>
+              </DropdownMenu.Item>
+            ) : node === "task" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenEditTask(true)}>Edit</button>
+              </DropdownMenu.Item>
+            ) : (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenEditSubtask(true)}>Edit</button>
+              </DropdownMenu.Item>
+            )}
+            {/* DELETE */}
             {node === "software" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
                 <DeleteNodeTree deleteNode={deleteSoftware} />
@@ -75,6 +98,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
+      {/* Componentes para crear */}
       <SoftwareSettingsModal
         id={id}
         getSoftwareTree={getSoftwareTree}
@@ -86,6 +110,13 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
         getSoftwareTree={getSoftwareTree}
         open={openSubtask}
         setOpen={setOpenSubtask}
+      />
+      {/* Componentes para editar */}
+      <SoftwareEditModal
+        getSoftwareTree={getSoftwareTree}
+        open={openEditSoftware}
+        setOpen={setOpenEditSoftware}
+        id={id}
       />
     </div>
   );
