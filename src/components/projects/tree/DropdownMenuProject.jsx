@@ -243,6 +243,7 @@ const dropdownMenuStyle = {
     animationName: `${slideRightAndFade}`,
   },
   ".DropdownMenuItem": {
+    width: "150px",
     fontSize: "15px",
     lineHeight: "1",
     color: "var(--violet11)",
