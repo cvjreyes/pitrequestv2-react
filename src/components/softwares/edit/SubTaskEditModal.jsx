@@ -41,7 +41,6 @@ const SubTaskEditModal = forwardRef(
       await client.put(`/subtasks/${id}`, formSubtask);
       notify("Task updated successfully!", "success");
       getSoftwareTree();
-      setFormSubtask({ name: "" });
       setNameIsEmpty(false);
       setOpen(false); // Cerrar el modal al crear el proyecto
     };

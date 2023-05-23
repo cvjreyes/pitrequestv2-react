@@ -44,7 +44,6 @@ const CharterEditModal = forwardRef(
       await client.put(`/charters/${id}`, formCharter);
       notify("Task created successfully!", "success");
       getProjectTree();
-      setFormCharter({ name: "", projectId: id });
       setNameIsEmpty(false);
       setOpen(false); // Cerrar el modal al crear el proyecto
     };

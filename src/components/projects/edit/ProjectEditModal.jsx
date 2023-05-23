@@ -62,11 +62,6 @@ export default function ProjectEditModal({
     await client.put(`/projects/${id}`, formProject);
     notify("Project updated successfully!", "success");
     getProjectTree();
-    setFormProject({
-      name: "",
-      code: "",
-      estimatedHours: 500,
-    });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
     setHoursIsEmpty(false);

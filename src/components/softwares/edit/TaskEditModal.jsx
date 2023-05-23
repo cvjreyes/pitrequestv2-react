@@ -41,7 +41,6 @@ const TaskEditModal = forwardRef(
       await client.put(`/tasks/${id}`, formTask);
       notify("Task updated successfully!", "success");
       getSoftwareTree();
-      setFormTask({ name: "" });
       setNameIsEmpty(false);
       setOpen(false); // Cerrar el modal al crear el proyecto
     };

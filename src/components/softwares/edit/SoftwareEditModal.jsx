@@ -51,7 +51,6 @@ export default function SoftwareEditModal({
     await client.put(`/softwares/${id}`, formSoftware);
     notify("Software updated successfully!", "success");
     getSoftwareTree();
-    setFormSoftware({ name: "", code: "" });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
     setOpen(false); // Cerrar el modal al crear el proyecto
