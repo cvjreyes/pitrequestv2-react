@@ -17,6 +17,8 @@ const AddAdminSoftwareSettingsModal = forwardRef(
   ({ id, softwareId, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
+
     const [admins, setAdmins] = useState([]);
     const [formAddAdmin, setformAddAdmin] = useState({
       projectId: id,
@@ -38,7 +40,7 @@ const AddAdminSoftwareSettingsModal = forwardRef(
     useEffect(() => {
       getAdmins();
     }, [open]);
-    
+
     const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
       if (!formAddAdmin.adminId) {
@@ -48,12 +50,16 @@ const AddAdminSoftwareSettingsModal = forwardRef(
       notify("Software added successfully!", "success");
       getProjectTree();
       setformAddAdmin({ projectId: id, adminId: 0, softwareId: softwareId });
+      setDisableCloseButton(true);
       setOpen(false);
     };
 
     const handleChange = (event) => {
       const { name, value } = event.target;
       setformAddAdmin((prev) => ({ ...prev, [name]: value }));
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (
@@ -90,7 +96,13 @@ const AddAdminSoftwareSettingsModal = forwardRef(
                   onClick={submitAddSoftwareAdmin}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Add Admin</button>
+                    <button
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Add Admin
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>

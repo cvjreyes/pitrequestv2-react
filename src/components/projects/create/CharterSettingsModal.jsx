@@ -85,7 +85,13 @@ const CharterSettingsModal = forwardRef(
                   onClick={createSubmitCharter}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Create Charter</button>
+                    <button
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Create Charter
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>

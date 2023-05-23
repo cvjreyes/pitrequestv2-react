@@ -1,21 +1,22 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { forwardRef, useEffect, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
 const AddSoftwareSettingsModal = forwardRef(
   ({ id, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
+
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
 
     const [softwares, setSoftwares] = useState([]);
     const [admins, setAdmins] = useState([]);
@@ -41,6 +42,12 @@ const AddSoftwareSettingsModal = forwardRef(
       getAdmins();
     }, [open]);
 
+    useEffect(() => {
+      const allFieldsFilled =
+        !!formAddSoftware.adminId && !!formAddSoftware.softwareId;
+      setDisableCloseButton(!allFieldsFilled);
+    }, [formAddSoftware.adminId, formAddSoftware.softwareId]);
+
     const submitAddSoftware = async (event) => {
       event.preventDefault();
       if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
@@ -50,6 +57,7 @@ const AddSoftwareSettingsModal = forwardRef(
       notify("Software added successfully!", "success");
       getProjectTree();
       setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
+      setDisableCloseButton(true);
       setOpen(false);
       updateUnselectedSoftwares(); // Actualizar la lista de softwares no seleccionados
     };
@@ -57,6 +65,10 @@ const AddSoftwareSettingsModal = forwardRef(
     const handleChange = (event) => {
       const { name, value } = event.target;
       setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
+      console.log(formAddSoftware);
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (
@@ -112,7 +124,13 @@ const AddSoftwareSettingsModal = forwardRef(
                   onClick={submitAddSoftware}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Add Software</button>
+                    <button
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Add Software
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>
