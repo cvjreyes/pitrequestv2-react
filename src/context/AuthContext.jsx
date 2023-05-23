@@ -14,14 +14,12 @@ export function useAuth() {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [roles, setRoles] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const getUserInfo = async () => {
     setIsLoading(true);
     const res = await client.get("/auth/user");
     setIsLoading(false);
-    setRoles(res.data.user.roles);
     return res.data.user;
   };
 
@@ -58,7 +56,6 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsLoading(false);
     setUser(null);
-    setRoles(null)
     Cookies.remove("access_token");
   };
 
@@ -66,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, roles, login, logout, updateUserInfo }}
+      value={{ user, roles: user.roles, login, logout, updateUserInfo }}
     >
       {children}
     </AuthContext.Provider>

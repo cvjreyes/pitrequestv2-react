@@ -7,9 +7,9 @@ import { ProfileNavbar } from "./ProfileNavbar";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
-  const { roles } = useAuth();
+  const { user } = useAuth();
 
-  const hasAdminToolRole = roles?.map((role) => role.includes("ADMINTOOL"));
+  const hasAdminToolRole = user.roles?.map((role) => role.includes("ADMINTOOL"));
 
   return (
     <>
