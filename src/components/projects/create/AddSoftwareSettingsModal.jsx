@@ -65,7 +65,6 @@ const AddSoftwareSettingsModal = forwardRef(
     const handleChange = (event) => {
       const { name, value } = event.target;
       setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
-      console.log(formAddSoftware);
       // Verificar si todos los campos están completos
       const allFieldsFilled = !!value; // Verificar si el campo no está vacío
       setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
