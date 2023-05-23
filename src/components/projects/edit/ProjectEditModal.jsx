@@ -21,6 +21,8 @@ export default function ProjectEditModal({
 }) {
   const { notify } = useNotifications();
 
+  const [disableCloseButton, setDisableCloseButton] = useState(true);
+
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
   const [hoursIsEmpty, setHoursIsEmpty] = useState(false);
@@ -65,6 +67,7 @@ export default function ProjectEditModal({
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
     setHoursIsEmpty(false);
+    setDisableCloseButton(true);
     setOpen(false);
   };
 
@@ -78,6 +81,9 @@ export default function ProjectEditModal({
     } else if (name === "estimatedHours") {
       setHoursIsEmpty(!value);
     }
+    // Verificar si todos los campos están completos
+    const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+    setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
   };
 
   const handleKeyDown = (event) => {
@@ -151,7 +157,12 @@ export default function ProjectEditModal({
                 justifyContent: "flex-end",
               }}
             >
-              <button type="submit" className="Button green">
+              <button
+                type="submit"
+                className={disableCloseButton ? "Button" : "Button green"}
+                aria-label="Close"
+                disabled={disableCloseButton}
+              >
                 Update Project
               </button>
             </div>

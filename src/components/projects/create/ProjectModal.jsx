@@ -18,6 +18,8 @@ import { useAuth } from "../../../context/AuthContext";
 export default function ProjectModal({ getProjectTree }) {
   const { notify } = useNotifications();
 
+  const [disableCloseButton, setDisableCloseButton] = useState(true);
+
   const { user } = useAuth();
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
@@ -58,6 +60,7 @@ export default function ProjectModal({ getProjectTree }) {
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
     setHoursIsEmpty(false);
+    setDisableCloseButton(true);
     setIsModalOpen(false); // Cerrar el modal al crear el proyecto
   };
 
@@ -71,6 +74,9 @@ export default function ProjectModal({ getProjectTree }) {
     } else if (name === "estimatedHours") {
       setHoursIsEmpty(!value);
     }
+    // Verificar si todos los campos están completos
+    const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+    setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
   };
 
   const handleKeyDown = (event) => {
@@ -147,7 +153,12 @@ export default function ProjectModal({ getProjectTree }) {
                 justifyContent: "flex-end",
               }}
             >
-              <button type="submit" className="Button green">
+              <button
+                type="submit"
+                className={disableCloseButton ? "Button" : "Button green"}
+                aria-label="Close"
+                disabled={disableCloseButton}
+              >
                 Create Project
               </button>
             </div>
