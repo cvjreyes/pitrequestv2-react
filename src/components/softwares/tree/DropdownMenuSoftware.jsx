@@ -145,17 +145,17 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       <DeleteNodeTree
         deleteNode={deleteSoftware}
         open={openDeleteSoftware}
-        setOpen={setOpenEditSoftware}
+        setOpen={setOpenDeleteSoftware} 
       />
       <DeleteNodeTree
         deleteNode={deleteTask}
         open={openDeleteTask}
-        setOpen={setOpenEditTask}
+        setOpen={setOpenDeleteTask} 
       />
       <DeleteNodeTree
         deleteNode={deleteSubtask}
         open={openDeleteSubtask}
-        setOpen={setOpenEditSubtask}
+        setOpen={setOpenDeleteSubtask}
       />
     </div>
   );

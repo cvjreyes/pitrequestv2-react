@@ -1,15 +1,14 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { forwardRef, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
@@ -17,6 +16,8 @@ import { Input } from "../../general";
 const TaskSettingsModal = forwardRef(
   ({ id, getSoftwareTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
+
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
 
     const [nameIsEmpty, setNameIsEmpty] = useState(false);
     const [formSubtask, setFormSubtask] = useState({
@@ -35,6 +36,7 @@ const TaskSettingsModal = forwardRef(
       getSoftwareTree();
       setFormSubtask({ name: "", taskId: id });
       setNameIsEmpty(false);
+      setDisableCloseButton(true);
       setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
@@ -44,6 +46,9 @@ const TaskSettingsModal = forwardRef(
       if (name === "name") {
         setNameIsEmpty(!value);
       }
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (
@@ -79,7 +84,13 @@ const TaskSettingsModal = forwardRef(
                   onClick={createSubmitSubTask}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Create SubTask</button>
+                    <button
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Create SubTask
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>

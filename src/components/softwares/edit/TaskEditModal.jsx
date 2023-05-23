@@ -17,6 +17,8 @@ const TaskEditModal = forwardRef(
   ({ id, getSoftwareTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
+
     const [nameIsEmpty, setNameIsEmpty] = useState(false);
     const [formTask, setFormTask] = useState({
       name: "",
@@ -42,6 +44,7 @@ const TaskEditModal = forwardRef(
       notify("Task updated successfully!", "success");
       getSoftwareTree();
       setNameIsEmpty(false);
+      setDisableCloseButton(true);
       setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
@@ -51,6 +54,9 @@ const TaskEditModal = forwardRef(
       if (name === "name") {
         setNameIsEmpty(!value);
       }
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (
@@ -84,7 +90,13 @@ const TaskEditModal = forwardRef(
                   onClick={updateSubmitTask}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Update Task</button>
+                    <button
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Update Task
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>

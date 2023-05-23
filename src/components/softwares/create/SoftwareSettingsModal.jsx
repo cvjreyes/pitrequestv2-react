@@ -14,83 +14,98 @@ import "@radix-ui/colors/violet.css";
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
-const SoftwareSettingsModal = forwardRef(({ id, getSoftwareTree, open, setOpen }, ref) => {
-  const { notify } = useNotifications();
+const SoftwareSettingsModal = forwardRef(
+  ({ id, getSoftwareTree, open, setOpen }, ref) => {
+    const { notify } = useNotifications();
 
-  const [nameIsEmpty, setNameIsEmpty] = useState(false);
-  const [formTask, setFormTask] = useState({
-    name: "",
-    softwareId: id,
-  });
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
 
-  const createSubmitTask = async (event) => {
-    event.preventDefault();
-    if (!formTask.name) {
-      setNameIsEmpty(!formTask.name);
-      return notify("Please, fill all fields", "error");
-    }
-    await client.post("/tasks/", formTask);
-    notify("Task created successfully!", "success");
-    getSoftwareTree();
-    setFormTask({ name: "", softwareId: id });
-    setNameIsEmpty(false);
-    setOpen(false); // Cerrar el modal al crear el proyecto
-  };
+    const [nameIsEmpty, setNameIsEmpty] = useState(false);
+    const [formTask, setFormTask] = useState({
+      name: "",
+      softwareId: id,
+    });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormTask((prev) => ({ ...prev, [name]: value }));
-    if (name === "name") {
-      setNameIsEmpty(!value);
-    }
-  };
+    const createSubmitTask = async (event) => {
+      event.preventDefault();
+      if (!formTask.name) {
+        setNameIsEmpty(!formTask.name);
+        return notify("Please, fill all fields", "error");
+      }
+      await client.post("/tasks/", formTask);
+      notify("Task created successfully!", "success");
+      getSoftwareTree();
+      setFormTask({ name: "", softwareId: id });
+      setNameIsEmpty(false);
+      setDisableCloseButton(true);
+      setOpen(false); // Cerrar el modal al crear el proyecto
+    };
 
-  return (
-    <div ref={ref}>
-      <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay css={overlayStyle} />
-          <Dialog.Content css={contentStyle}>
-            <Dialog.Title className="DialogTitle">Create Task</Dialog.Title>
-            <form onSubmit={createSubmitTask}>
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="name">
-                  Task
-                </label>
-                <Input
-                  className="Input"
-                  id="name"
-                  name="name"
-                  value={formTask.name}
-                  placeholder="Name"
-                  onChange={handleChange}
-                  error={nameIsEmpty ? "Required" : null}
-                />
-              </fieldset>
-              <div
-                style={{
-                  display: "flex",
-                  marginTop: 25,
-                  justifyContent: "flex-end",
-                }}
-                onClick={createSubmitTask}
-              >
-                <Dialog.Close asChild>
-                  <button className="Button green">Create Task</button>
-                </Dialog.Close>
-              </div>
-            </form>
-            <Dialog.Close asChild>
-              <button className="IconButton" aria-label="Close">
-                <RxCross2 />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
-  );
-});
+    const handleChange = (event) => {
+      const { name, value } = event.target;
+      setFormTask((prev) => ({ ...prev, [name]: value }));
+      if (name === "name") {
+        setNameIsEmpty(!value);
+      }
+
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
+    };
+
+    return (
+      <div ref={ref}>
+        <Dialog.Root open={open} onOpenChange={setOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay css={overlayStyle} />
+            <Dialog.Content css={contentStyle}>
+              <Dialog.Title className="DialogTitle">Create Task</Dialog.Title>
+              <form onSubmit={createSubmitTask}>
+                <fieldset className="Fieldset">
+                  <label className="Label" htmlFor="name">
+                    Task
+                  </label>
+                  <Input
+                    className="Input"
+                    id="name"
+                    name="name"
+                    value={formTask.name}
+                    placeholder="Name"
+                    onChange={handleChange}
+                    error={nameIsEmpty ? "Required" : null}
+                  />
+                </fieldset>
+                <div
+                  style={{
+                    display: "flex",
+                    marginTop: 25,
+                    justifyContent: "flex-end",
+                  }}
+                  onClick={createSubmitTask}
+                >
+                  <Dialog.Close asChild>
+                    <button
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Create Task
+                    </button>
+                  </Dialog.Close>
+                </div>
+              </form>
+              <Dialog.Close asChild>
+                <button className="IconButton" aria-label="Close">
+                  <RxCross2 />
+                </button>
+              </Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+      </div>
+    );
+  }
+);
 
 const overlayShow = keyframes`
 from {
@@ -137,7 +152,7 @@ const contentStyle = {
   },
 
   ".DialogTitle": {
-    marginBottom:"5px",
+    marginBottom: "5px",
     fontWeight: "500",
     color: "var(--mauve12)",
     fontSize: "17px",

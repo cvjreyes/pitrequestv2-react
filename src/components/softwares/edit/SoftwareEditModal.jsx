@@ -21,6 +21,8 @@ export default function SoftwareEditModal({
 }) {
   const { notify } = useNotifications();
 
+  const [disableCloseButton, setDisableCloseButton] = useState(true);
+
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
   const [formSoftware, setFormSoftware] = useState({
@@ -53,6 +55,7 @@ export default function SoftwareEditModal({
     getSoftwareTree();
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
+    setDisableCloseButton(true);
     setOpen(false); // Cerrar el modal al crear el proyecto
   };
 
@@ -64,6 +67,9 @@ export default function SoftwareEditModal({
     } else if (name === "code") {
       setCodeIsEmpty(!value);
     }
+    // Verificar si todos los campos están completos
+    const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+    setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
   };
 
   const handleKeyDown = (event) => {
@@ -123,7 +129,13 @@ export default function SoftwareEditModal({
               onClick={updateSubmitSoftware}
             >
               <Dialog.Close asChild>
-                <button className="Button green">Update Software</button>
+                <button
+                  className={disableCloseButton ? "Button" : "Button green"}
+                  aria-label="Close"
+                  disabled={disableCloseButton}
+                >
+                  Update Software
+                </button>
               </Dialog.Close>
             </div>
           </form>

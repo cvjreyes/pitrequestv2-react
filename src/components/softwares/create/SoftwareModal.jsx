@@ -1,21 +1,23 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { ImFolderPlus } from "react-icons/im";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useState } from "react";
+import { ImFolderPlus } from "react-icons/im";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
 
 export default function SoftwareModal({ getSoftwareTree }) {
   const { notify } = useNotifications();
+
+  const [disableCloseButton, setDisableCloseButton] = useState(true);
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
@@ -38,9 +40,10 @@ export default function SoftwareModal({ getSoftwareTree }) {
     await client.post("/softwares/", formSoftware);
     notify("Software created successfully!", "success");
     getSoftwareTree();
-    setFormSoftware({ name: "", code: ""});
+    setFormSoftware({ name: "", code: "" });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
+    setDisableCloseButton(true);
     setIsModalOpen(false); // Cerrar el modal al crear el proyecto
   };
 
@@ -52,6 +55,9 @@ export default function SoftwareModal({ getSoftwareTree }) {
     } else if (name === "code") {
       setCodeIsEmpty(!value);
     }
+    // Verificar si todos los campos están completos
+    const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+    setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
   };
 
   const handleKeyDown = (event) => {
@@ -64,7 +70,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
   return (
     <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
-        <ImFolderPlus fontSize="20px" color="gray"/>
+        <ImFolderPlus fontSize="20px" color="gray" />
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay css={overlayStyle} />
@@ -114,7 +120,13 @@ export default function SoftwareModal({ getSoftwareTree }) {
               onClick={createSubmitSoftware}
             >
               <Dialog.Close asChild>
-                <button className="Button green">Create Software</button>
+                <button
+                  className={disableCloseButton ? "Button" : "Button green"}
+                  aria-label="Close"
+                  disabled={disableCloseButton}
+                >
+                  Create Software
+                </button>
               </Dialog.Close>
             </div>
           </form>
