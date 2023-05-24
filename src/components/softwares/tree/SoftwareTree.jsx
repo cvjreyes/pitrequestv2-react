@@ -18,11 +18,13 @@ import SoftwareModal from "../create/SoftwareModal";
 import DropdownMenuSoftware from "./DropdownMenuSoftware";
 
 import { client } from "../../../helpers/config";
+import { Input } from "../../general";
 
 export default function SoftwareTree() {
   const [checked, setChecked] = useState([]);
   const [expanded, setExpanded] = useState([]);
   const [softwareTree, setSoftwareTree] = useState([]);
+  const [filter, setFilter] = useState("");
 
   const getSoftwareTree = async () => {
     const softwareTree = await client.get("/softwares/tree");
@@ -35,76 +37,89 @@ export default function SoftwareTree() {
 
   // Preparar los datos de entrada en el formato aceptado por react-checkbox-tree
   const prepareData = (data) =>
-    data.map((software) => ({
-      value: software.id,
-      label: (
-        <div
-          style={{
-            display: "flex",
-            height: 0,
-            alignItems: "center",
-            margin: "-10px 0",
-          }}
-        >
-          <b>{`${software.name} (${software.code})`}</b>
-          <DropdownMenuSoftware
-            id={software.id}
-            getSoftwareTree={getSoftwareTree}
-            node={"software"}
-          />
-        </div>
-      ),
-      showCheckbox: false,
-      children: software.Task
-        ? software.Task.map((task) => ({
-            value: task.id + 1000,
-            label: (
-              <div
-                style={{
-                  display: "flex",
-                  height: 0,
-                  alignItems: "center",
-                  margin: "-10px 0",
-                }}
-              >
-                {task.name}
-                <DropdownMenuSoftware
-                  id={task.id}
-                  getSoftwareTree={getSoftwareTree}
-                  node={"task"}
-                />
-              </div>
-            ),
-            showCheckbox: false,
-            children: task.Subtask
-              ? task.Subtask.map((subtask) => ({
-                  value: subtask.id + 10000,
-                  label: (
-                    <div
-                      style={{
-                        display: "flex",
-                        height: 0,
-                        alignItems: "center",
-                        margin: "-10px 0",
-                      }}
-                    >
-                      <i>{subtask.name}</i>
-                      <DropdownMenuSoftware
-                        id={subtask.id}
-                        getSoftwareTree={getSoftwareTree}
-                        node={"subtask"}
-                      />
-                    </div>
-                  ),
-                  showCheckbox: false,
-                }))
-              : [],
-          }))
-        : [],
-    }));
+    data
+      .filter((software) =>
+        filter
+          ? software.name.toLowerCase().includes(filter.toLowerCase()) ||
+            software.code.toLowerCase().includes(filter.toLowerCase())
+          : true
+      )
+      .map((software) => ({
+        value: software.id,
+        label: (
+          <div
+            style={{
+              display: "flex",
+              height: 0,
+              alignItems: "center",
+              margin: "-10px 0",
+            }}
+          >
+            <b>{`${software.name} (${software.code})`}</b>
+            <DropdownMenuSoftware
+              id={software.id}
+              getSoftwareTree={getSoftwareTree}
+              node={"software"}
+            />
+          </div>
+        ),
+        showCheckbox: false,
+        children: software.Task
+          ? software.Task.map((task) => ({
+              value: task.id + 1000,
+              label: (
+                <div
+                  style={{
+                    display: "flex",
+                    height: 0,
+                    alignItems: "center",
+                    margin: "-10px 0",
+                  }}
+                >
+                  {task.name}
+                  <DropdownMenuSoftware
+                    id={task.id}
+                    getSoftwareTree={getSoftwareTree}
+                    node={"task"}
+                  />
+                </div>
+              ),
+              showCheckbox: false,
+              children: task.Subtask
+                ? task.Subtask.map((subtask) => ({
+                    value: subtask.id + 10000,
+                    label: (
+                      <div
+                        style={{
+                          display: "flex",
+                          height: 0,
+                          alignItems: "center",
+                          margin: "-10px 0",
+                        }}
+                      >
+                        <i>{subtask.name}</i>
+                        <DropdownMenuSoftware
+                          id={subtask.id}
+                          getSoftwareTree={getSoftwareTree}
+                          node={"subtask"}
+                        />
+                      </div>
+                    ),
+                    showCheckbox: false,
+                  }))
+                : [],
+            }))
+          : [],
+      }));
 
   return (
     <div className="container-tree">
+      <Input
+        type="text"
+        placeholder="Buscar software"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value)}
+      />
       <SoftwareModal getSoftwareTree={getSoftwareTree} />
       <CheckboxTree
         nodes={prepareData(softwareTree)}
