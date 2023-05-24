@@ -69,7 +69,7 @@ export default function SoftwareModal({ getSoftwareTree }) {
 
   return (
     <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <Dialog.Trigger>
+      <Dialog.Trigger title="Create Software">
         <ImFolderPlus fontSize="20px" color="gray" />
       </Dialog.Trigger>
       <Dialog.Portal>

@@ -88,8 +88,8 @@ export default function ProjectModal({ getProjectTree }) {
 
   return (
     <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <Dialog.Trigger>
-        <ImFolderPlus fontSize="20px" color="gray" />
+      <Dialog.Trigger title="Create Project" >
+        <ImFolderPlus fontSize="20px" color="gray"/>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay css={overlayStyle} />
