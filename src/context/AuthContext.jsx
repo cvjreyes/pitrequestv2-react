@@ -63,7 +63,13 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, roles: user.roles, login, logout, updateUserInfo }}
+      value={{
+        user,
+        roles: user ? user.roles : [], // Acceder a 'user.roles' solo si 'user' no es nulo
+        login,
+        logout,
+        updateUserInfo,
+      }}
     >
       {children}
     </AuthContext.Provider>
