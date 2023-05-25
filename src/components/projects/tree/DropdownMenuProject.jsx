@@ -17,6 +17,7 @@ import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 import CharterSettingsModal from "../create/CharterSettingsModal";
 import CharterEditModal from "../edit/CharterEditModal";
 import ProjectEditModal from "../edit/ProjectEditModal";
+import AdminChangeModal from "../edit/AdminChangeModal";
 
 export default function DropdownMenuProject({
   id,
@@ -36,11 +37,13 @@ export default function DropdownMenuProject({
   // Edit modal
   const [openEditProject, setOpenEditProject] = useState(false);
   const [openEditCharter, setOpenEditCharter] = useState(false);
+  const [openEditAdmin, setOpenEditAdmin] = useState(false);
 
   // Delete modal
   const [openDeleteProject, setOpenDeleteProject] = useState(false);
   const [openDeleteCharter, setOpenDeleteCharter] = useState(false);
   const [openDeleteAdmin, setOpenDeleteAdmin] = useState(false);
+  const [openDeleteSoftware, setOpenDeleteSoftware] = useState(false);
 
   const deleteProject = async () => {
     await client.delete(`/projects/${id}`);
@@ -59,7 +62,13 @@ export default function DropdownMenuProject({
       `/projects/${projectId}/admins/${adminId}/softwares/${softwareId}`
     );
     await client.delete(`/projects/admin/softwares/${id.data[0].id}`);
-    notify("Admin deleted successfully!", "success");
+    notify("Admin removed successfully!", "success");
+    getProjectTree();
+  };
+
+  const removeSoftware = async () => {
+    await client.delete(`/projects/${projectId}/softwares/${softwareId}`);
+    notify("Software removed successfully!", "success");
     getProjectTree();
   };
 
@@ -94,6 +103,10 @@ export default function DropdownMenuProject({
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
                 <button onClick={() => setOpenEditProject(true)}>Edit</button>
               </DropdownMenu.Item>
+            ) : node === "admin" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenEditAdmin(true)}>Change Admin</button>
+              </DropdownMenu.Item>
             ) : (
               node === "charter" && (
                 <DropdownMenu.Item className="DropdownMenuItem" asChild>
@@ -108,6 +121,12 @@ export default function DropdownMenuProject({
                   Delete
                 </button>
               </DropdownMenu.Item>
+            ) : node === "software" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenDeleteSoftware(true)}>
+                  Remove
+                </button>
+              </DropdownMenu.Item>
             ) : node === "charter" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
                 <button onClick={() => setOpenDeleteCharter(true)}>
@@ -118,7 +137,7 @@ export default function DropdownMenuProject({
               node === "admin" && (
                 <DropdownMenu.Item className="DropdownMenuItem" asChild>
                   <button onClick={() => setOpenDeleteAdmin(true)}>
-                    Delete
+                    Remove
                   </button>
                 </DropdownMenu.Item>
               )
@@ -160,11 +179,24 @@ export default function DropdownMenuProject({
         open={openEditCharter}
         setOpen={setOpenEditCharter}
       />
+      <AdminChangeModal
+        projectId={projectId}
+        softwareId={softwareId}
+        adminId={adminId}
+        getProjectTree={getProjectTree}
+        open={openEditAdmin}
+        setOpen={setOpenEditAdmin}
+      />
       {/* Modales para eliminar */}
       <DeleteNodeTree
         deleteNode={deleteProject}
         open={openDeleteProject}
         setOpen={setOpenDeleteProject}
+      />
+      <DeleteNodeTree
+        deleteNode={removeSoftware}
+        open={openDeleteSoftware}
+        setOpen={setOpenDeleteSoftware}
       />
       <DeleteNodeTree
         deleteNode={deleteCharter}

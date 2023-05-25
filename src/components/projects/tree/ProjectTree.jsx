@@ -142,7 +142,24 @@ export default function ProjectTree() {
               ...(project.ProjectSoftwares
                 ? project.ProjectSoftwares.map((projectSoftware, j) => ({
                     value: `ps-${projectSoftware.software.id}-${i}-${j}`,
-                    label: `${projectSoftware.software.name} (${projectSoftware.software.code})`,
+                    label: (
+                      <div
+                        style={{
+                          display: "flex",
+                          height: 0,
+                          alignItems: "center",
+                          margin: "-10px 0",
+                        }}
+                      >
+                        {`${projectSoftware.software.name} (${projectSoftware.software.code})`}
+                        <DropdownMenuProject
+                          projectId={project.id}
+                          softwareId={projectSoftware.software.id}
+                          getProjectTree={getProjectTree}
+                          node={"software"}
+                        />
+                      </div>
+                    ),
                     disabled: user.id !== project.userProjectId,
                     showCheckbox: false,
                     children: [
