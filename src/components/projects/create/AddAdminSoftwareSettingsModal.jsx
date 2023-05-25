@@ -1,15 +1,14 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { forwardRef, useEffect, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
@@ -93,10 +92,10 @@ const AddAdminSoftwareSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={submitAddSoftwareAdmin}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={submitAddSoftwareAdmin}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}

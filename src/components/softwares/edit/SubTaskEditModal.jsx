@@ -90,10 +90,10 @@ const SubTaskEditModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={updateSubmitSubTask}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={updateSubmitSubTask}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}

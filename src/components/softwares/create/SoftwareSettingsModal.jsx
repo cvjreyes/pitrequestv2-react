@@ -1,15 +1,14 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { forwardRef, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
@@ -81,10 +80,10 @@ const SoftwareSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={createSubmitTask}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={createSubmitTask}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}

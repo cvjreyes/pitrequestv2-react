@@ -117,10 +117,10 @@ export default function SoftwareModal({ getSoftwareTree }) {
                 marginTop: 25,
                 justifyContent: "flex-end",
               }}
-              onClick={createSubmitSoftware}
             >
               <Dialog.Close asChild>
                 <button
+                  onClick={createSubmitSoftware}
                   className={disableCloseButton ? "Button" : "Button green"}
                   aria-label="Close"
                   disabled={disableCloseButton}

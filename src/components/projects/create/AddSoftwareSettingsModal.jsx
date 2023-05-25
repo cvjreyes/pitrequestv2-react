@@ -120,10 +120,10 @@ const AddSoftwareSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={submitAddSoftware}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={submitAddSoftware}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}

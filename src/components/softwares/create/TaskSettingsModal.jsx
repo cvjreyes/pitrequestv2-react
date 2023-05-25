@@ -81,10 +81,10 @@ const TaskSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={createSubmitSubTask}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={createSubmitSubTask}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}

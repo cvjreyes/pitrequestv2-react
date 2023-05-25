@@ -87,10 +87,10 @@ const TaskEditModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={updateSubmitTask}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={updateSubmitTask}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}

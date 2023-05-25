@@ -82,10 +82,10 @@ const CharterSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={createSubmitCharter}
                 >
                   <Dialog.Close asChild>
                     <button
+                      onClick={createSubmitCharter}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}
