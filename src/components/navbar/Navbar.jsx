@@ -7,9 +7,11 @@ import { ProfileNavbar } from "./ProfileNavbar";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
-  const { roles } = useAuth();
+  const { user } = useAuth();
 
-  const hasAdminToolRole = roles?.map((role) => role.includes("ADMINTOOL"));
+  const hasAdminToolRole = user.roles?.map((role) =>
+    role.includes("ADMINTOOL")
+  );
 
   return (
     <>
@@ -22,22 +24,36 @@ export default function Navbar() {
             >
               Home
             </NavLink>
+            {hasAdminToolRole && (
+              <React.Fragment>
+                <div>
+                  <NavLink
+                    to="/softwares"
+                    style={({ isActive }) =>
+                      isActive ? { color: "white" } : null
+                    }
+                  >
+                    Softwares
+                  </NavLink>
+                </div>
+                <div>
+                  <NavLink
+                    to="/projects"
+                    style={({ isActive }) =>
+                      isActive ? { color: "white" } : null
+                    }
+                  >
+                    Projects
+                  </NavLink>
+                </div>
+              </React.Fragment>
+            )}
             <NavLink
-              to="/softwares"
+              to="/users"
               style={({ isActive }) => (isActive ? { color: "white" } : null)}
             >
-              Softwares
+              Users
             </NavLink>
-            {hasAdminToolRole ? (
-              <NavLink
-                to="/projects"
-                style={({ isActive }) => (isActive ? { color: "white" } : null)}
-              >
-                Projects
-              </NavLink>
-            ) : (
-              <></>
-            )}
             <NavLink
               to="/requestdashboard"
               style={({ isActive }) => (isActive ? { color: "white" } : null)}
@@ -82,6 +98,11 @@ const navbarStyle = {
     display: "flex",
     gap: "1.1rem",
     alignItems: "center",
+    "> div": {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.5rem",
+    },
   },
   ".buttonLink": {
     display: "flex",

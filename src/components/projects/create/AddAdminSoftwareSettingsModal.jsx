@@ -1,21 +1,22 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useEffect, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { forwardRef, useEffect, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
 const AddAdminSoftwareSettingsModal = forwardRef(
   ({ id, softwareId, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
+
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
 
     const [admins, setAdmins] = useState([]);
     const [formAddAdmin, setformAddAdmin] = useState({
@@ -24,15 +25,20 @@ const AddAdminSoftwareSettingsModal = forwardRef(
       softwareId: softwareId,
     });
 
+    const getAdmins = async () => {
+      const admins = await client.get(
+        `/projects/${id}/softwares/${softwareId}/admins/unassigned`
+      );
+      setAdmins(admins.data.admins);
+    };
+
     useEffect(() => {
-      const getAdmins = async () => {
-        const admins = await client.get(
-          `/projects/${id}/softwares/${softwareId}/admins/unassigned`
-        );
-        setAdmins(admins.data.admins);
-      };
       getAdmins();
     }, []);
+
+    useEffect(() => {
+      getAdmins();
+    }, [open]);
 
     const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
@@ -43,12 +49,16 @@ const AddAdminSoftwareSettingsModal = forwardRef(
       notify("Software added successfully!", "success");
       getProjectTree();
       setformAddAdmin({ projectId: id, adminId: 0, softwareId: softwareId });
+      setDisableCloseButton(true);
       setOpen(false);
     };
 
     const handleChange = (event) => {
       const { name, value } = event.target;
       setformAddAdmin((prev) => ({ ...prev, [name]: value }));
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (
@@ -82,10 +92,16 @@ const AddAdminSoftwareSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={submitAddSoftwareAdmin}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Add Admin</button>
+                    <button
+                      onClick={submitAddSoftwareAdmin}
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Add Admin
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>

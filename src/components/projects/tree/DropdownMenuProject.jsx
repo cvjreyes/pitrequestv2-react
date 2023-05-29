@@ -15,6 +15,9 @@ import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
 import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 import CharterSettingsModal from "../create/CharterSettingsModal";
+import CharterEditModal from "../edit/CharterEditModal";
+import ProjectEditModal from "../edit/ProjectEditModal";
+import AdminChangeModal from "../edit/AdminChangeModal";
 
 export default function DropdownMenuProject({
   id,
@@ -26,9 +29,21 @@ export default function DropdownMenuProject({
 }) {
   const { notify } = useNotifications();
 
+  // Create modal
   const [openCharter, setOpenCharter] = useState(false);
   const [openSoftware, setOpenSoftware] = useState(false);
   const [openAdmin, setOpenAdmin] = useState(false);
+
+  // Edit modal
+  const [openEditProject, setOpenEditProject] = useState(false);
+  const [openEditCharter, setOpenEditCharter] = useState(false);
+  const [openEditAdmin, setOpenEditAdmin] = useState(false);
+
+  // Delete modal
+  const [openDeleteProject, setOpenDeleteProject] = useState(false);
+  const [openDeleteCharter, setOpenDeleteCharter] = useState(false);
+  const [openDeleteAdmin, setOpenDeleteAdmin] = useState(false);
+  const [openDeleteSoftware, setOpenDeleteSoftware] = useState(false);
 
   const deleteProject = async () => {
     await client.delete(`/projects/${id}`);
@@ -47,7 +62,13 @@ export default function DropdownMenuProject({
       `/projects/${projectId}/admins/${adminId}/softwares/${softwareId}`
     );
     await client.delete(`/projects/admin/softwares/${id.data[0].id}`);
-    notify("Admin deleted successfully!", "success");
+    notify("Admin removed successfully!", "success");
+    getProjectTree();
+  };
+
+  const removeSoftware = async () => {
+    await client.delete(`/projects/${projectId}/softwares/${softwareId}`);
+    notify("Software removed successfully!", "success");
     getProjectTree();
   };
 
@@ -61,6 +82,7 @@ export default function DropdownMenuProject({
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
+            {/* Create and add actions */}
             <DropdownMenu.Item className="DropdownMenuItem" asChild>
               {node === "charterfolder" ? (
                 <button onClick={() => setOpenCharter(true)}>
@@ -76,18 +98,47 @@ export default function DropdownMenuProject({
                 )
               )}
             </DropdownMenu.Item>
+            {/* Edit actions */}
             {node === "project" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <DeleteNodeTree deleteNode={deleteProject} />
+                <button onClick={() => setOpenEditProject(true)}>Edit</button>
+              </DropdownMenu.Item>
+            ) : node === "admin" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenEditAdmin(true)}>Change Admin</button>
+              </DropdownMenu.Item>
+            ) : (
+              node === "charter" && (
+                <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                  <button onClick={() => setOpenEditCharter(true)}>Edit</button>
+                </DropdownMenu.Item>
+              )
+            )}
+            {/* Delete actions */}
+            {node === "project" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenDeleteProject(true)}>
+                  Delete
+                </button>
+              </DropdownMenu.Item>
+            ) : node === "software" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenDeleteSoftware(true)}>
+                  Remove
+                </button>
               </DropdownMenu.Item>
             ) : node === "charter" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <DeleteNodeTree deleteNode={deleteCharter} />
+                <button onClick={() => setOpenDeleteCharter(true)}>
+                  Delete
+                </button>
               </DropdownMenu.Item>
             ) : (
               node === "admin" && (
                 <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                  <DeleteNodeTree deleteNode={removeAdmin} />
+                  <button onClick={() => setOpenDeleteAdmin(true)}>
+                    Remove
+                  </button>
                 </DropdownMenu.Item>
               )
             )}
@@ -114,6 +165,48 @@ export default function DropdownMenuProject({
         softwareId={softwareId}
         open={openAdmin}
         setOpen={setOpenAdmin}
+      />
+      {/* Modales para editar */}
+      <ProjectEditModal
+        id={id}
+        getProjectTree={getProjectTree}
+        open={openEditProject}
+        setOpen={setOpenEditProject}
+      />
+      <CharterEditModal
+        id={id}
+        getProjectTree={getProjectTree}
+        open={openEditCharter}
+        setOpen={setOpenEditCharter}
+      />
+      <AdminChangeModal
+        projectId={projectId}
+        softwareId={softwareId}
+        adminId={adminId}
+        getProjectTree={getProjectTree}
+        open={openEditAdmin}
+        setOpen={setOpenEditAdmin}
+      />
+      {/* Modales para eliminar */}
+      <DeleteNodeTree
+        deleteNode={deleteProject}
+        open={openDeleteProject}
+        setOpen={setOpenDeleteProject}
+      />
+      <DeleteNodeTree
+        deleteNode={removeSoftware}
+        open={openDeleteSoftware}
+        setOpen={setOpenDeleteSoftware}
+      />
+      <DeleteNodeTree
+        deleteNode={deleteCharter}
+        open={openDeleteCharter}
+        setOpen={setOpenDeleteCharter}
+      />
+      <DeleteNodeTree
+        deleteNode={removeAdmin}
+        open={openDeleteAdmin}
+        setOpen={setOpenDeleteAdmin}
       />
     </div>
   );
@@ -182,6 +275,7 @@ const dropdownMenuStyle = {
     animationName: `${slideRightAndFade}`,
   },
   ".DropdownMenuItem": {
+    width: "150px",
     fontSize: "15px",
     lineHeight: "1",
     color: "var(--violet11)",

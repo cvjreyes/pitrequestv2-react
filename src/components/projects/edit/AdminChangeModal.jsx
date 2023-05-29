@@ -12,59 +12,52 @@ import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
-const AddSoftwareSettingsModal = forwardRef(
-  ({ id, getProjectTree, open, setOpen }, ref) => {
+const AdminChangeModal = forwardRef(
+  ({ projectId, softwareId, adminId, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
     const [disableCloseButton, setDisableCloseButton] = useState(true);
 
-    const [softwares, setSoftwares] = useState([]);
     const [admins, setAdmins] = useState([]);
-    const [formAddSoftware, setFormAddSoftware] = useState({
-      projectId: id,
-      adminId: 0,
-      softwareId: 0,
+    const [formChangeAdmin, setformChangeAdmin] = useState({
+      projectId: projectId,
+      newAdminId: adminId,
+      softwareId: softwareId,
     });
 
-    const updateUnselectedSoftwares = async () => {
-      const unselectedSoftwares = await client.get(
-        `/projects/${id}/softwares/unselected`
+    const getAdmins = async () => {
+      const admins = await client.get(
+        `/projects/${projectId}/softwares/${softwareId}/admins/unassigned`
       );
-      setSoftwares(unselectedSoftwares.data);
+      setAdmins(admins.data.admins);
     };
 
     useEffect(() => {
-      const getAdmins = async () => {
-        const admins = await client.get("/users/admins");
-        setAdmins(admins.data.Admins);
-      };
-      updateUnselectedSoftwares();
+      getAdmins();
+    }, []);
+
+    useEffect(() => {
       getAdmins();
     }, [open]);
 
-    useEffect(() => {
-      const allFieldsFilled =
-        !!formAddSoftware.adminId && !!formAddSoftware.softwareId;
-      setDisableCloseButton(!allFieldsFilled);
-    }, [formAddSoftware.adminId, formAddSoftware.softwareId]);
-
-    const submitAddSoftware = async (event) => {
+    const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
-      if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
+      if (!formChangeAdmin.newAdminId) {
         return notify("Please, fill all fields", "error");
       }
-      await client.post("/projects/softwares", formAddSoftware);
+      await client.put(
+        `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`,
+        formChangeAdmin
+      );
       notify("Software added successfully!", "success");
       getProjectTree();
-      setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
       setDisableCloseButton(true);
       setOpen(false);
-      updateUnselectedSoftwares(); // Actualizar la lista de softwares no seleccionados
     };
 
     const handleChange = (event) => {
       const { name, value } = event.target;
-      setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
+      setformChangeAdmin((prev) => ({ ...prev, [name]: value }));
       // Verificar si todos los campos están completos
       const allFieldsFilled = !!value; // Verificar si el campo no está vacío
       setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
@@ -76,34 +69,15 @@ const AddSoftwareSettingsModal = forwardRef(
           <Dialog.Portal>
             <Dialog.Overlay css={overlayStyle} />
             <Dialog.Content css={contentStyle}>
-              <Dialog.Title className="DialogTitle">
-                Add Software and Admin
-              </Dialog.Title>
-              <form onSubmit={submitAddSoftware}>
-                <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="software">
-                    Software
-                  </label>
-                  <select
-                    name="softwareId"
-                    value={formAddSoftware.softwareId}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select a software...</option>
-                    {softwares.map((software) => (
-                      <option key={software.id} value={software.id}>
-                        {software.name}
-                      </option>
-                    ))}
-                  </select>
-                </fieldset>
+              <Dialog.Title className="DialogTitle">Add Admin</Dialog.Title>
+              <form onSubmit={submitAddSoftwareAdmin}>
                 <fieldset className="Fieldset">
                   <label className="Label" htmlFor="admin">
                     Admin
                   </label>
                   <select
-                    name="adminId"
-                    value={formAddSoftware.adminId}
+                    name="newAdminId"
+                    value={formChangeAdmin.newAdminId}
                     onChange={handleChange}
                   >
                     <option value="">Select an admin...</option>
@@ -123,12 +97,12 @@ const AddSoftwareSettingsModal = forwardRef(
                 >
                   <Dialog.Close asChild>
                     <button
-                      onClick={submitAddSoftware}
+                      onClick={submitAddSoftwareAdmin}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}
                     >
-                      Add Software
+                      Change Admin
                     </button>
                   </Dialog.Close>
                 </div>
@@ -287,4 +261,4 @@ const contentStyle = {
   },
 };
 
-export default AddSoftwareSettingsModal;
+export default AdminChangeModal;

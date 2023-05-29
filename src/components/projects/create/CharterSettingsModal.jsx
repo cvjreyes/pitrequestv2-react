@@ -18,8 +18,9 @@ const CharterSettingsModal = forwardRef(
   ({ id, getProjectTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
-    const [nameIsEmpty, setNameIsEmpty] = useState(false);
+    const [disableCloseButton, setDisableCloseButton] = useState(true);
 
+    const [nameIsEmpty, setNameIsEmpty] = useState(false);
     const [formCharter, setFormCharter] = useState({
       name: "",
       projectId: id,
@@ -36,6 +37,7 @@ const CharterSettingsModal = forwardRef(
       getProjectTree();
       setFormCharter({ name: "", projectId: id });
       setNameIsEmpty(false);
+      setDisableCloseButton(true);
       setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
@@ -45,6 +47,9 @@ const CharterSettingsModal = forwardRef(
       if (name === "name") {
         setNameIsEmpty(!value);
       }
+      // Verificar si todos los campos están completos
+      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
+      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (
@@ -77,10 +82,16 @@ const CharterSettingsModal = forwardRef(
                     marginTop: 25,
                     justifyContent: "flex-end",
                   }}
-                  onClick={createSubmitCharter}
                 >
                   <Dialog.Close asChild>
-                    <button className="Button green">Create Charter</button>
+                    <button
+                      onClick={createSubmitCharter}
+                      className={disableCloseButton ? "Button" : "Button green"}
+                      aria-label="Close"
+                      disabled={disableCloseButton}
+                    >
+                      Create Charter
+                    </button>
                   </Dialog.Close>
                 </div>
               </form>

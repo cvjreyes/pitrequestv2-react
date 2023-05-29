@@ -1,78 +1,71 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { ImFolderPlus } from "react-icons/im";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useEffect, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
-import { useAuth } from "../../../context/AuthContext";
 
-export default function ProjectModal({ getProjectTree }) {
+export default function SoftwareEditModal({
+  id,
+  getSoftwareTree,
+  open,
+  setOpen,
+}) {
   const { notify } = useNotifications();
 
   const [disableCloseButton, setDisableCloseButton] = useState(true);
 
-  const { user } = useAuth();
-
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
-  const [hoursIsEmpty, setHoursIsEmpty] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formProject, setFormProject] = useState({
+  const [formSoftware, setFormSoftware] = useState({
     name: "",
     code: "",
-    estimatedHours: 500,
-    userProjectId: user.id,
   });
 
-  const createSubmitProject = async (event) => {
+  useEffect(() => {
+    const getOneSoftware = async () => {
+      const software = await client.get(`/softwares/${id}`);
+      if (software.data) {
+        setFormSoftware({ name: software.data.name, code: software.data.code });
+      }
+    };
+    getOneSoftware();
+  }, []);
+
+  const updateSubmitSoftware = async (event) => {
     event.preventDefault();
-    if (!formProject.name || !formProject.code || !formProject.estimatedHours) {
-      setNameIsEmpty(!formProject.name);
-      setCodeIsEmpty(!formProject.code);
-      setHoursIsEmpty(!formProject.estimatedHours);
+    if (!formSoftware.name || !formSoftware.code) {
+      setNameIsEmpty(!formSoftware.name);
+      setCodeIsEmpty(!formSoftware.code);
       return notify("Please, fill all fields", "error");
     }
-    if (formProject.code.length > 10)
+    if (formSoftware.code.length > 10)
       return notify("Code can't have more than 10 characters", "error");
 
-    if (!Number(formProject.estimatedHours)) {
-      return notify("The estimated hours only accept numbers", "error");
-    }
-
-    await client.post("/projects/", formProject);
-    notify("Project created successfully!", "success");
-    getProjectTree();
-    setFormProject({
-      name: "",
-      code: "",
-      estimatedHours: 500,
-      userProjectId: user.id,
-    });
+    await client.put(`/softwares/${id}`, formSoftware);
+    notify("Software updated successfully!", "success");
+    getSoftwareTree();
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
-    setHoursIsEmpty(false);
     setDisableCloseButton(true);
-    setIsModalOpen(false); // Cerrar el modal al crear el proyecto
+    setOpen(false); // Cerrar el modal al crear el proyecto
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormProject((prev) => ({ ...prev, [name]: value }));
+    setFormSoftware((prev) => ({ ...prev, [name]: value }));
     if (name === "name") {
       setNameIsEmpty(!value);
     } else if (name === "code") {
       setCodeIsEmpty(!value);
-    } else if (name === "estimatedHours") {
-      setHoursIsEmpty(!value);
     }
     // Verificar si todos los campos están completos
     const allFieldsFilled = !!value; // Verificar si el campo no está vacío
@@ -82,33 +75,30 @@ export default function ProjectModal({ getProjectTree }) {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      createSubmitProject(event);
+      updateSubmitSoftware(event);
     }
   };
 
   return (
-    <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <Dialog.Trigger title="Create Project" >
-        <ImFolderPlus fontSize="20px" color="gray"/>
-      </Dialog.Trigger>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
         <Dialog.Overlay css={overlayStyle} />
         <Dialog.Content css={contentStyle}>
-          <Dialog.Title className="DialogTitle">Create Project</Dialog.Title>
+          <Dialog.Title className="DialogTitle">Update Software</Dialog.Title>
           <Dialog.Description className="DialogDescription">
-            Make sure the Project is correct, you will not be available to
-            change name of Project
+            Make sure the software is correct, you will not be available to
+            change name of software
           </Dialog.Description>
-          <form onSubmit={createSubmitProject}>
+          <form onSubmit={updateSubmitSoftware}>
             <fieldset className="Fieldset">
               <label className="Label" htmlFor="name">
-                Project
+                Software
               </label>
               <Input
                 className="Input"
                 id="name"
                 name="name"
-                value={formProject.name}
+                value={formSoftware.name}
                 placeholder="Name"
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
@@ -123,27 +113,11 @@ export default function ProjectModal({ getProjectTree }) {
                 className="Input"
                 id="code"
                 name="code"
-                value={formProject.code}
+                value={formSoftware.code}
                 placeholder="Code"
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 error={codeIsEmpty ? "Required" : null}
-              />
-            </fieldset>
-            <fieldset className="Fieldset">
-              <label className="Label" htmlFor="estimatedHours">
-                Estimated Hours
-              </label>
-              <Input
-                type="number"
-                className="Input"
-                id="estimatedHours"
-                name="estimatedHours"
-                value={formProject.estimatedHours}
-                placeholder="Hours"
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                error={hoursIsEmpty ? "Required" : null}
               />
             </fieldset>
             <div
@@ -153,14 +127,16 @@ export default function ProjectModal({ getProjectTree }) {
                 justifyContent: "flex-end",
               }}
             >
-              <button
-                type="submit"
-                className={disableCloseButton ? "Button" : "Button green"}
-                aria-label="Close"
-                disabled={disableCloseButton}
-              >
-                Create Project
-              </button>
+              <Dialog.Close asChild>
+                <button
+                  onClick={updateSubmitSoftware}
+                  className={disableCloseButton ? "Button" : "Button green"}
+                  aria-label="Close"
+                  disabled={disableCloseButton}
+                >
+                  Update Software
+                </button>
+              </Dialog.Close>
             </div>
           </form>
           <Dialog.Close asChild>

@@ -1,23 +1,37 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useNotifications } from "reapop";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useState } from "react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { useNotifications } from "reapop";
+import { client } from "../../../helpers/config";
 import SoftwareSettingsModal from "../create/SoftwareSettingsModal";
 import TaskSettingsModal from "../create/TaskSettingsModal";
 import DeleteNodeTree from "../delete/DeleteNodeTree";
-import { client } from "../../../helpers/config";
-import { useState } from "react";
+import SoftwareEditModal from "../edit/SoftwareEditModal";
+import SubTaskEditModal from "../edit/SubTaskEditModal";
+import TaskEditModal from "../edit/TaskEditModal";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const { notify } = useNotifications();
 
+  // Create
   const [openTask, setOpenTask] = useState(false);
   const [openSubtask, setOpenSubtask] = useState(false);
+
+  // Updates
+  const [openEditSoftware, setOpenEditSoftware] = useState(false);
+  const [openEditTask, setOpenEditTask] = useState(false);
+  const [openEditSubtask, setOpenEditSubtask] = useState(false);
+
+  // Deletes
+  const [openDeleteSoftware, setOpenDeleteSoftware] = useState(false);
+  const [openDeleteTask, setOpenDeleteTask] = useState(false);
+  const [openDeleteSubtask, setOpenDeleteSubtask] = useState(false);
 
   const deleteSoftware = async () => {
     await client.delete(`/softwares/${id}`);
@@ -47,6 +61,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
+            {/* ADD */}
             {node !== "subtask" && (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
                 {node === "software" ? (
@@ -58,23 +73,43 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
                 )}
               </DropdownMenu.Item>
             )}
+            {/* EDIT */}
             {node === "software" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <DeleteNodeTree deleteNode={deleteSoftware} />
+                <button onClick={() => setOpenEditSoftware(true)}>Edit</button>
               </DropdownMenu.Item>
             ) : node === "task" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <DeleteNodeTree deleteNode={deleteTask} />
+                <button onClick={() => setOpenEditTask(true)}>Edit</button>
               </DropdownMenu.Item>
             ) : (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <DeleteNodeTree deleteNode={deleteSubtask} />
+                <button onClick={() => setOpenEditSubtask(true)}>Edit</button>
+              </DropdownMenu.Item>
+            )}
+            {/* DELETE */}
+            {node === "software" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenDeleteSoftware(true)}>
+                  Delete
+                </button>
+              </DropdownMenu.Item>
+            ) : node === "task" ? (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenDeleteTask(true)}>Delete</button>
+              </DropdownMenu.Item>
+            ) : (
+              <DropdownMenu.Item className="DropdownMenuItem" asChild>
+                <button onClick={() => setOpenDeleteSubtask(true)}>
+                  Delete
+                </button>
               </DropdownMenu.Item>
             )}
             <DropdownMenu.Arrow className="DropdownMenuArrow" />
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
+      {/* Modales para crear */}
       <SoftwareSettingsModal
         id={id}
         getSoftwareTree={getSoftwareTree}
@@ -86,6 +121,41 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
         getSoftwareTree={getSoftwareTree}
         open={openSubtask}
         setOpen={setOpenSubtask}
+      />
+      {/* Modales para editar */}
+      <SoftwareEditModal
+        getSoftwareTree={getSoftwareTree}
+        open={openEditSoftware}
+        setOpen={setOpenEditSoftware}
+        id={id}
+      />
+      <TaskEditModal
+        id={id}
+        getSoftwareTree={getSoftwareTree}
+        open={openEditTask}
+        setOpen={setOpenEditTask}
+      />
+      <SubTaskEditModal
+        id={id}
+        getSoftwareTree={getSoftwareTree}
+        open={openEditSubtask}
+        setOpen={setOpenEditSubtask}
+      />
+      {/* Modales para eliminar */}
+      <DeleteNodeTree
+        deleteNode={deleteSoftware}
+        open={openDeleteSoftware}
+        setOpen={setOpenDeleteSoftware} 
+      />
+      <DeleteNodeTree
+        deleteNode={deleteTask}
+        open={openDeleteTask}
+        setOpen={setOpenDeleteTask} 
+      />
+      <DeleteNodeTree
+        deleteNode={deleteSubtask}
+        open={openDeleteSubtask}
+        setOpen={setOpenDeleteSubtask}
       />
     </div>
   );
@@ -154,6 +224,7 @@ const dropdownMenuStyle = {
     animationName: `${slideRightAndFade}`,
   },
   ".DropdownMenuItem": {
+    width: "150px",
     fontSize: "15px",
     lineHeight: "1",
     color: "var(--violet11)",

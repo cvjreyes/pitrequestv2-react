@@ -9,13 +9,10 @@ import "@radix-ui/colors/red.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
 
-const DeleteNodeTree = forwardRef(({ deleteNode }, ref) => {
+const DeleteNodeTree = forwardRef(({ deleteNode, open, setOpen }, ref) => {
   return (
     <div ref={ref}>
-      <AlertDialog.Root>
-        <AlertDialog.Trigger asChild>
-          <button className="DropdownMenuItem">Delete</button>
-        </AlertDialog.Trigger>
+      <AlertDialog.Root open={open} onOpenChange={setOpen}>
         <AlertDialog.Portal>
           <AlertDialog.Overlay css={AlertDialogOverlayStyle} />
           <AlertDialog.Content css={AlertDialogContentStyle}>

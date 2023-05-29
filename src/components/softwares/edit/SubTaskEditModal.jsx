@@ -11,60 +11,50 @@ import { RxCross2 } from "react-icons/rx";
 import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
+import { Input } from "../../general";
 
-const AddSoftwareSettingsModal = forwardRef(
-  ({ id, getProjectTree, open, setOpen }, ref) => {
+const SubTaskEditModal = forwardRef(
+  ({ id, getSoftwareTree, open, setOpen }, ref) => {
     const { notify } = useNotifications();
 
     const [disableCloseButton, setDisableCloseButton] = useState(true);
 
-    const [softwares, setSoftwares] = useState([]);
-    const [admins, setAdmins] = useState([]);
-    const [formAddSoftware, setFormAddSoftware] = useState({
-      projectId: id,
-      adminId: 0,
-      softwareId: 0,
+    const [nameIsEmpty, setNameIsEmpty] = useState(false);
+    const [formSubtask, setFormSubtask] = useState({
+      name: "",
     });
 
-    const updateUnselectedSoftwares = async () => {
-      const unselectedSoftwares = await client.get(
-        `/projects/${id}/softwares/unselected`
-      );
-      setSoftwares(unselectedSoftwares.data);
-    };
-
     useEffect(() => {
-      const getAdmins = async () => {
-        const admins = await client.get("/users/admins");
-        setAdmins(admins.data.Admins);
+      const getOneSubTask = async () => {
+        const Subtask = await client.get(`/subtasks/${id}`);
+        if (Subtask.data) {
+          setFormSubtask({ name: Subtask.data.name });
+        }
       };
-      updateUnselectedSoftwares();
-      getAdmins();
-    }, [open]);
+      getOneSubTask();
+    }, []);
 
-    useEffect(() => {
-      const allFieldsFilled =
-        !!formAddSoftware.adminId && !!formAddSoftware.softwareId;
-      setDisableCloseButton(!allFieldsFilled);
-    }, [formAddSoftware.adminId, formAddSoftware.softwareId]);
-
-    const submitAddSoftware = async (event) => {
+    const updateSubmitSubTask = async (event) => {
       event.preventDefault();
-      if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
+      if (!formSubtask.name) {
+        setNameIsEmpty(!formSubtask.name);
         return notify("Please, fill all fields", "error");
       }
-      await client.post("/projects/softwares", formAddSoftware);
-      notify("Software added successfully!", "success");
-      getProjectTree();
-      setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
+      await client.put(`/subtasks/${id}`, formSubtask);
+      notify("Task updated successfully!", "success");
+      getSoftwareTree();
+      setNameIsEmpty(false);
       setDisableCloseButton(true);
-      setOpen(false);
-      updateUnselectedSoftwares(); // Actualizar la lista de softwares no seleccionados
+      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {
       const { name, value } = event.target;
-      setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
+      setFormSubtask((prev) => ({ ...prev, [name]: value }));
+      if (name === "name") {
+        setNameIsEmpty(!value);
+      }
+
       // Verificar si todos los campos están completos
       const allFieldsFilled = !!value; // Verificar si el campo no está vacío
       setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
@@ -77,42 +67,22 @@ const AddSoftwareSettingsModal = forwardRef(
             <Dialog.Overlay css={overlayStyle} />
             <Dialog.Content css={contentStyle}>
               <Dialog.Title className="DialogTitle">
-                Add Software and Admin
+                Update SubTask
               </Dialog.Title>
-              <form onSubmit={submitAddSoftware}>
+              <form onSubmit={updateSubmitSubTask}>
                 <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="software">
-                    Software
+                  <label className="Label" htmlFor="name">
+                    SubTask
                   </label>
-                  <select
-                    name="softwareId"
-                    value={formAddSoftware.softwareId}
+                  <Input
+                    className="Input"
+                    id="name"
+                    name="name"
+                    value={formSubtask.name}
+                    placeholder="Name"
                     onChange={handleChange}
-                  >
-                    <option value="">Select a software...</option>
-                    {softwares.map((software) => (
-                      <option key={software.id} value={software.id}>
-                        {software.name}
-                      </option>
-                    ))}
-                  </select>
-                </fieldset>
-                <fieldset className="Fieldset">
-                  <label className="Label" htmlFor="admin">
-                    Admin
-                  </label>
-                  <select
-                    name="adminId"
-                    value={formAddSoftware.adminId}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select an admin...</option>
-                    {admins.map((admin) => (
-                      <option key={admin.id} value={admin.id}>
-                        {admin.name}
-                      </option>
-                    ))}
-                  </select>
+                    error={nameIsEmpty ? "Required" : null}
+                  />
                 </fieldset>
                 <div
                   style={{
@@ -123,12 +93,12 @@ const AddSoftwareSettingsModal = forwardRef(
                 >
                   <Dialog.Close asChild>
                     <button
-                      onClick={submitAddSoftware}
+                      onClick={updateSubmitSubTask}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}
                     >
-                      Add Software
+                      Update SubTask
                     </button>
                   </Dialog.Close>
                 </div>
@@ -287,4 +257,4 @@ const contentStyle = {
   },
 };
 
-export default AddSoftwareSettingsModal;
+export default SubTaskEditModal;

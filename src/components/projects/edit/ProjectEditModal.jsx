@@ -1,39 +1,52 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { ImFolderPlus } from "react-icons/im";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useEffect, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
-import { useAuth } from "../../../context/AuthContext";
 
-export default function ProjectModal({ getProjectTree }) {
+export default function ProjectEditModal({
+  id,
+  getProjectTree,
+  open,
+  setOpen,
+}) {
   const { notify } = useNotifications();
 
   const [disableCloseButton, setDisableCloseButton] = useState(true);
 
-  const { user } = useAuth();
-
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
   const [hoursIsEmpty, setHoursIsEmpty] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formProject, setFormProject] = useState({
     name: "",
     code: "",
     estimatedHours: 500,
-    userProjectId: user.id,
   });
 
-  const createSubmitProject = async (event) => {
+  useEffect(() => {
+    const getOneProject = async () => {
+      const project = await client.get(`/projects/${id}`);
+      if (project.data) {
+        setFormProject({
+          name: project.data.name,
+          code: project.data.code,
+          estimatedHours: project.data.estimatedHours,
+        });
+      }
+    };
+    getOneProject();
+  }, []);
+
+  const updateSubmitProject = async (event) => {
     event.preventDefault();
     if (!formProject.name || !formProject.code || !formProject.estimatedHours) {
       setNameIsEmpty(!formProject.name);
@@ -48,20 +61,14 @@ export default function ProjectModal({ getProjectTree }) {
       return notify("The estimated hours only accept numbers", "error");
     }
 
-    await client.post("/projects/", formProject);
-    notify("Project created successfully!", "success");
+    await client.put(`/projects/${id}`, formProject);
+    notify("Project updated successfully!", "success");
     getProjectTree();
-    setFormProject({
-      name: "",
-      code: "",
-      estimatedHours: 500,
-      userProjectId: user.id,
-    });
     setNameIsEmpty(false);
     setCodeIsEmpty(false);
     setHoursIsEmpty(false);
     setDisableCloseButton(true);
-    setIsModalOpen(false); // Cerrar el modal al crear el proyecto
+    setOpen(false);
   };
 
   const handleChange = (event) => {
@@ -82,24 +89,21 @@ export default function ProjectModal({ getProjectTree }) {
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      createSubmitProject(event);
+      updateSubmitProject(event);
     }
   };
 
   return (
-    <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <Dialog.Trigger title="Create Project" >
-        <ImFolderPlus fontSize="20px" color="gray"/>
-      </Dialog.Trigger>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
         <Dialog.Overlay css={overlayStyle} />
         <Dialog.Content css={contentStyle}>
-          <Dialog.Title className="DialogTitle">Create Project</Dialog.Title>
+          <Dialog.Title className="DialogTitle">Update Project</Dialog.Title>
           <Dialog.Description className="DialogDescription">
             Make sure the Project is correct, you will not be available to
             change name of Project
           </Dialog.Description>
-          <form onSubmit={createSubmitProject}>
+          <form onSubmit={updateSubmitProject}>
             <fieldset className="Fieldset">
               <label className="Label" htmlFor="name">
                 Project
@@ -159,7 +163,7 @@ export default function ProjectModal({ getProjectTree }) {
                 aria-label="Close"
                 disabled={disableCloseButton}
               >
-                Create Project
+                Update Project
               </button>
             </div>
           </form>
