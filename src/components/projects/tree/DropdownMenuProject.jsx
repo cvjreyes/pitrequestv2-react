@@ -61,7 +61,7 @@ export default function DropdownMenuProject({
     const id = await client.get(
       `/projects/${projectId}/admins/${adminId}/softwares/${softwareId}`
     );
-    await client.delete(`/projects/admin/softwares/${id.data[0].id}`);
+    await client.put(`/projects/admin/softwares/${id.data[0].id}`);
     notify("Admin removed successfully!", "success");
     getProjectTree();
   };

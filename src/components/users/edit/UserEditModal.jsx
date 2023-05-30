@@ -40,7 +40,7 @@ export default function UserEditModal({
   useEffect(() => {
     const getProjects = async () => {
       const response = await client.get("/projects/");
-      console.log(response.data.Projects[0].name);
+    //   console.log(response.data.Projects[0].name);
       setAllProjects(response.data.Projects);
     };
     getProjects();
@@ -63,7 +63,7 @@ export default function UserEditModal({
               <Select
                 closeMenuOnSelect={false}
                 components={animatedComponents}
-                defaultValue={[userProjects[0]]}
+                // defaultValue={[userProjects]}
                 isMulti
                 options={allProjects}
               />
