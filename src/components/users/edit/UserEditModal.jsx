@@ -25,8 +25,6 @@ export default function UserEditModal({
   const { notify } = useNotifications();
   const animatedComponents = makeAnimated();
 
-  const [disableCloseButton, setDisableCloseButton] = useState(true);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formUser, setFormUser] = useState({
     userId: id,
@@ -34,16 +32,42 @@ export default function UserEditModal({
     roleId: 0,
   });
 
-  const [allProjects, setAllProjects] = useState([]);
-  const [allRoles, setAllRoles] = useState([]);
+  const [projectOptions, setProjectOptions] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useState([]);
+
+  const [roleOptions, setRoleOptions] = useState([]);
+  const [selectedRoles, setSelectedRoles] = useState([]);
 
   useEffect(() => {
     const getProjects = async () => {
       const response = await client.get("/projects/");
-    //   console.log(response.data.Projects[0].name);
-      setAllProjects(response.data.Projects);
+      const options = response.data.Projects.map((project) => ({
+        value: project.id,
+        label: project.code,
+      }));
+      setProjectOptions(options);
+
+      const selectedProjects = options.filter((option) =>
+        userProjects.includes(option.label)
+      );
+      setSelectedProjects(selectedProjects);
+    };
+    const getRoles = async () => {
+      const response = await client.get("/roles/");
+      const options = response.data.roles
+        .filter((option) => option.label !== "User")
+        .map((role) => ({
+          value: role.id,
+          label: role.name,
+        }));
+      setRoleOptions(options);
+      const selectedRoles = options
+        .filter((option) => userRoles.includes(option.label))
+        .filter((option) => option.label !== "User");
+      setSelectedRoles(selectedRoles);
     };
     getProjects();
+    getRoles();
   }, []);
 
   return (
@@ -61,18 +85,26 @@ export default function UserEditModal({
                 Projects
               </label>
               <Select
+                className="SelectContainer"
                 closeMenuOnSelect={false}
                 components={animatedComponents}
-                // defaultValue={[userProjects]}
+                defaultValue={selectedProjects}
                 isMulti
-                options={allProjects}
+                options={projectOptions}
               />
             </fieldset>
             <fieldset className="Fieldset">
               <label className="Label" htmlFor="roles">
                 Roles
               </label>
-              <p>{userRoles}</p>
+              <Select
+                className="SelectContainer"
+                closeMenuOnSelect={false}
+                components={animatedComponents}
+                defaultValue={selectedRoles}
+                isMulti
+                options={roleOptions}
+              />
             </fieldset>
             <div
               style={{
@@ -84,9 +116,8 @@ export default function UserEditModal({
               <Dialog.Close asChild>
                 <button
                   //   onClick={createSubmitSoftware}
-                  className={disableCloseButton ? "Button" : "Button green"}
+                  className="Button green"
                   aria-label="Close"
-                  disabled={disableCloseButton}
                 >
                   Save Changes
                 </button>
@@ -140,14 +171,16 @@ const contentStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "90vw",
-  maxWidth: "450px",
+  maxWidth: "900px",
   maxHeight: "85vh",
   padding: "25px",
   animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
   ":focus": {
     outline: "none",
   },
-
+  ".SelectContainer": {
+    width: "100%", // Establece el ancho en 100%
+  },
   ".DialogTitle": {
     margin: 0,
     fontWeight: "500",

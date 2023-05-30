@@ -19,7 +19,7 @@ export default function UsersTable() {
       col1: user.name,
       col2: user.email,
       col3: user.ProjectUsers.map(
-        (projectUser) => projectUser.Project.name
+        (projectUser) => projectUser.Project.code
       ).join(", "),
       col4: user.UsersRol.map((userRol) => userRol.rol.name).join(", "),
     }));
@@ -41,7 +41,7 @@ export default function UsersTable() {
       headerName: "Actions",
       width: 70,
       renderCell: (params) => (
-        <div className="edit_btn" onClick={() => console.log(params.row.col4)}>
+        <div className="edit_btn" >
           <UserEditModal
             getUsers={getUsers}
             id={params.row.id}
