@@ -28,8 +28,8 @@ export default function UserEditModal({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formUser, setFormUser] = useState({
     userId: id,
-    projectId: 0,
-    roleId: 0,
+    projectIds: [],
+    roleIds: [],
   });
 
   const [projectOptions, setProjectOptions] = useState([]);
@@ -37,6 +37,25 @@ export default function UserEditModal({
 
   const [roleOptions, setRoleOptions] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Actualizar proyectos y roles del usuario
+    await client.post("/users/projects/roles", formUser);
+
+    // Actualizar la lista de usuarios
+    getUsers();
+
+    notify({
+      title: "Success",
+      message: "User data updated successfully",
+      status: "success",
+      dismissible: true,
+    });
+
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const getProjects = async () => {
@@ -46,29 +65,44 @@ export default function UserEditModal({
         label: project.code,
       }));
       setProjectOptions(options);
-
+  
       const selectedProjects = options.filter((option) =>
         userProjects.includes(option.label)
       );
       setSelectedProjects(selectedProjects);
     };
     const getRoles = async () => {
-      const response = await client.get("/roles/");
-      const options = response.data.roles
-        .filter((option) => option.label !== "User")
-        .map((role) => ({
-          value: role.id,
-          label: role.name,
-        }));
+      const response = await client.get("/roles/noUser");
+      const options = response.data.roles.map((role) => ({
+        value: role.id,
+        label: role.name,
+      }));
       setRoleOptions(options);
-      const selectedRoles = options
-        .filter((option) => userRoles.includes(option.label))
-        .filter((option) => option.label !== "User");
+      const selectedRoles = options.filter((option) =>
+        userRoles.includes(option.label)
+      );
       setSelectedRoles(selectedRoles);
     };
     getProjects();
     getRoles();
-  }, []);
+  }, [projectOptions, roleOptions]);
+
+  const handleProjectChange = (selectedOptions) => {
+    const selectedProjectIds = selectedOptions.map((option) => option.value);
+    setFormUser((prevFormUser) => ({
+      ...prevFormUser,
+      projectIds: selectedProjectIds,
+    }));
+  };
+  
+  const handleRoleChange = (selectedOptions) => {
+    const selectedRoleIds = selectedOptions.map((option) => option.value);
+    setFormUser((prevFormUser) => ({
+      ...prevFormUser,
+      roleIds: selectedRoleIds,
+    }));
+  };
+  
 
   return (
     <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -91,6 +125,7 @@ export default function UserEditModal({
                 defaultValue={selectedProjects}
                 isMulti
                 options={projectOptions}
+                onChange={handleProjectChange}
               />
             </fieldset>
             <fieldset className="Fieldset">
@@ -104,6 +139,7 @@ export default function UserEditModal({
                 defaultValue={selectedRoles}
                 isMulti
                 options={roleOptions}
+                onChange={handleRoleChange}
               />
             </fieldset>
             <div
@@ -115,7 +151,7 @@ export default function UserEditModal({
             >
               <Dialog.Close asChild>
                 <button
-                  //   onClick={createSubmitSoftware}
+                  onClick={handleSubmit}
                   className="Button green"
                   aria-label="Close"
                 >
