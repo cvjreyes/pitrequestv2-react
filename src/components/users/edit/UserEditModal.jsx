@@ -17,6 +17,7 @@ import makeAnimated from "react-select/animated";
 import { client } from "../../../helpers/config";
 
 export default function UserEditModal({
+  users,
   getUsers,
   id,
   userProjects,
@@ -38,25 +39,6 @@ export default function UserEditModal({
   const [roleOptions, setRoleOptions] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Actualizar proyectos y roles del usuario
-    await client.post("/users/projects/roles", formUser);
-
-    // Actualizar la lista de usuarios
-    getUsers();
-
-    notify({
-      title: "Success",
-      message: "User data updated successfully",
-      status: "success",
-      dismissible: true,
-    });
-
-    setIsModalOpen(false);
-  };
-
   useEffect(() => {
     const getProjects = async () => {
       const response = await client.get("/projects/");
@@ -65,11 +47,18 @@ export default function UserEditModal({
         label: project.code,
       }));
       setProjectOptions(options);
-  
+
       const selectedProjects = options.filter((option) =>
         userProjects.includes(option.label)
       );
       setSelectedProjects(selectedProjects);
+
+      // Obtener los IDs de los proyectos seleccionados
+      const selectedProjectIds = selectedProjects.map((option) => option.value);
+      setFormUser((prevFormUser) => ({
+        ...prevFormUser,
+        projectIds: selectedProjectIds,
+      }));
     };
     const getRoles = async () => {
       const response = await client.get("/roles/noUser");
@@ -82,10 +71,16 @@ export default function UserEditModal({
         userRoles.includes(option.label)
       );
       setSelectedRoles(selectedRoles);
+      // Obtener los IDs de los roles seleccionados
+      const selectedRoleIds = selectedRoles.map((option) => option.value);
+      setFormUser((prevFormUser) => ({
+        ...prevFormUser,
+        roleIds: selectedRoleIds,
+      }));
     };
     getProjects();
     getRoles();
-  }, [projectOptions, roleOptions]);
+  }, [users]);
 
   const handleProjectChange = (selectedOptions) => {
     const selectedProjectIds = selectedOptions.map((option) => option.value);
@@ -94,7 +89,7 @@ export default function UserEditModal({
       projectIds: selectedProjectIds,
     }));
   };
-  
+
   const handleRoleChange = (selectedOptions) => {
     const selectedRoleIds = selectedOptions.map((option) => option.value);
     setFormUser((prevFormUser) => ({
@@ -102,7 +97,34 @@ export default function UserEditModal({
       roleIds: selectedRoleIds,
     }));
   };
-  
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      // Actualizar proyectos y roles del usuario
+      await client.put("/users/projects/roles", formUser);
+
+      // Actualizar la lista de usuarios
+      getUsers();
+
+      notify({
+        title: "Success",
+        message: "User data updated successfully",
+        status: "success",
+        dismissible: true,
+      });
+
+      setIsModalOpen(false);
+    } catch (error) {
+      notify({
+        title: "Error",
+        message: "An error occurred while updating user data",
+        status: "error",
+        dismissible: true,
+      });
+    }
+  };
 
   return (
     <Dialog.Root open={isModalOpen} onOpenChange={setIsModalOpen}>

@@ -42,10 +42,10 @@ export default function UsersTable() {
         {...data}
         rows={rows}
         columns={[
-          { field: "col1", headerName: "Name", width: 300 },
+          { field: "col1", headerName: "Name", width: 250 },
           { field: "col2", headerName: "Email", width: 450 },
-          { field: "col3", headerName: "Projects", width: 450 },
-          { field: "col4", headerName: "Roles", width: 200 },
+          { field: "col3", headerName: "Projects", width: 400 },
+          { field: "col4", headerName: "Roles", width: 300 },
           {
             field: "col5",
             headerName: "Actions",
@@ -53,12 +53,11 @@ export default function UsersTable() {
             renderCell: (params) => (
               <div className="edit_btn">
                 <UserEditModal
+                  users={rows}
                   getUsers={getUsers}
                   id={params.row.id}
                   userProjects={params.row.col3}
-                  userRoles={params.row.col4.filter(
-                    (role) => role !== "USER"
-                  )}
+                  userRoles={params.row.col4.filter((role) => role !== "USER")}
                 />
               </div>
             ),
