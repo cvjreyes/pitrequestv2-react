@@ -69,7 +69,7 @@ const AdminChangeModal = forwardRef(
           <Dialog.Portal>
             <Dialog.Overlay css={overlayStyle} />
             <Dialog.Content css={contentStyle}>
-              <Dialog.Title className="DialogTitle">Add Admin</Dialog.Title>
+              <Dialog.Title className="DialogTitle">Change Admin</Dialog.Title>
               <form onSubmit={submitAddSoftwareAdmin}>
                 <fieldset className="Fieldset">
                   <label className="Label" htmlFor="admin">
