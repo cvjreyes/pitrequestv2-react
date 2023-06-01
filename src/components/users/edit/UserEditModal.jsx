@@ -15,6 +15,7 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 
 import { client } from "../../../helpers/config";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function UserEditModal({
   users,
@@ -25,6 +26,8 @@ export default function UserEditModal({
 }) {
   const { notify } = useNotifications();
   const animatedComponents = makeAnimated();
+
+  const { updateUserInfo } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formUser, setFormUser] = useState({
@@ -107,7 +110,8 @@ export default function UserEditModal({
 
       // Actualizar la lista de usuarios
       getUsers();
-
+      updateUserInfo();
+      
       notify({
         title: "Success",
         message: "User data updated successfully",

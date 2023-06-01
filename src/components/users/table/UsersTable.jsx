@@ -5,8 +5,12 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { client } from "../../../helpers/config";
 
 import UserEditModal from "../edit/UserEditModal";
+import { useAuth } from "../../../context/AuthContext";
+import UserDeleteDialog from "../delete/UserDeleteDialog";
 
 export default function UsersTable() {
+  const { user } = useAuth();
+
   const [rows, setRows] = useState([]);
 
   const getUsers = async () => {
@@ -43,22 +47,43 @@ export default function UsersTable() {
         rows={rows}
         columns={[
           { field: "col1", headerName: "Name", width: 250 },
-          { field: "col2", headerName: "Email", width: 450 },
-          { field: "col3", headerName: "Projects", width: 400 },
+          { field: "col2", headerName: "Email", width: 400 },
+          { field: "col3", headerName: "Projects", width: 370 },
           { field: "col4", headerName: "Roles", width: 300 },
+          ...(user.roles.includes("ADMINLEAD") ||
+          user.roles.includes("ADMINTOOL")
+            ? [
+                {
+                  field: "col5",
+                  headerName: "Actions",
+                  width: 70,
+                  disabled: true,
+                  renderCell: (params) => (
+                    <div className="edit_btn">
+                      <UserEditModal
+                        users={rows}
+                        getUsers={getUsers}
+                        id={params.row.id}
+                        userProjects={params.row.col3}
+                        userRoles={params.row.col4.filter(
+                          (role) => role !== "USER"
+                        )}
+                      />
+                    </div>
+                  ),
+                },
+              ]
+            : []),
           {
-            field: "col5",
-            headerName: "Actions",
+            field: "col6",
+            headerName: "Delete",
             width: 70,
             renderCell: (params) => (
               <div className="edit_btn">
-                <UserEditModal
-                  users={rows}
-                  getUsers={getUsers}
-                  id={params.row.id}
-                  userProjects={params.row.col3}
-                  userRoles={params.row.col4.filter((role) => role !== "USER")}
-                />
+                {(user.id === params.row.id ||
+                  user.roles.includes("ADMINLEAD")) && (
+                  <UserDeleteDialog id={params.row.id} getUsers={getUsers} />
+                )}
               </div>
             ),
           },
