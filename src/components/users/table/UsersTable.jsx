@@ -31,6 +31,7 @@ export default function UsersTable() {
             users={rows}
             getUsers={getUsers}
             id={params.row.id}
+            email={params.row.col2}
             userProjects={params.row.col3}
             userRoles={params.row.col4.filter((role) => role !== "USER")}
           />

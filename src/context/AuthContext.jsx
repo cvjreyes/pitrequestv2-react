@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import Loading from "../components/general/Loading";
-import { client } from "../helpers/config";
+import { URL, client } from "../helpers/config";
 
 const AuthContext = createContext(null);
 
@@ -34,7 +34,9 @@ export const AuthProvider = ({ children }) => {
       try {
         const access_token = Cookies.get("access_token"); // get token
         if (!access_token) return logout();
-        client.defaults.headers.common["Authorization"] = `Bearer ${access_token}`; // set token for all api calls
+        client.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${access_token}`; // set token for all api calls
         const res = await getUserInfo();
         if (res) return login({ ...res, token: access_token });
       } catch (err) {
@@ -58,6 +60,20 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     Cookies.remove("access_token");
   };
+
+  client.interceptors.response.use(
+    async (response) => {
+      return response;
+    },
+
+    async (error) => {
+      if (error.response.status === 403 || error.response.status === 401) {
+        logout();
+        window.location.assign(window.location);
+      }
+      return Promise.reject(error.response);
+    }
+  );
 
   if (isLoading) return <Loading />;
 

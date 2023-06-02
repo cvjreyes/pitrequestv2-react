@@ -20,6 +20,7 @@ import Restricted from "../../authentication/Restricted";
 
 export default function UserEditModal({
   users,
+  email,
   getUsers,
   id,
   userProjects,
@@ -28,11 +29,12 @@ export default function UserEditModal({
   const { notify } = useNotifications();
   const animatedComponents = makeAnimated();
 
-  const { user, updateUserInfo } = useAuth();
+  const { updateUserInfo } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formUser, setFormUser] = useState({
     userId: id,
+    email: email,
     projectIds: [],
     roleIds: [],
   });
