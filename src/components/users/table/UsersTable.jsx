@@ -3,53 +3,58 @@ import { useDemoData } from "@mui/x-data-grid-generator";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 import { client } from "../../../helpers/config";
+import { useAuth } from "../../../context/AuthContext";
+import { checkUserRoles } from "../../authentication/Restricted";
 
 import UserEditModal from "../edit/UserEditModal";
-import { useAuth } from "../../../context/AuthContext";
 import UserDeleteDialog from "../delete/UserDeleteDialog";
-import { checkUserRoles } from "../../authentication/Restricted";
 
 export default function UsersTable() {
   const { user } = useAuth();
 
   const [rows, setRows] = useState([]);
 
+  const hasRoles = checkUserRoles(user.roles, ["ADMINTOOL", "ADMINLEAD"]);
   // Columns and headers
-  const columns = [
+  let columns = [
     { field: "col1", headerName: "Name", width: 250 },
     { field: "col2", headerName: "Email", width: 400 },
     { field: "col3", headerName: "Projects", width: 370 },
     { field: "col4", headerName: "Roles", width: 300 },
-    checkUserRoles(user.roles, ["ADMINTOOL", "ADMINLEAD"]) && {
-      field: "col5",
-      headerName: "Actions",
-      width: 70,
-      disabled: true,
-      renderCell: (params) => (
-        <div className="edit_btn">
-          <UserEditModal
-            users={rows}
-            getUsers={getUsers}
-            id={params.row.id}
-            email={params.row.col2}
-            userProjects={params.row.col3}
-            userRoles={params.row.col4.filter((role) => role !== "USER")}
-          />
-        </div>
-      ),
-    },
-    {
-      field: "col6",
-      headerName: "Delete",
-      width: 70,
-      renderCell: (params) => (
-        <div className="edit_btn">
-          <UserDeleteDialog id={params.row.id} getUsers={getUsers} />
-        </div>
-      ),
-    },
-    ,
   ];
+
+  if (hasRoles) {
+    columns.push(
+      {
+        field: "col5",
+        headerName: "Actions",
+        width: 70,
+        disabled: true,
+        renderCell: (params) => (
+          <div className="edit_btn">
+            <UserEditModal
+              users={rows}
+              email={params.row.col2}
+              getUsers={getUsers}
+              id={params.row.id}
+              userProjects={params.row.col3}
+              userRoles={params.row.col4.filter((role) => role !== "USER")}
+            />
+          </div>
+        ),
+      },
+      {
+        field: "col6",
+        headerName: "Delete",
+        width: 70,
+        renderCell: (params) => (
+          <div className="edit_btn">
+            <UserDeleteDialog id={params.row.id} getUsers={getUsers} />
+          </div>
+        ),
+      }
+    );
+  }
 
   // Create the rows for the users table
   const getUsers = async () => {
