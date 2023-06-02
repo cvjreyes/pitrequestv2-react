@@ -19,6 +19,7 @@ import DropdownMenuSoftware from "./DropdownMenuSoftware";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
+import Restricted from "../../authentication/Restricted";
 
 export default function SoftwareTree() {
   const [checked, setChecked] = useState([]);
@@ -120,7 +121,9 @@ export default function SoftwareTree() {
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
-      <SoftwareModal getSoftwareTree={getSoftwareTree} />
+      <Restricted to={["ADMINLEAD"]}>
+        <SoftwareModal getSoftwareTree={getSoftwareTree} />
+      </Restricted>
       <CheckboxTree
         nodes={prepareData(softwareTree)}
         checked={checked}

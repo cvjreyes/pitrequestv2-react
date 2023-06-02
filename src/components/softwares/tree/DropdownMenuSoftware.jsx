@@ -15,6 +15,7 @@ import DeleteNodeTree from "../delete/DeleteNodeTree";
 import SoftwareEditModal from "../edit/SoftwareEditModal";
 import SubTaskEditModal from "../edit/SubTaskEditModal";
 import TaskEditModal from "../edit/TaskEditModal";
+import Restricted from "../../authentication/Restricted";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const { notify } = useNotifications();
@@ -54,11 +55,13 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   return (
     <div>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <button aria-label="Customise options">
-            <BsThreeDotsVertical className="icon" />
-          </button>
-        </DropdownMenu.Trigger>
+        <Restricted to={["ADMINLEAD"]}>
+          <DropdownMenu.Trigger asChild>
+            <button aria-label="Customise options">
+              <BsThreeDotsVertical className="icon" />
+            </button>
+          </DropdownMenu.Trigger>
+        </Restricted>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
             {/* ADD */}
@@ -145,12 +148,12 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       <DeleteNodeTree
         deleteNode={deleteSoftware}
         open={openDeleteSoftware}
-        setOpen={setOpenDeleteSoftware} 
+        setOpen={setOpenDeleteSoftware}
       />
       <DeleteNodeTree
         deleteNode={deleteTask}
         open={openDeleteTask}
-        setOpen={setOpenDeleteTask} 
+        setOpen={setOpenDeleteTask}
       />
       <DeleteNodeTree
         deleteNode={deleteSubtask}
