@@ -5,12 +5,9 @@ import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { ProfileNavbar } from "./ProfileNavbar";
 import { useAuth } from "../../context/AuthContext";
+import Restricted from "../authentication/Restricted";
 
 export default function Navbar() {
-  const { user } = useAuth();
-
-  const hasAdminToolRole = user.roles?.includes("ADMINTOOL");
-
   return (
     <>
       <div css={navbarStyle}>
@@ -22,7 +19,7 @@ export default function Navbar() {
             >
               Home
             </NavLink>
-            {hasAdminToolRole && (
+            <Restricted to={["ADMINTOOL", "ADMINLEAD"]}>
               <React.Fragment>
                 <div>
                   <NavLink
@@ -45,7 +42,7 @@ export default function Navbar() {
                   </NavLink>
                 </div>
               </React.Fragment>
-            )}
+            </Restricted>
             <NavLink
               to="/users"
               style={({ isActive }) => (isActive ? { color: "white" } : null)}

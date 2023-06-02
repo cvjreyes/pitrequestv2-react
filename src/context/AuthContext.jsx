@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const getUserInfo = async () => {
     setIsLoading(true);
     const res = await client.get("/auth/user");
+    console.log("Entra:", res);
     setIsLoading(false);
     return res.data.user;
   };
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const access_token = Cookies.get("access_token"); // get token
         if (!access_token) return logout();
-        client.defaults.headers.common["Authorization"] = access_token; // set token for all api calls
+        client.defaults.headers.common["Authorization"] = `Bearer ${access_token}`; // set token for all api calls
         const res = await getUserInfo();
         if (res) return login({ ...res, token: access_token });
       } catch (err) {
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     delete receivedUser.token;
     setUser(receivedUser);
     Cookies.set("access_token", token);
-    client.defaults.headers.common["Authorization"] = token; // set token for all api calls
+    client.defaults.headers.common["Authorization"] = `Bearer ${token}`; // set token for all api calls
   };
 
   const logout = () => {

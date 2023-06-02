@@ -9,15 +9,17 @@ import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useNotifications } from "reapop";
 
+import { useAuth } from "../../../context/AuthContext";
 import { client } from "../../../helpers/config";
 
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
 import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 import CharterSettingsModal from "../create/CharterSettingsModal";
+import AdminChangeModal from "../edit/AdminChangeModal";
 import CharterEditModal from "../edit/CharterEditModal";
 import ProjectEditModal from "../edit/ProjectEditModal";
-import AdminChangeModal from "../edit/AdminChangeModal";
+import Restricted from "../../authentication/Restricted";
 
 export default function DropdownMenuProject({
   id,
@@ -28,6 +30,7 @@ export default function DropdownMenuProject({
   node,
 }) {
   const { notify } = useNotifications();
+  const { user } = useAuth();
 
   // Create modal
   const [openCharter, setOpenCharter] = useState(false);
@@ -75,11 +78,13 @@ export default function DropdownMenuProject({
   return (
     <div>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <button aria-label="Customise options">
-            <BsThreeDotsVertical className="icon" />
-          </button>
-        </DropdownMenu.Trigger>
+        <Restricted to={["ADMINLEAD"]}>
+          <DropdownMenu.Trigger asChild>
+            <button aria-label="Customise options">
+              <BsThreeDotsVertical className="icon" />
+            </button>
+          </DropdownMenu.Trigger>
+        </Restricted>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
             {/* Create and add actions */}
@@ -105,7 +110,9 @@ export default function DropdownMenuProject({
               </DropdownMenu.Item>
             ) : node === "admin" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenEditAdmin(true)}>Change Admin</button>
+                <button onClick={() => setOpenEditAdmin(true)}>
+                  Change Admin
+                </button>
               </DropdownMenu.Item>
             ) : (
               node === "charter" && (

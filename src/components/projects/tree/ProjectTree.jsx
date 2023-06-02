@@ -20,6 +20,7 @@ import { useAuth } from "../../../context/AuthContext";
 import DropdownMenuProject from "./DropdownMenuProject";
 import ProjectModal from "../create/ProjectModal";
 import { Input } from "../../general";
+import Restricted from "../../authentication/Restricted";
 
 export default function ProjectTree() {
   const { user } = useAuth();
@@ -247,8 +248,9 @@ export default function ProjectTree() {
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
-
-      <ProjectModal getProjectTree={getProjectTree} />
+      <Restricted to={["ADMINLEAD"]}>
+        <ProjectModal getProjectTree={getProjectTree} />
+      </Restricted>
       <CheckboxTree
         nodes={prepareData(projectTree)}
         checked={checked}

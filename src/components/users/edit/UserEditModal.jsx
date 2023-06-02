@@ -16,6 +16,7 @@ import makeAnimated from "react-select/animated";
 
 import { client } from "../../../helpers/config";
 import { useAuth } from "../../../context/AuthContext";
+import Restricted from "../../authentication/Restricted";
 
 export default function UserEditModal({
   users,
@@ -27,7 +28,7 @@ export default function UserEditModal({
   const { notify } = useNotifications();
   const animatedComponents = makeAnimated();
 
-  const { updateUserInfo } = useAuth();
+  const { user, updateUserInfo } = useAuth();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formUser, setFormUser] = useState({
@@ -111,7 +112,7 @@ export default function UserEditModal({
       // Actualizar la lista de usuarios
       getUsers();
       updateUserInfo();
-      
+
       notify({
         title: "Success",
         message: "User data updated successfully",
@@ -154,20 +155,22 @@ export default function UserEditModal({
                 onChange={handleProjectChange}
               />
             </fieldset>
-            <fieldset className="Fieldset">
-              <label className="Label" htmlFor="roles">
-                Roles
-              </label>
-              <Select
-                className="SelectContainer"
-                closeMenuOnSelect={false}
-                components={animatedComponents}
-                defaultValue={selectedRoles}
-                isMulti
-                options={roleOptions}
-                onChange={handleRoleChange}
-              />
-            </fieldset>
+            <Restricted to={["ADMINLEAD"]}>
+              <fieldset className="Fieldset">
+                <label className="Label" htmlFor="roles">
+                  Roles
+                </label>
+                <Select
+                  className="SelectContainer"
+                  closeMenuOnSelect={false}
+                  components={animatedComponents}
+                  defaultValue={selectedRoles}
+                  isMulti
+                  options={roleOptions}
+                  onChange={handleRoleChange}
+                />
+              </fieldset>
+            </Restricted>
             <div
               style={{
                 display: "flex",
