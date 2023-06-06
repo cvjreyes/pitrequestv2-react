@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 
 import Loading from "../components/general/Loading";
-import { URL, client } from "../helpers/config";
+import { client } from "../helpers/config";
 
 const AuthContext = createContext(null);
 
@@ -67,11 +67,14 @@ export const AuthProvider = ({ children }) => {
     },
 
     async (error) => {
+      // console.log("error:", error);
       if (error.response.status === 403 || error.response.status === 401) {
-        logout();
-        window.location.assign(window.location);
+        if (user) {
+          logout();
+          window.location.assign(window.location);
+        }
       }
-      return Promise.reject(error.response);
+      return Promise.reject(error);
     }
   );
 

@@ -42,21 +42,26 @@ export default function SoftwareEditModal({
 
   const updateSubmitSoftware = async (event) => {
     event.preventDefault();
-    if (!formSoftware.name || !formSoftware.code) {
-      setNameIsEmpty(!formSoftware.name);
-      setCodeIsEmpty(!formSoftware.code);
-      return notify("Please, fill all fields", "error");
-    }
-    if (formSoftware.code.length > 10)
-      return notify("Code can't have more than 10 characters", "error");
+    try {
+      if (!formSoftware.name || !formSoftware.code) {
+        setNameIsEmpty(!formSoftware.name);
+        setCodeIsEmpty(!formSoftware.code);
+        return notify("Please, fill all fields", "error");
+      }
+      if (formSoftware.code.length > 10)
+        return notify("Code can't have more than 10 characters", "error");
 
-    await client.put(`/softwares/${id}`, formSoftware);
-    notify("Software updated successfully!", "success");
-    getSoftwareTree();
-    setNameIsEmpty(false);
-    setCodeIsEmpty(false);
-    setDisableCloseButton(true);
-    setOpen(false); // Cerrar el modal al crear el proyecto
+      await client.put(`/softwares/${id}`, formSoftware);
+      notify("Software updated successfully!", "success");
+      getSoftwareTree();
+      setNameIsEmpty(false);
+      setCodeIsEmpty(false);
+      setDisableCloseButton(true);
+      setOpen(false); // Cerrar el modal al crear el proyecto
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const handleChange = (event) => {

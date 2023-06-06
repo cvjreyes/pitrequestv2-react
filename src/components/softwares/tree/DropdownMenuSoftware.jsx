@@ -9,13 +9,13 @@ import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useNotifications } from "reapop";
 import { client } from "../../../helpers/config";
+import Restricted from "../../authentication/Restricted";
 import SoftwareSettingsModal from "../create/SoftwareSettingsModal";
 import TaskSettingsModal from "../create/TaskSettingsModal";
 import DeleteNodeTree from "../delete/DeleteNodeTree";
 import SoftwareEditModal from "../edit/SoftwareEditModal";
 import SubTaskEditModal from "../edit/SubTaskEditModal";
 import TaskEditModal from "../edit/TaskEditModal";
-import Restricted from "../../authentication/Restricted";
 
 export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const { notify } = useNotifications();
@@ -35,21 +35,36 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const [openDeleteSubtask, setOpenDeleteSubtask] = useState(false);
 
   const deleteSoftware = async () => {
-    await client.delete(`/softwares/${id}`);
-    notify("Software deleted successfully!", "success");
-    getSoftwareTree();
+    try {
+      await client.delete(`/softwares/${id}`);
+      notify("Software deleted successfully!", "success");
+      getSoftwareTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const deleteTask = async () => {
-    await client.delete(`/tasks/${id}`);
-    notify("Task deleted successfully!", "success");
-    getSoftwareTree();
+    try {
+      await client.delete(`/tasks/${id}`);
+      notify("Task deleted successfully!", "success");
+      getSoftwareTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const deleteSubtask = async () => {
-    await client.delete(`/subtasks/${id}`);
-    notify("Subtask deleted successfully!", "success");
-    getSoftwareTree();
+    try {
+      await client.delete(`/subtasks/${id}`);
+      notify("Subtask deleted successfully!", "success");
+      getSoftwareTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   return (
