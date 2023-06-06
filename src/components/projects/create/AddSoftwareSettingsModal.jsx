@@ -50,16 +50,21 @@ const AddSoftwareSettingsModal = forwardRef(
 
     const submitAddSoftware = async (event) => {
       event.preventDefault();
-      if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formAddSoftware.adminId || !formAddSoftware.softwareId) {
+          return notify("Please, fill all fields", "error");
+        }
+        await client.post("/projects/softwares", formAddSoftware);
+        notify("Software added successfully!", "success");
+        getProjectTree();
+        setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
+        setDisableCloseButton(true);
+        setOpen(false);
+        updateUnselectedSoftwares(); // Actualizar la lista de softwares no seleccionados
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        notify(errorMessage, "error");
       }
-      await client.post("/projects/softwares", formAddSoftware);
-      notify("Software added successfully!", "success");
-      getProjectTree();
-      setFormAddSoftware({ projectId: id, adminId: 0, softwareId: 0 });
-      setDisableCloseButton(true);
-      setOpen(false);
-      updateUnselectedSoftwares(); // Actualizar la lista de softwares no seleccionados
     };
 
     const handleChange = (event) => {

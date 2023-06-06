@@ -42,17 +42,22 @@ const AdminChangeModal = forwardRef(
 
     const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
-      if (!formChangeAdmin.newAdminId) {
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formChangeAdmin.newAdminId) {
+          return notify("Please, fill all fields", "error");
+        }
+        await client.put(
+          `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`,
+          formChangeAdmin
+        );
+        notify("Software added successfully!", "success");
+        getProjectTree();
+        setDisableCloseButton(true);
+        setOpen(false);
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        notify(errorMessage, "error");
       }
-      await client.put(
-        `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`,
-        formChangeAdmin
-      );
-      notify("Software added successfully!", "success");
-      getProjectTree();
-      setDisableCloseButton(true);
-      setOpen(false);
     };
 
     const handleChange = (event) => {

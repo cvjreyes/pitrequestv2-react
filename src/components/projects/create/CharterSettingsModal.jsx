@@ -1,15 +1,14 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, keyframes } from "@emotion/react";
-import * as Dialog from "@radix-ui/react-dialog";
-import { useState } from "react";
-import { RxCross2 } from "react-icons/rx";
-import { useNotifications } from "reapop";
-import { forwardRef } from "react";
 import "@radix-ui/colors/blackA.css";
 import "@radix-ui/colors/green.css";
 import "@radix-ui/colors/mauve.css";
 import "@radix-ui/colors/violet.css";
+import * as Dialog from "@radix-ui/react-dialog";
+import { forwardRef, useState } from "react";
+import { RxCross2 } from "react-icons/rx";
+import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 import { Input } from "../../general";
@@ -28,17 +27,22 @@ const CharterSettingsModal = forwardRef(
 
     const createSubmitCharter = async (event) => {
       event.preventDefault();
-      if (!formCharter.name) {
-        setNameIsEmpty(!formCharter.name);
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formCharter.name) {
+          setNameIsEmpty(!formCharter.name);
+          return notify("Please, fill all fields", "error");
+        }
+        await client.post("/charters/", formCharter);
+        notify("Task created successfully!", "success");
+        getProjectTree();
+        setFormCharter({ name: "", projectId: id });
+        setNameIsEmpty(false);
+        setDisableCloseButton(true);
+        setOpen(false); // Cerrar el modal al crear el proyecto
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        notify(errorMessage, "error");
       }
-      await client.post("/charters/", formCharter);
-      notify("Task created successfully!", "success");
-      getProjectTree();
-      setFormCharter({ name: "", projectId: id });
-      setNameIsEmpty(false);
-      setDisableCloseButton(true);
-      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {

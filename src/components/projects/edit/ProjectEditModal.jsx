@@ -48,27 +48,36 @@ export default function ProjectEditModal({
 
   const updateSubmitProject = async (event) => {
     event.preventDefault();
-    if (!formProject.name || !formProject.code || !formProject.estimatedHours) {
-      setNameIsEmpty(!formProject.name);
-      setCodeIsEmpty(!formProject.code);
-      setHoursIsEmpty(!formProject.estimatedHours);
-      return notify("Please, fill all fields", "error");
-    }
-    if (formProject.code.length > 10)
-      return notify("Code can't have more than 10 characters", "error");
+    try {
+      if (
+        !formProject.name ||
+        !formProject.code ||
+        !formProject.estimatedHours
+      ) {
+        setNameIsEmpty(!formProject.name);
+        setCodeIsEmpty(!formProject.code);
+        setHoursIsEmpty(!formProject.estimatedHours);
+        return notify("Please, fill all fields", "error");
+      }
+      if (formProject.code.length > 10)
+        return notify("Code can't have more than 10 characters", "error");
 
-    if (!Number(formProject.estimatedHours)) {
-      return notify("The estimated hours only accept numbers", "error");
-    }
+      if (!Number(formProject.estimatedHours)) {
+        return notify("The estimated hours only accept numbers", "error");
+      }
 
-    await client.put(`/projects/${id}`, formProject);
-    notify("Project updated successfully!", "success");
-    getProjectTree();
-    setNameIsEmpty(false);
-    setCodeIsEmpty(false);
-    setHoursIsEmpty(false);
-    setDisableCloseButton(true);
-    setOpen(false);
+      await client.put(`/projects/${id}`, formProject);
+      notify("Project updated successfully!", "success");
+      getProjectTree();
+      setNameIsEmpty(false);
+      setCodeIsEmpty(false);
+      setHoursIsEmpty(false);
+      setDisableCloseButton(true);
+      setOpen(false);
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const handleChange = (event) => {
