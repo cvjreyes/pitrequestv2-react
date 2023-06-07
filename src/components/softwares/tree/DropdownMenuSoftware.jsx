@@ -41,6 +41,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       getSoftwareTree();
     } catch (error) {
       const errorMessage = error.response.data.error;
+      getSoftwareTree();
       notify(errorMessage, "error");
     }
   };
@@ -52,6 +53,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       getSoftwareTree();
     } catch (error) {
       const errorMessage = error.response.data.error;
+      getSoftwareTree();
       notify(errorMessage, "error");
     }
   };
@@ -63,6 +65,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       getSoftwareTree();
     } catch (error) {
       const errorMessage = error.response.data.error;
+      getSoftwareTree();
       notify(errorMessage, "error");
     }
   };

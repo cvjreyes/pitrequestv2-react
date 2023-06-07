@@ -60,6 +60,7 @@ export default function SoftwareEditModal({
       setOpen(false); // Cerrar el modal al crear el proyecto
     } catch (error) {
       const errorMessage = error.response.data.error;
+      getSoftwareTree();
       notify(errorMessage, "error");
     }
   };

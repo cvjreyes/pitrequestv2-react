@@ -4,7 +4,6 @@ import { jsx } from "@emotion/react";
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { ProfileNavbar } from "./ProfileNavbar";
-import { useAuth } from "../../context/AuthContext";
 import Restricted from "../authentication/Restricted";
 
 export default function Navbar() {
