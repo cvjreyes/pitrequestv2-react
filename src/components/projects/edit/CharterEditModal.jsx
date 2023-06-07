@@ -52,6 +52,7 @@ const CharterEditModal = forwardRef(
       } catch (error) {
         const errorMessage = error.response.data.error;
         notify(errorMessage, "error");
+        getProjectTree();
       }
     };
 
