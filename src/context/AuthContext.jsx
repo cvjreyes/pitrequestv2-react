@@ -61,13 +61,14 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("access_token");
   };
 
+  // Esto es para que haga un logout cuando haga una accion no autorizada
   client.interceptors.response.use(
     async (response) => {
       return response;
     },
 
     async (error) => {
-      // console.log("error:", error);
+      console.log("error:", error);
       if (error.response.status === 403 || error.response.status === 401) {
         if (user) {
           logout();
