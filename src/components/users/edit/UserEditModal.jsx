@@ -14,8 +14,8 @@ import { useNotifications } from "reapop";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 
-import { useAuth } from "../../../context/AuthContext";
 import { client } from "../../../helpers/config";
+import { useAuth } from "../../../context/AuthContext";
 import Restricted from "../../authentication/Restricted";
 
 export default function UserEditModal({
@@ -98,35 +98,9 @@ export default function UserEditModal({
 
   const handleRoleChange = (selectedOptions) => {
     const selectedRoleIds = selectedOptions.map((option) => option.value);
-    const mappedRoleIds = [...selectedRoleIds];
-
-    const getAdditionalRoleLabels = (roleLabel) => {
-      switch (roleLabel) {
-        case "ADMINLEAD":
-          return ["ADMINTOOL", "USERLEAD"];
-        case "ADMINTOOL":
-          return ["USERLEAD"];
-        default:
-          return [];
-      }
-    };
-
-    selectedOptions.forEach((option) => {
-      const additionalRoleLabels = getAdditionalRoleLabels(option.label);
-      console.log(additionalRoleLabels);
-
-      const additionalRoleIds = roleOptions
-        .filter((option) => additionalRoleLabels.includes(option.label))
-        .map((option) => option.value);
-      console.log(additionalRoleIds);
-      mappedRoleIds.push(...additionalRoleIds);
-    });
-
-    setSelectedRoles(selectedOptions);
-
     setFormUser((prevFormUser) => ({
       ...prevFormUser,
-      roleIds: mappedRoleIds,
+      roleIds: selectedRoleIds,
     }));
   };
 
