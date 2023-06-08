@@ -26,23 +26,31 @@ export default function ProjectEditModal({
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
   const [hoursIsEmpty, setHoursIsEmpty] = useState(false);
+
+  const [modifiedFields, setModifiedFields] = useState({
+    name: false,
+    code: false,
+    estimatedHours: false,
+  });
+
   const [formProject, setFormProject] = useState({
     name: "",
     code: "",
     estimatedHours: 500,
   });
 
+  const getOneProject = async () => {
+    const project = await client.get(`/projects/${id}`);
+    if (project.data) {
+      setFormProject({
+        name: project.data.name,
+        code: project.data.code,
+        estimatedHours: project.data.estimatedHours,
+      });
+    }
+  };
+
   useEffect(() => {
-    const getOneProject = async () => {
-      const project = await client.get(`/projects/${id}`);
-      if (project.data) {
-        setFormProject({
-          name: project.data.name,
-          code: project.data.code,
-          estimatedHours: project.data.estimatedHours,
-        });
-      }
-    };
     getOneProject();
   }, []);
 
@@ -66,13 +74,21 @@ export default function ProjectEditModal({
         return notify("The estimated hours only accept numbers", "error");
       }
 
-      await client.put(`/projects/${id}`, formProject);
+      const modifiedFieldsToSend = Object.entries(modifiedFields)
+        .filter(([_, modified]) => modified)
+        .reduce((obj, [fieldName, _]) => {
+          obj[fieldName] = formProject[fieldName];
+          return obj;
+        }, {});
+
+      await client.put(`/projects/${id}`, modifiedFieldsToSend);
       notify("Project updated successfully!", "success");
       getProjectTree();
       setNameIsEmpty(false);
       setCodeIsEmpty(false);
       setHoursIsEmpty(false);
       setDisableCloseButton(true);
+      getOneProject();
       setOpen(false);
     } catch (error) {
       const errorMessage = error.response.data.error;
@@ -84,6 +100,7 @@ export default function ProjectEditModal({
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormProject((prev) => ({ ...prev, [name]: value }));
+    setModifiedFields((prev) => ({ ...prev, [name]: true }));
     if (name === "name") {
       setNameIsEmpty(!value);
     } else if (name === "code") {
