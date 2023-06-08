@@ -38,12 +38,20 @@ export const AuthProvider = ({ children }) => {
           "Authorization"
         ] = `Bearer ${access_token}`; // set token for all api calls
         const res = await getUserInfo();
-        if (res) return login({ ...res, token: access_token });
+        if (res) {
+          if (res.token === access_token) {
+            // check if tokens match
+            return login({ ...res, token: access_token });
+          } else {
+            return logout();
+          }
+        }
       } catch (err) {
         console.error(err);
         return err;
       }
     };
+
     checkAuthCookie();
   }, []);
 
