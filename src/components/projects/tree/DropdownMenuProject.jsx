@@ -96,13 +96,11 @@ export default function DropdownMenuProject({
   return (
     <div>
       <DropdownMenu.Root>
-        <Restricted to={["ADMINLEAD"]}>
-          <DropdownMenu.Trigger asChild>
-            <button aria-label="Customise options">
-              <BsThreeDotsVertical className="icon" />
-            </button>
-          </DropdownMenu.Trigger>
-        </Restricted>
+        <DropdownMenu.Trigger asChild>
+          <button aria-label="Customise options">
+            <BsThreeDotsVertical className="icon" />
+          </button>
+        </DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
             {/* Create and add actions */}
