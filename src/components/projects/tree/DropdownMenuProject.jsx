@@ -11,7 +11,6 @@ import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
-import Restricted from "../../authentication/Restricted";
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
 import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
@@ -70,9 +69,8 @@ export default function DropdownMenuProject({
 
   const removeAdmin = async () => {
     try {
-      await client.put(
-        `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`,
-        null
+      await client.delete(
+        `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`
       );
       notify("Admin removed successfully!", "success");
       getProjectTree();
