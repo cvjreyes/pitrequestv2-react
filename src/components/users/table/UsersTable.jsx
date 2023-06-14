@@ -17,18 +17,18 @@ export default function UsersTable() {
   const hasRoles = checkUserRoles(user.roles, ["ADMINTOOL", "ADMINLEAD"]);
   // Columns and headers
   let columns = [
-    { field: "col1", headerName: "Name", width: 250 },
-    { field: "col2", headerName: "Email", width: 400 },
-    { field: "col3", headerName: "Projects", width: 370 },
-    { field: "col4", headerName: "Roles", width: 300 },
+    { field: "col1", headerName: "NAME", width: 250 },
+    { field: "col2", headerName: "EMAIL", width: 400 },
+    { field: "col3", headerName: "PROJECTS", width: 370 },
+    { field: "col4", headerName: "ROLES", width: 300 },
   ];
 
   if (hasRoles) {
     columns.push(
       {
         field: "col5",
-        headerName: "Actions",
-        width: 70,
+        headerName: "ACTIONS",
+        width: 80,
         disabled: true,
         renderCell: (params) => (
           <div className="edit_btn">
@@ -45,7 +45,7 @@ export default function UsersTable() {
       },
       {
         field: "col6",
-        headerName: "Delete",
+        headerName: "DELETE",
         width: 70,
         renderCell: (params) => (
           <div className="edit_btn">

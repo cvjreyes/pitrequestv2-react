@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     },
 
     async (error) => {
-      console.log("error:", error);
+      // console.log("error:", error);
       if (error.response.status === 403 || error.response.status === 401) {
         if (user) {
           logout();

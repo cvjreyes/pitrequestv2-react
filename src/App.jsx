@@ -1,10 +1,10 @@
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
   Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
 } from "react-router-dom";
 import NotificationsSystem, {
   atalhoTheme,
@@ -12,20 +12,21 @@ import NotificationsSystem, {
   useNotifications,
 } from "reapop";
 
-import { AuthProvider } from "./context/AuthContext";
 import ErrorFallback from "./components/general/ErrorFallback";
+import { AuthProvider } from "./context/AuthContext";
 
 import PrivateRoute from "./router/PrivateRoute";
 import PublicRoute from "./router/PublicRoute";
 
-import Login from "./components/authentication/Login";
-import Home from "./components/home/Home";
 import CheckLogin from "./components/authentication/CheckLogin";
-import Signin from "./components/authentication/Signin";
-import Softwares from "./components/softwares/Softwares";
-import Projects from "./components/projects/Projects";
-import Users from "./components/users/Users";
+import Login from "./components/authentication/Login";
 import { RestrictedRoutes } from "./components/authentication/Restricted";
+import Signin from "./components/authentication/Signin";
+import Home from "./components/home/Home";
+import Projects from "./components/projects/Projects";
+import RequestDashboard from "./components/requestdashboard/RequestDashboard";
+import Softwares from "./components/softwares/Softwares";
+import Users from "./components/users/Users";
 
 export default function App() {
   const { notifications, dismissNotification } = useNotifications();
@@ -54,11 +55,14 @@ export default function App() {
           <Routes>
             <Route element={<PrivateRoute />}>
               <Route path="/" element={<Home />} />
-              <Route element={<RestrictedRoutes to={["ADMINTOOL", "ADMINLEAD"]}/>}>
+              <Route
+                element={<RestrictedRoutes to={["ADMINTOOL", "ADMINLEAD"]} />}
+              >
                 <Route path="/softwares" element={<Softwares />} />
                 <Route path="/projects" element={<Projects />} />
               </Route>
               <Route path="/users" element={<Users />} />
+              <Route path="/requestdashboard" element={<RequestDashboard />} />
             </Route>
             <Route element={<PublicRoute />}>
               <Route path="/log_in/:user_id/:token" element={<CheckLogin />} />
