@@ -1,51 +1,86 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
+import { useEffect, useState } from "react";
 import { useDemoData } from "@mui/x-data-grid-generator";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { AiOutlineEdit } from "react-icons/ai";
+
+import { client } from "../../../helpers/config";
+import { useAuth } from "../../../context/AuthContext";
+import { checkUserRoles } from "../../authentication/Restricted";
+
+import UserEditModal from "../edit/UserEditModal";
+import UserDeleteDialog from "../delete/UserDeleteDialog";
 
 export default function UsersTable() {
-  const rows = [
-    {
-      id: 1,
-      col1: "Sean Saez Fuller",
-      col2: "sean.saez-fuller@technipenergies.com",
-    },
-    {
-      id: 2,
-      col1: "Ignacio Gonzalez",
-      col2: "ignacio.gonzalez@external.technipenergies.com",
-    },
-    {
-      id: 3,
-      col1: "Jorge Reyes",
-      col2: "jorge.reyes-sztayzel@technipenergies.com",
-    },
+  const { user } = useAuth();
+
+  const [rows, setRows] = useState([]);
+
+  const hasRoles = checkUserRoles(user.roles, ["ADMINTOOL", "ADMINLEAD"]);
+  // Columns and headers
+  let columns = [
+    { field: "col1", headerName: "Name", width: 250 },
+    { field: "col2", headerName: "Email", width: 400 },
+    { field: "col3", headerName: "Projects", width: 370 },
+    { field: "col4", headerName: "Roles", width: 300 },
   ];
 
-  const columns = [
-    { field: "col1", headerName: "Name", width: 400 },
-    { field: "col2", headerName: "Email", width: 400 },
-    { field: "col3", headerName: "Projects", width: 200 },
-    { field: "col4", headerName: "Roles", width: 200 },
-    {
-      field: "col5",
-      headerName: "Actions",
-      width: 70,
-      renderCell: (params) => (
-        <div className="edit_btn" onClick={() => console.log(params.row.id)}>
-          <AiOutlineEdit /> {/* Componente de react-icons */}
-        </div>
-      ),
-    },
-  ];
+  if (hasRoles) {
+    columns.push(
+      {
+        field: "col5",
+        headerName: "Actions",
+        width: 70,
+        disabled: true,
+        renderCell: (params) => (
+          <div className="edit_btn">
+            <UserEditModal
+              users={rows}
+              email={params.row.col2}
+              getUsers={getUsers}
+              id={params.row.id}
+              userProjects={params.row.col3}
+              userRoles={params.row.col4.filter((role) => role !== "USER")}
+            />
+          </div>
+        ),
+      },
+      {
+        field: "col6",
+        headerName: "Delete",
+        width: 70,
+        renderCell: (params) => (
+          <div className="edit_btn">
+            <UserDeleteDialog id={params.row.id} getUsers={getUsers} />
+          </div>
+        ),
+      }
+    );
+  }
+
+  // Create the rows for the users table
+  const getUsers = async () => {
+    const response = await client.get("/users/projects/roles");
+    const users = response.data;
+
+    const createRows = users.map((user) => ({
+      id: user.id,
+      col1: user.name,
+      col2: user.email,
+      col3: user.ProjectUsers.map((projectUser) => projectUser.Project.code),
+      col4: user.UsersRole.map((userRole) => userRole.role.name),
+    }));
+
+    setRows(createRows);
+  };
 
   const { data, loading } = useDemoData({
     dataSet: "Commodity",
     rowLength: 4,
     maxColumns: 6,
   });
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <div className="container-table">

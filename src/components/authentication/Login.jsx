@@ -42,7 +42,7 @@ export default function Login() {
           <span className="box_signin">
             First time in PitRequest?{" "}
             <Link to="/signin" className="signin_btn">
-              Sign In
+              Register
             </Link>
           </span>
         </div>

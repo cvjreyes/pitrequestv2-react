@@ -45,7 +45,7 @@ export default function Signin() {
             type="email"
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Button className="button">Signin</Button>
+          <Button className="button">REGISTER</Button>
         </div>
       </form>
     </div>

@@ -21,7 +21,6 @@ export default function CheckLogin() {
         notify(res.data.email, "success");
         login(res.data);
       } catch (err) {
-        console.log(err);
         notify(err.response.data, "info");
         navigate("/login");
       }

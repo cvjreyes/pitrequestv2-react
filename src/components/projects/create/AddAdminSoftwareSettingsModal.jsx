@@ -42,15 +42,21 @@ const AddAdminSoftwareSettingsModal = forwardRef(
 
     const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
-      if (!formAddAdmin.adminId) {
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formAddAdmin.adminId) {
+          return notify("Please, fill all fields", "error");
+        }
+        await client.post("/projects/softwares", formAddAdmin);
+        notify("Software added successfully!", "success");
+        getProjectTree();
+        setformAddAdmin({ projectId: id, adminId: 0, softwareId: softwareId });
+        setDisableCloseButton(true);
+        setOpen(false);
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        notify(errorMessage, "error");
+        getProjectTree();
       }
-      await client.post("/projects/softwares", formAddAdmin);
-      notify("Software added successfully!", "success");
-      getProjectTree();
-      setformAddAdmin({ projectId: id, adminId: 0, softwareId: softwareId });
-      setDisableCloseButton(true);
-      setOpen(false);
     };
 
     const handleChange = (event) => {

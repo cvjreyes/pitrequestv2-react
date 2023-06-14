@@ -27,17 +27,23 @@ const TaskSettingsModal = forwardRef(
 
     const createSubmitSubTask = async (event) => {
       event.preventDefault();
-      if (!formSubtask.name) {
-        setNameIsEmpty(!formSubtask.name);
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formSubtask.name) {
+          setNameIsEmpty(!formSubtask.name);
+          return notify("Please, fill all fields", "error");
+        }
+        await client.post("/subtasks", formSubtask);
+        notify("Task created successfully!", "success");
+        getSoftwareTree();
+        setFormSubtask({ name: "", taskId: id });
+        setNameIsEmpty(false);
+        setDisableCloseButton(true);
+        setOpen(false); // Cerrar el modal al crear el proyecto
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        getSoftwareTree();
+        notify(errorMessage, "error");
       }
-      await client.post("/subtasks", formSubtask);
-      notify("Task created successfully!", "success");
-      getSoftwareTree();
-      setFormSubtask({ name: "", taskId: id });
-      setNameIsEmpty(false);
-      setDisableCloseButton(true);
-      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {

@@ -42,17 +42,23 @@ const AdminChangeModal = forwardRef(
 
     const submitAddSoftwareAdmin = async (event) => {
       event.preventDefault();
-      if (!formChangeAdmin.newAdminId) {
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formChangeAdmin.newAdminId) {
+          return notify("Please, fill all fields", "error");
+        }
+        await client.put(
+          `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`,
+          formChangeAdmin
+        );
+        notify("Software added successfully!", "success");
+        getProjectTree();
+        setDisableCloseButton(true);
+        setOpen(false);
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        notify(errorMessage, "error");
+        getProjectTree();
       }
-      await client.put(
-        `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`,
-        formChangeAdmin
-      );
-      notify("Software added successfully!", "success");
-      getProjectTree();
-      setDisableCloseButton(true);
-      setOpen(false);
     };
 
     const handleChange = (event) => {
@@ -69,7 +75,7 @@ const AdminChangeModal = forwardRef(
           <Dialog.Portal>
             <Dialog.Overlay css={overlayStyle} />
             <Dialog.Content css={contentStyle}>
-              <Dialog.Title className="DialogTitle">Add Admin</Dialog.Title>
+              <Dialog.Title className="DialogTitle">Change Admin</Dialog.Title>
               <form onSubmit={submitAddSoftwareAdmin}>
                 <fieldset className="Fieldset">
                   <label className="Label" htmlFor="admin">

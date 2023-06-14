@@ -36,18 +36,24 @@ const CharterEditModal = forwardRef(
       getOneCharter();
     }, []);
 
-    const createSubmitCharter = async (event) => {
+    const editSubmitCharter = async (event) => {
       event.preventDefault();
-      if (!formCharter.name) {
-        setNameIsEmpty(!formCharter.name);
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formCharter.name) {
+          setNameIsEmpty(!formCharter.name);
+          return notify("Please, fill all fields", "error");
+        }
+        await client.put(`/charters/${id}`, formCharter);
+        notify("Task created successfully!", "success");
+        getProjectTree();
+        setNameIsEmpty(false);
+        setDisableCloseButton(true);
+        setOpen(false); // Cerrar el modal al crear el proyecto
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        notify(errorMessage, "error");
+        getProjectTree();
       }
-      await client.put(`/charters/${id}`, formCharter);
-      notify("Task created successfully!", "success");
-      getProjectTree();
-      setNameIsEmpty(false);
-      setDisableCloseButton(true);
-      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {
@@ -68,9 +74,9 @@ const CharterEditModal = forwardRef(
             <Dialog.Overlay css={overlayStyle} />
             <Dialog.Content css={contentStyle}>
               <Dialog.Title className="DialogTitle">
-                Create Charter
+                Edit Charter
               </Dialog.Title>
-              <form onSubmit={createSubmitCharter}>
+              <form onSubmit={editSubmitCharter}>
                 <fieldset className="Fieldset">
                   <label className="Label" htmlFor="name">
                     Charter
@@ -94,12 +100,12 @@ const CharterEditModal = forwardRef(
                 >
                   <Dialog.Close asChild>
                     <button
-                      onClick={createSubmitCharter}
+                      onClick={editSubmitCharter}
                       className={disableCloseButton ? "Button" : "Button green"}
                       aria-label="Close"
                       disabled={disableCloseButton}
                     >
-                      Create Charter
+                      Edit Charter
                     </button>
                   </Dialog.Close>
                 </div>

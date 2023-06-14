@@ -9,6 +9,7 @@ import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useNotifications } from "reapop";
 import { client } from "../../../helpers/config";
+import Restricted from "../../authentication/Restricted";
 import SoftwareSettingsModal from "../create/SoftwareSettingsModal";
 import TaskSettingsModal from "../create/TaskSettingsModal";
 import DeleteNodeTree from "../delete/DeleteNodeTree";
@@ -34,31 +35,51 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
   const [openDeleteSubtask, setOpenDeleteSubtask] = useState(false);
 
   const deleteSoftware = async () => {
-    await client.delete(`/softwares/${id}`);
-    notify("Software deleted successfully!", "success");
-    getSoftwareTree();
+    try {
+      await client.delete(`/softwares/${id}`);
+      notify("Software deleted successfully!", "success");
+      getSoftwareTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      getSoftwareTree();
+      notify(errorMessage, "error");
+    }
   };
 
   const deleteTask = async () => {
-    await client.delete(`/tasks/${id}`);
-    notify("Task deleted successfully!", "success");
-    getSoftwareTree();
+    try {
+      await client.delete(`/tasks/${id}`);
+      notify("Task deleted successfully!", "success");
+      getSoftwareTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      getSoftwareTree();
+      notify(errorMessage, "error");
+    }
   };
 
   const deleteSubtask = async () => {
-    await client.delete(`/subtasks/${id}`);
-    notify("Subtask deleted successfully!", "success");
-    getSoftwareTree();
+    try {
+      await client.delete(`/subtasks/${id}`);
+      notify("Subtask deleted successfully!", "success");
+      getSoftwareTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      getSoftwareTree();
+      notify(errorMessage, "error");
+    }
   };
 
   return (
     <div>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <button aria-label="Customise options">
-            <BsThreeDotsVertical className="icon" />
-          </button>
-        </DropdownMenu.Trigger>
+        <Restricted to={["ADMINLEAD"]}>
+          <DropdownMenu.Trigger asChild>
+            <button aria-label="Customise options">
+              <BsThreeDotsVertical className="icon" />
+            </button>
+          </DropdownMenu.Trigger>
+        </Restricted>
         <DropdownMenu.Portal>
           <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
             {/* ADD */}
@@ -145,12 +166,12 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       <DeleteNodeTree
         deleteNode={deleteSoftware}
         open={openDeleteSoftware}
-        setOpen={setOpenDeleteSoftware} 
+        setOpen={setOpenDeleteSoftware}
       />
       <DeleteNodeTree
         deleteNode={deleteTask}
         open={openDeleteTask}
-        setOpen={setOpenDeleteTask} 
+        setOpen={setOpenDeleteTask}
       />
       <DeleteNodeTree
         deleteNode={deleteSubtask}

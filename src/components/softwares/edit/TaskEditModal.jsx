@@ -36,16 +36,22 @@ const TaskEditModal = forwardRef(
 
     const updateSubmitTask = async (event) => {
       event.preventDefault();
-      if (!formTask.name) {
-        setNameIsEmpty(!formTask.name);
-        return notify("Please, fill all fields", "error");
+      try {
+        if (!formTask.name) {
+          setNameIsEmpty(!formTask.name);
+          return notify("Please, fill all fields", "error");
+        }
+        await client.put(`/tasks/${id}`, formTask);
+        notify("Task updated successfully!", "success");
+        getSoftwareTree();
+        setNameIsEmpty(false);
+        setDisableCloseButton(true);
+        setOpen(false); // Cerrar el modal al crear el proyecto
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        getSoftwareTree();
+        notify(errorMessage, "error");
       }
-      await client.put(`/tasks/${id}`, formTask);
-      notify("Task updated successfully!", "success");
-      getSoftwareTree();
-      setNameIsEmpty(false);
-      setDisableCloseButton(true);
-      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {

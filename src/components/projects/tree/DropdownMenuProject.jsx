@@ -15,9 +15,9 @@ import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
 import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
 import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
 import CharterSettingsModal from "../create/CharterSettingsModal";
+import AdminChangeModal from "../edit/AdminChangeModal";
 import CharterEditModal from "../edit/CharterEditModal";
 import ProjectEditModal from "../edit/ProjectEditModal";
-import AdminChangeModal from "../edit/AdminChangeModal";
 
 export default function DropdownMenuProject({
   id,
@@ -46,30 +46,49 @@ export default function DropdownMenuProject({
   const [openDeleteSoftware, setOpenDeleteSoftware] = useState(false);
 
   const deleteProject = async () => {
-    await client.delete(`/projects/${id}`);
-    notify("Project deleted successfully!", "success");
-    getProjectTree();
+    try {
+      await client.delete(`/projects/${id}`);
+      notify("Project deleted successfully!", "success");
+      getProjectTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const deleteCharter = async () => {
-    await client.delete(`/charters/${id}`);
-    notify("Charter deleted successfully!", "success");
-    getProjectTree();
+    try {
+      await client.delete(`/charters/${id}`);
+      notify("Charter deleted successfully!", "success");
+      getProjectTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const removeAdmin = async () => {
-    const id = await client.get(
-      `/projects/${projectId}/admins/${adminId}/softwares/${softwareId}`
-    );
-    await client.delete(`/projects/admin/softwares/${id.data[0].id}`);
-    notify("Admin removed successfully!", "success");
-    getProjectTree();
+    try {
+      await client.delete(
+        `/projects/${projectId}/softwares/${softwareId}/admins/${adminId}`
+      );
+      notify("Admin removed successfully!", "success");
+      getProjectTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   const removeSoftware = async () => {
-    await client.delete(`/projects/${projectId}/softwares/${softwareId}`);
-    notify("Software removed successfully!", "success");
-    getProjectTree();
+    try {
+      await client.delete(`/projects/${projectId}/softwares/${softwareId}`);
+      notify("Software removed successfully!", "success");
+      getProjectTree();
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+    }
   };
 
   return (
@@ -105,7 +124,9 @@ export default function DropdownMenuProject({
               </DropdownMenu.Item>
             ) : node === "admin" ? (
               <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenEditAdmin(true)}>Change Admin</button>
+                <button onClick={() => setOpenEditAdmin(true)}>
+                  Change Admin
+                </button>
               </DropdownMenu.Item>
             ) : (
               node === "charter" && (

@@ -67,6 +67,7 @@ function TextField({ label, id, error, textarea, ...props }) {
           <textarea
             name={id}
             id={id}
+            autoComplete="on"
             aria-errormessage={errorId}
             placeholder=" "
             {...props}

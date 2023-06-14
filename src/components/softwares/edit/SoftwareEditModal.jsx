@@ -25,38 +25,62 @@ export default function SoftwareEditModal({
 
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
+
+  const [nameModified, setNameModified] = useState(false);
+  const [codeModified, setCodeModified] = useState(false);
+
   const [formSoftware, setFormSoftware] = useState({
     name: "",
     code: "",
   });
 
+  const getOneSoftware = async () => {
+    const software = await client.get(`/softwares/${id}`);
+    if (software.data) {
+      setFormSoftware({ name: software.data.name, code: software.data.code });
+    }
+  };
+
   useEffect(() => {
-    const getOneSoftware = async () => {
-      const software = await client.get(`/softwares/${id}`);
-      if (software.data) {
-        setFormSoftware({ name: software.data.name, code: software.data.code });
-      }
-    };
     getOneSoftware();
   }, []);
 
   const updateSubmitSoftware = async (event) => {
     event.preventDefault();
-    if (!formSoftware.name || !formSoftware.code) {
-      setNameIsEmpty(!formSoftware.name);
-      setCodeIsEmpty(!formSoftware.code);
-      return notify("Please, fill all fields", "error");
-    }
-    if (formSoftware.code.length > 10)
-      return notify("Code can't have more than 10 characters", "error");
+    try {
+      if (!nameModified && !codeModified) {
+        // No hay campos modificados
+        return;
+      }
+      const updatedFields = {};
+      if (nameModified) {
+        updatedFields.name = formSoftware.name;
+      }
+      if (codeModified) {
+        updatedFields.code = formSoftware.code;
+      }
 
-    await client.put(`/softwares/${id}`, formSoftware);
-    notify("Software updated successfully!", "success");
-    getSoftwareTree();
-    setNameIsEmpty(false);
-    setCodeIsEmpty(false);
-    setDisableCloseButton(true);
-    setOpen(false); // Cerrar el modal al crear el proyecto
+      if (!formSoftware.name || !formSoftware.code) {
+        setNameIsEmpty(!formSoftware.name);
+        setCodeIsEmpty(!formSoftware.code);
+        return notify("Please, fill all fields", "error");
+      }
+      if (formSoftware.code.length > 10)
+        return notify("Code can't have more than 10 characters", "error");
+
+      await client.put(`/softwares/${id}`, updatedFields);
+      notify("Software updated successfully!", "success");
+      getSoftwareTree();
+      setNameIsEmpty(false);
+      setCodeIsEmpty(false);
+      setDisableCloseButton(true);
+      getOneSoftware();
+      setOpen(false); // Cerrar el modal al crear el proyecto
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      getSoftwareTree();
+      notify(errorMessage, "error");
+    }
   };
 
   const handleChange = (event) => {
@@ -64,8 +88,10 @@ export default function SoftwareEditModal({
     setFormSoftware((prev) => ({ ...prev, [name]: value }));
     if (name === "name") {
       setNameIsEmpty(!value);
+      setNameModified(true);
     } else if (name === "code") {
       setCodeIsEmpty(!value);
+      setCodeModified(true);
     }
     // Verificar si todos los campos están completos
     const allFieldsFilled = !!value; // Verificar si el campo no está vacío

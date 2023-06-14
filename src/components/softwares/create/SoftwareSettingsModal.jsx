@@ -27,17 +27,24 @@ const SoftwareSettingsModal = forwardRef(
 
     const createSubmitTask = async (event) => {
       event.preventDefault();
-      if (!formTask.name) {
-        setNameIsEmpty(!formTask.name);
-        return notify("Please, fill all fields", "error");
+
+      try {
+        if (!formTask.name) {
+          setNameIsEmpty(!formTask.name);
+          return notify("Please, fill all fields", "error");
+        }
+        await client.post("/tasks/", formTask);
+        notify("Task created successfully!", "success");
+        getSoftwareTree();
+        setFormTask({ name: "", softwareId: id });
+        setNameIsEmpty(false);
+        setDisableCloseButton(true);
+        setOpen(false); // Cerrar el modal al crear el proyecto
+      } catch (error) {
+        const errorMessage = error.response.data.error;
+        getSoftwareTree();
+        notify(errorMessage, "error");
       }
-      await client.post("/tasks/", formTask);
-      notify("Task created successfully!", "success");
-      getSoftwareTree();
-      setFormTask({ name: "", softwareId: id });
-      setNameIsEmpty(false);
-      setDisableCloseButton(true);
-      setOpen(false); // Cerrar el modal al crear el proyecto
     };
 
     const handleChange = (event) => {

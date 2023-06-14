@@ -20,6 +20,7 @@ import { useAuth } from "../../../context/AuthContext";
 import DropdownMenuProject from "./DropdownMenuProject";
 import ProjectModal from "../create/ProjectModal";
 import { Input } from "../../general";
+import Restricted from "../../authentication/Restricted";
 
 export default function ProjectTree() {
   const { user } = useAuth();
@@ -58,11 +59,13 @@ export default function ProjectTree() {
             }}
           >
             <b>{`${project.name} (${project.code}) => ${project.estimatedHours}h`}</b>
-            <DropdownMenuProject
-              id={project.id}
-              getProjectTree={getProjectTree}
-              node={"project"}
-            />
+            <Restricted to={["ADMINLEAD"]}>
+              <DropdownMenuProject
+                id={project.id}
+                getProjectTree={getProjectTree}
+                node={"project"}
+              />
+            </Restricted>
           </div>
         ),
         title: `${project.userProjectId}`,
@@ -82,11 +85,13 @@ export default function ProjectTree() {
                 <b>
                   <i>Charter</i>
                 </b>
-                <DropdownMenuProject
-                  id={project.id}
-                  getProjectTree={getProjectTree}
-                  node={"charterfolder"}
-                />
+                <Restricted to={["ADMINLEAD"]}>
+                  <DropdownMenuProject
+                    id={project.id}
+                    getProjectTree={getProjectTree}
+                    node={"charterfolder"}
+                  />
+                </Restricted>
               </div>
             ),
             showCheckbox: false,
@@ -104,11 +109,13 @@ export default function ProjectTree() {
                         }}
                       >
                         {`${charter.name}`}
-                        <DropdownMenuProject
-                          id={charter.id}
-                          getProjectTree={getProjectTree}
-                          node={"charter"}
-                        />
+                        <Restricted to={["ADMINLEAD"]}>
+                          <DropdownMenuProject
+                            id={charter.id}
+                            getProjectTree={getProjectTree}
+                            node={"charter"}
+                          />
+                        </Restricted>
                       </div>
                     ),
                     showCheckbox: false,
@@ -130,11 +137,13 @@ export default function ProjectTree() {
                 <b>
                   <i>Softwares</i>
                 </b>
-                <DropdownMenuProject
-                  id={project.id}
-                  getProjectTree={getProjectTree}
-                  node={"softwarefolder"}
-                />
+                <Restricted to={["ADMINLEAD"]}>
+                  <DropdownMenuProject
+                    id={project.id}
+                    getProjectTree={getProjectTree}
+                    node={"softwarefolder"}
+                  />
+                </Restricted>
               </div>
             ),
             showCheckbox: false,
@@ -152,12 +161,14 @@ export default function ProjectTree() {
                         }}
                       >
                         {`${projectSoftware.software.name} (${projectSoftware.software.code})`}
-                        <DropdownMenuProject
-                          projectId={project.id}
-                          softwareId={projectSoftware.software.id}
-                          getProjectTree={getProjectTree}
-                          node={"software"}
-                        />
+                        <Restricted to={["ADMINLEAD"]}>
+                          <DropdownMenuProject
+                            projectId={project.id}
+                            softwareId={projectSoftware.software.id}
+                            getProjectTree={getProjectTree}
+                            node={"software"}
+                          />
+                        </Restricted>
                       </div>
                     ),
                     disabled: user.id !== project.userProjectId,
@@ -193,12 +204,14 @@ export default function ProjectTree() {
                             <u>
                               <i>Admins</i>
                             </u>
-                            <DropdownMenuProject
-                              id={project.id}
-                              getProjectTree={getProjectTree}
-                              softwareId={projectSoftware.software.id}
-                              node={"adminfolder"}
-                            />
+                            <Restricted to={["ADMINLEAD"]}>
+                              <DropdownMenuProject
+                                id={project.id}
+                                getProjectTree={getProjectTree}
+                                softwareId={projectSoftware.software.id}
+                                node={"adminfolder"}
+                              />
+                            </Restricted>
                           </div>
                         ),
                         showCheckbox: false,
@@ -216,13 +229,15 @@ export default function ProjectTree() {
                                     }}
                                   >
                                     {`${user.name}`}
-                                    <DropdownMenuProject
-                                      adminId={user.id}
-                                      softwareId={projectSoftware.software.id}
-                                      projectId={project.id}
-                                      getProjectTree={getProjectTree}
-                                      node={"admin"}
-                                    />
+                                    <Restricted to={["ADMINLEAD"]}>
+                                      <DropdownMenuProject
+                                        adminId={user.id}
+                                        softwareId={projectSoftware.software.id}
+                                        projectId={project.id}
+                                        getProjectTree={getProjectTree}
+                                        node={"admin"}
+                                      />
+                                    </Restricted>
                                   </div>
                                 ),
                                 showCheckbox: false,
@@ -247,8 +262,9 @@ export default function ProjectTree() {
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
-
-      <ProjectModal getProjectTree={getProjectTree} />
+      <Restricted to={["ADMINLEAD"]}>
+        <ProjectModal getProjectTree={getProjectTree} />
+      </Restricted>
       <CheckboxTree
         nodes={prepareData(projectTree)}
         checked={checked}

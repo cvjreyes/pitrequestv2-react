@@ -26,54 +26,81 @@ export default function ProjectEditModal({
   const [nameIsEmpty, setNameIsEmpty] = useState(false);
   const [codeIsEmpty, setCodeIsEmpty] = useState(false);
   const [hoursIsEmpty, setHoursIsEmpty] = useState(false);
+
+  const [modifiedFields, setModifiedFields] = useState({
+    name: false,
+    code: false,
+    estimatedHours: false,
+  });
+
   const [formProject, setFormProject] = useState({
     name: "",
     code: "",
     estimatedHours: 500,
   });
 
+  const getOneProject = async () => {
+    const project = await client.get(`/projects/${id}`);
+    if (project.data) {
+      setFormProject({
+        name: project.data.name,
+        code: project.data.code,
+        estimatedHours: project.data.estimatedHours,
+      });
+    }
+  };
+
   useEffect(() => {
-    const getOneProject = async () => {
-      const project = await client.get(`/projects/${id}`);
-      if (project.data) {
-        setFormProject({
-          name: project.data.name,
-          code: project.data.code,
-          estimatedHours: project.data.estimatedHours,
-        });
-      }
-    };
     getOneProject();
   }, []);
 
   const updateSubmitProject = async (event) => {
     event.preventDefault();
-    if (!formProject.name || !formProject.code || !formProject.estimatedHours) {
-      setNameIsEmpty(!formProject.name);
-      setCodeIsEmpty(!formProject.code);
-      setHoursIsEmpty(!formProject.estimatedHours);
-      return notify("Please, fill all fields", "error");
-    }
-    if (formProject.code.length > 10)
-      return notify("Code can't have more than 10 characters", "error");
+    try {
+      if (
+        !formProject.name ||
+        !formProject.code ||
+        !formProject.estimatedHours
+      ) {
+        setNameIsEmpty(!formProject.name);
+        setCodeIsEmpty(!formProject.code);
+        setHoursIsEmpty(!formProject.estimatedHours);
+        return notify("Please, fill all fields", "error");
+      }
+      if (formProject.code.length > 10)
+        return notify("Code can't have more than 10 characters", "error");
 
-    if (!Number(formProject.estimatedHours)) {
-      return notify("The estimated hours only accept numbers", "error");
-    }
+      if (!Number(formProject.estimatedHours)) {
+        return notify("The estimated hours only accept numbers", "error");
+      }
 
-    await client.put(`/projects/${id}`, formProject);
-    notify("Project updated successfully!", "success");
-    getProjectTree();
-    setNameIsEmpty(false);
-    setCodeIsEmpty(false);
-    setHoursIsEmpty(false);
-    setDisableCloseButton(true);
-    setOpen(false);
+      const modifiedFieldsToSend = Object.entries(modifiedFields)
+        .filter(([_, modified]) => modified)
+        .reduce((obj, [fieldName, _]) => {
+          obj[fieldName] = formProject[fieldName];
+          return obj;
+        }, {});
+
+      await client.put(`/projects/${id}`, modifiedFieldsToSend);
+      notify("Project updated successfully!", "success");
+      getProjectTree();
+      setNameIsEmpty(false);
+      setCodeIsEmpty(false);
+      setHoursIsEmpty(false);
+      setDisableCloseButton(true);
+      getOneProject();
+      setOpen(false);
+    } catch (error) {
+      const errorMessage = error.response.data.error;
+      notify(errorMessage, "error");
+      getProjectTree();
+    }
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormProject((prev) => ({ ...prev, [name]: value }));
+    setModifiedFields((prev) => ({ ...prev, [name]: true }));
     if (name === "name") {
       setNameIsEmpty(!value);
     } else if (name === "code") {

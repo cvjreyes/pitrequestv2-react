@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom";
 import SoftwareTree from "./tree/SoftwareTree";
 
 export default function Softwares() {
+
   return (
     <div css={softwareStyle}>
       <h1>Softwares</h1>
