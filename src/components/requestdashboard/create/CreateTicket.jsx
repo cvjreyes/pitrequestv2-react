@@ -12,17 +12,20 @@ import { useNotifications } from "reapop";
 
 import { useAuth } from "../../../context/AuthContext";
 import { client } from "../../../helpers/config";
-import { Input } from "../../general";
 
 export default function CreateTicket({ getTickets }) {
   const { notify } = useNotifications();
-
-  const [disableCloseButton, setDisableCloseButton] = useState(true);
-
   const { user } = useAuth();
 
-  const [subjectIsEmpty, setSubjectIsEmpty] = useState(false);
-  const [descriptionIsEmpty, setDescriptionIsEmpty] = useState(false);
+  const [disableCreateButton, setDisableCreateButton] = useState(true);
+
+  const [formErrors, setFormErrors] = useState({
+    subject: false,
+    description: false,
+  });
+
+  const [disableSoftwareSelect, setDisableSoftwareSelect] = useState(true);
+  const [disableAdminSelect, setDisableAdminSelect] = useState(true);
 
   const [projects, setProjects] = useState([]);
   const [softwares, setSoftwares] = useState([]);
@@ -39,47 +42,47 @@ export default function CreateTicket({ getTickets }) {
     description: "",
   });
 
-  const getProjectsNames = async () => {
-    const projectsNames = await client.get("/projects/name");
-    setProjects(projectsNames.data.Projects);
-  };
-
-  const updateSelectedSoftwares = async () => {
-    const selectedSoftwares = await client.get(
-      `/projects/${formTicket.projectId}/softwares/selected`
-    );
-    setSoftwares(selectedSoftwares.data);
-  };
-
-  const getAdminsFromSoftware = async () => {
-    const admins = await client.get(
-      `/projects/${formTicket.projectId}/softwares/${formTicket.softwareId}/admins/assigned`
-    );
-    setAdmins(admins.data.admins);
-  };
-
   useEffect(() => {
-    getProjectsNames();
-  }, []);
+    const fetchData = async () => {
+      const [projectsNamesResponse, selectedSoftwaresResponse, adminsResponse] =
+        await Promise.all([
+          client.get("/projects/name"),
+          client.get(`/projects/${formTicket.projectId}/softwares/selected`),
+          client.get(
+            `/projects/${formTicket.projectId}/softwares/${formTicket.softwareId}/admins/assigned`
+          ),
+        ]);
 
-  useEffect(() => {
-    updateSelectedSoftwares();
-  }, [formTicket.projectId]);
+      setProjects(projectsNamesResponse.data.Projects);
+      setSoftwares(selectedSoftwaresResponse.data);
+      setAdmins(adminsResponse.data.admins);
 
-  useEffect(() => {
-    getAdminsFromSoftware();
-  }, [formTicket.softwareId]);
+      setDisableSoftwareSelect(formTicket.projectId === 0);
+      setDisableAdminSelect(formTicket.softwareId === 0);
+    };
+
+    fetchData();
+  }, [formTicket.projectId, formTicket.softwareId]);
 
   const createSubmitTicket = async (event) => {
     event.preventDefault();
     if (!formTicket.subject || !formTicket.description) {
-      setSubjectIsEmpty(!formTicket.subject);
-      setDescriptionIsEmpty(!formTicket.description);
+      setFormErrors({
+        subject: !formTicket.subject,
+        description: !formTicket.description,
+      });
       return notify("Please, fill all fields", "error");
     }
 
-    if (!formTicket.projectId || !formTicket.softwareId || !formTicket.adminId) {
-      return notify("To create a ticket select a Project, Software and Admin", "error");
+    if (
+      !formTicket.projectId ||
+      !formTicket.softwareId ||
+      !formTicket.adminId
+    ) {
+      return notify(
+        "To create a ticket select a Project, Software and Admin",
+        "error"
+      );
     }
 
     // Generar el número de identificación con el prefijo
@@ -90,40 +93,49 @@ export default function CreateTicket({ getTickets }) {
     const ticketCode = `TIC${ticketId}`;
 
     // Actualizar la propiedad "code" del ticket
-    const ticketWithCode = {
-      ...formTicket,
-      code: ticketCode,
-    };
+    const updatedFormTicket = { ...formTicket, code: ticketCode };
 
-    await client.post("/tickets/", ticketWithCode);
-    notify("Ticket created successfully!", "success");
-    getTickets();
-    setFormTicket({
-      code: "",
-      raisedBy: user.id,
-      projectId: 0,
-      softwareId: 0,
-      adminId: 0,
-      subject: "",
-      description: "",
-    });
-    setSubjectIsEmpty(false);
-    setDescriptionIsEmpty(false);
-    setDisableCloseButton(true);
-    setIsModalOpen(false); // Cerrar el modal al crear el proyecto
+    try {
+      await client.post("/tickets/", updatedFormTicket);
+      notify("Ticket created successfully", "success");
+      getTickets();
+      setIsModalOpen(false);
+      setFormTicket({
+        code: "",
+        raisedBy: user.id,
+        projectId: 0,
+        softwareId: 0,
+        adminId: 0,
+        subject: "",
+        description: "",
+      }); // Reset the form
+    } catch (error) {
+      notify("Failed to create ticket", "error");
+    }
   };
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormTicket((prev) => ({ ...prev, [name]: value }));
-    if (name === "subject") {
-      setSubjectIsEmpty(!value);
-    } else if (name === "description") {
-      setDescriptionIsEmpty(!value);
-    }
-    // Verificar si todos los campos están completos
-    const allFieldsFilled = !!value; // Verificar si el campo no está vacío
-    setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
+    setFormTicket((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+
+    // Verificar si los campos requeridos están vacíos
+    const isSubjectEmpty = name === "subject" && value === "";
+    const isDescriptionEmpty = name === "description" && value === "";
+
+    setFormErrors((prevState) => ({
+      ...prevState,
+      subject: isSubjectEmpty,
+      description: isDescriptionEmpty,
+    }));
+
+    // Verificar los campos y actualizar el estado del botón
+    const isSubjectError = isSubjectEmpty || formErrors.subject;
+    const isDescriptionError = isDescriptionEmpty || formErrors.description;
+
+    setDisableCreateButton(isSubjectError || isDescriptionError);
   };
 
   const handleKeyDown = (event) => {
@@ -151,7 +163,7 @@ export default function CreateTicket({ getTickets }) {
               <label className="Label" htmlFor="subject">
                 Subject
               </label>
-              <Input
+              <input
                 className="Input"
                 id="subject"
                 name="subject"
@@ -159,24 +171,29 @@ export default function CreateTicket({ getTickets }) {
                 placeholder="Subject"
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
-                error={subjectIsEmpty ? "Required" : null}
+                error={formErrors.subject ? "Required" : null}
               />
             </fieldset>
+            {formErrors.subject && (
+              <span className="ErrorMessage">Required</span>
+            )}
             <fieldset className="Fieldset">
               <label className="Label" htmlFor="description">
                 Description
               </label>
-              <Input
-                className="Input"
-                id="description"
+              <textarea
+                className="TextArea"
                 name="description"
-                value={formTicket.description}
                 placeholder="Description"
+                value={formTicket.description}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
-                error={descriptionIsEmpty ? "Required" : null}
+                error={formErrors.description ? "Required" : null}
               />
             </fieldset>
+            {formErrors.description && (
+              <span className="ErrorMessage">Required</span>
+            )}
             <fieldset className="Fieldset">
               <label className="Label" htmlFor="project">
                 Project
@@ -186,7 +203,7 @@ export default function CreateTicket({ getTickets }) {
                 value={formTicket.projectId}
                 onChange={handleChange}
               >
-                <option value="">Select a project...</option>
+                <option value={0}>Select a project...</option>
                 {projects.map((project) => (
                   <option key={project.id} value={project.id}>
                     {project.name}
@@ -194,44 +211,42 @@ export default function CreateTicket({ getTickets }) {
                 ))}
               </select>
             </fieldset>
-            {softwares.length > 0 && (
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="software">
-                  Software
-                </label>
-                <select
-                  name="softwareId"
-                  value={formTicket.softwareId}
-                  onChange={handleChange}
-                >
-                  <option value="">Select a software...</option>
-                  {softwares.map((software) => (
-                    <option key={software.id} value={software.id}>
-                      {software.name}
-                    </option>
-                  ))}
-                </select>
-              </fieldset>
-            )}
-            {admins.length > 0 && (
-              <fieldset className="Fieldset">
-                <label className="Label" htmlFor="admin">
-                  Admin
-                </label>
-                <select
-                  name="adminId"
-                  value={formTicket.adminId}
-                  onChange={handleChange}
-                >
-                  <option value="">Select an admin...</option>
-                  {admins.map((admin) => (
-                    <option key={admin.id} value={admin.id}>
-                      {admin.name}
-                    </option>
-                  ))}
-                </select>
-              </fieldset>
-            )}
+            <fieldset className="Fieldset">
+              <label className="Label" htmlFor="software">
+                Software
+              </label>
+              <select
+                name="softwareId"
+                value={formTicket.softwareId}
+                onChange={handleChange}
+                disabled={disableSoftwareSelect} // Desactivar el campo si no hay proyecto seleccionado
+              >
+                <option value={0}>Select a software...</option>
+                {softwares.map((software) => (
+                  <option key={software.id} value={software.id}>
+                    {software.name}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset className="Fieldset">
+              <label className="Label" htmlFor="admin">
+                Admin
+              </label>
+              <select
+                name="adminId"
+                value={formTicket.adminId}
+                onChange={handleChange}
+                disabled={disableAdminSelect} // Desactivar el campo si no hay software seleccionado
+              >
+                <option value={0}>Select an admin...</option>
+                {admins.map((admin) => (
+                  <option key={admin.id} value={admin.id}>
+                    {admin.name}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
             <div
               style={{
                 display: "flex",
@@ -241,9 +256,9 @@ export default function CreateTicket({ getTickets }) {
             >
               <button
                 type="submit"
-                className={disableCloseButton ? "Button" : "Button green"}
+                className={disableCreateButton ? "Button" : "Button green"}
                 aria-label="Close"
-                disabled={disableCloseButton}
+                disabled={disableCreateButton}
               >
                 Create Ticket
               </button>
@@ -286,9 +301,8 @@ const dialogTriggerStyle = {
   borderRadius: "4px",
   cursor: "pointer",
   marginLeft: "auto",
-  marginRight: "10%"
+  marginRight: "10%",
 };
-
 
 const overlayStyle = {
   backgroundColor: "var(--blackA9)",
@@ -307,7 +321,7 @@ const contentStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "90vw",
-  maxWidth: "450px",
+  maxWidth: "650px",
   maxHeight: "85vh",
   padding: "25px",
   animation: `${contentShow} 150ms cubic-bezier(0.16, 1, 0.3, 1)`,
@@ -382,7 +396,7 @@ const contentStyle = {
     display: "flex",
     gap: "20px",
     alignItems: "center",
-    marginBottom: "15px",
+    marginTop: "15px",
     border: "none",
   },
   ".Label": {
@@ -409,5 +423,36 @@ const contentStyle = {
     ":focus": {
       boxShadow: "0 0 0 2px var(--violet8)",
     },
+    ":invalid": {
+      boxShadow: "0 0 0 2px red", // Estilo para los campos con errores
+    },
+  },
+  ".TextArea": {
+    border: "none",
+    width: "100%",
+    flex: "1",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "4px",
+    padding: "10px",
+    fontSize: "15px",
+    lineHeight: "1",
+    color: "var(--violet11)",
+    boxShadow: "0 0 0 1px var(--violet7)",
+    height: "100px",
+    marginBottom: "5px",
+    ":focus": {
+      boxShadow: "0 0 0 2px var(--violet8)",
+    },
+    ":invalid": {
+      boxShadow: "0 0 0 2px red", // Estilo para los campos con errores
+    },
+  },
+  ".ErrorMessage": {
+    display: "flex",
+    color: "red",
+    fontSize: "13px",
+    marginLeft: "20%",
   },
 };
