@@ -44,7 +44,6 @@ export default function CreateTicket({ getTickets }) {
   });
 
   const handleFileUpload = (files) => {
-    // console.log("Files:", files);
     setSelectedFiles(files);
   };
 
@@ -72,11 +71,7 @@ export default function CreateTicket({ getTickets }) {
 
   const createSubmitTicket = async (event) => {
     event.preventDefault();
-    if (
-      !formTicket.subject ||
-      !formTicket.description ||
-      selectedFiles.length === 0
-    ) {
+    if (!formTicket.subject || !formTicket.description) {
       setFormErrors({
         subject: !formTicket.subject,
         description: !formTicket.description,
@@ -99,7 +94,6 @@ export default function CreateTicket({ getTickets }) {
 
     // Agregar los archivos seleccionados al objeto FormData
     selectedFiles.forEach((file) => {
-      // console.log("file:", file);
       formData.append("tickets", file);
     });
 
