@@ -12,7 +12,7 @@ import { useNotifications } from "reapop";
 
 import { useAuth } from "../../../context/AuthContext";
 import { client } from "../../../helpers/config";
-import { Button, Input } from "../../general";
+import { Input } from "../../general";
 
 export default function CreateTicket({ getTickets }) {
   const { notify } = useNotifications();
@@ -76,6 +76,10 @@ export default function CreateTicket({ getTickets }) {
       setSubjectIsEmpty(!formTicket.subject);
       setDescriptionIsEmpty(!formTicket.description);
       return notify("Please, fill all fields", "error");
+    }
+
+    if (!formTicket.projectId || !formTicket.softwareId || !formTicket.adminId) {
+      return notify("To create a ticket select a Project, Software and Admin", "error");
     }
 
     // Generar el número de identificación con el prefijo
@@ -276,12 +280,15 @@ to {
 `;
 
 const dialogTriggerStyle = {
-  backgroundColor: "blue",
+  background: "#155AAA",
   color: "white",
   padding: "10px 20px",
   borderRadius: "4px",
   cursor: "pointer",
+  marginLeft: "auto",
+  marginRight: "10%"
 };
+
 
 const overlayStyle = {
   backgroundColor: "var(--blackA9)",
