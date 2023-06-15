@@ -12,6 +12,7 @@ import { useNotifications } from "reapop";
 
 import { useAuth } from "../../../context/AuthContext";
 import { client } from "../../../helpers/config";
+import FileUploader from "../../general/FileUploader";
 
 export default function CreateTicket({ getTickets }) {
   const { notify } = useNotifications();
@@ -30,10 +31,10 @@ export default function CreateTicket({ getTickets }) {
   const [projects, setProjects] = useState([]);
   const [softwares, setSoftwares] = useState([]);
   const [admins, setAdmins] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formTicket, setFormTicket] = useState({
-    code: "",
     raisedBy: user.id,
     projectId: 0,
     softwareId: 0,
@@ -41,6 +42,11 @@ export default function CreateTicket({ getTickets }) {
     subject: "",
     description: "",
   });
+
+  const handleFileUpload = (files) => {
+    // console.log("Files:", files);
+    setSelectedFiles(files);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +72,11 @@ export default function CreateTicket({ getTickets }) {
 
   const createSubmitTicket = async (event) => {
     event.preventDefault();
-    if (!formTicket.subject || !formTicket.description) {
+    if (
+      !formTicket.subject ||
+      !formTicket.description ||
+      selectedFiles.length === 0
+    ) {
       setFormErrors({
         subject: !formTicket.subject,
         description: !formTicket.description,
@@ -85,23 +95,29 @@ export default function CreateTicket({ getTickets }) {
       );
     }
 
-    // Generar el número de identificación con el prefijo
-    const response = await client.get("/tickets/");
-    const tickets = response.data;
-    const ticketCount = tickets.length;
-    const ticketId = String(ticketCount + 1).padStart(6, "0");
-    const ticketCode = `TIC${ticketId}`;
+    const formData = new FormData();
 
-    // Actualizar la propiedad "code" del ticket
-    const updatedFormTicket = { ...formTicket, code: ticketCode };
+    // Agregar los archivos seleccionados al objeto FormData
+    selectedFiles.forEach((file) => {
+      // console.log("file:", file);
+      formData.append("tickets", file);
+    });
+
+    // Agregar otros datos al objeto FormData
+    formData.append("raisedBy", formTicket.raisedBy);
+    formData.append("projectId", formTicket.projectId);
+    formData.append("softwareId", formTicket.softwareId);
+    formData.append("adminId", formTicket.adminId);
+    formData.append("subject", formTicket.subject);
+    formData.append("description", formTicket.description);
 
     try {
-      await client.post("/tickets/", updatedFormTicket);
+      await client.post("/tickets/", formData);
       notify("Ticket created successfully", "success");
       getTickets();
+      setSelectedFiles([]);
       setIsModalOpen(false);
       setFormTicket({
-        code: "",
         raisedBy: user.id,
         projectId: 0,
         softwareId: 0,
@@ -246,6 +262,12 @@ export default function CreateTicket({ getTickets }) {
                   </option>
                 ))}
               </select>
+            </fieldset>
+            <fieldset className="Fieldset">
+              <label className="Label" htmlFor="admin">
+                Attach
+              </label>
+              <FileUploader onFileUpload={handleFileUpload} name="tickets" />
             </fieldset>
             <div
               style={{

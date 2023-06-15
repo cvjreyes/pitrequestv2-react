@@ -59,5 +59,6 @@ const requestDashboardStyle = {
     flexGrow: 1,
     marginTop: "25px",
     width: "80vw",
+    maxHeight: "80vh",
   },
 };
