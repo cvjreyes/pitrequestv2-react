@@ -24,8 +24,8 @@ const usersStyle = {
   ".container-table": {
     flexGrow: 1,
     marginTop: "25px",
-    width: "80vw",
-    maxHeight: "80vh",
+    width: "81vw",
+    maxHeight: "70vh",
   },
   ".edit_btn": {
     display: "flex",

@@ -51,7 +51,7 @@ const FileUploader = ({ onFileUpload, name }) => {
       ) : (
         <p>Drag and drop files here, or click to select files</p>
       )}
-      {selectedFiles && selectedFiles.length > 0 && (
+      {selectedFiles.length > 0 && (
         <div className="filesList">
           <h4>Selected Files:</h4>
           <ul className="fileListItems">
