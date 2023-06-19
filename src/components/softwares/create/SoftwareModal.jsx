@@ -1,10 +1,3 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
-import "@radix-ui/colors/blackA.css";
-import "@radix-ui/colors/green.css";
-import "@radix-ui/colors/mauve.css";
-import "@radix-ui/colors/violet.css";
 import { useState } from "react";
 import { AiFillFolderAdd } from "react-icons/ai";
 import { useNotifications } from "reapop";
