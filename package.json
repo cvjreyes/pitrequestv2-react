@@ -16,7 +16,7 @@
     "@mui/styled-engine-sc": "^5.12.0",
     "@mui/x-data-grid": "^6.5.0",
     "@mui/x-data-grid-generator": "^6.5.0",
-    "@nachogonzalezv99/ui-library": "^1.1.7",
+    "@nachogonzalezv99/ui-library": "^1.1.9",
     "@radix-ui/colors": "^0.1.8",
     "@radix-ui/react-alert-dialog": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.3",

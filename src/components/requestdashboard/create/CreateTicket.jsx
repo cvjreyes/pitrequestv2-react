@@ -17,6 +17,7 @@ import {
 } from "@nachogonzalezv99/ui-library";
 import { useAuth } from "../../../context/AuthContext";
 import { client } from "../../../helpers/config";
+
 export default function CreateTicket({ getTickets }) {
   const { notify } = useNotifications();
   const { user } = useAuth();
@@ -43,11 +44,6 @@ export default function CreateTicket({ getTickets }) {
     description: "",
   });
 
-  console.log(formTicket);
-
-  /*  const handleFileUpload = (files) => {
-    setSelectedFiles(files);
-  }; */
   useEffect(() => {
     const fetchData = async () => {
       const [projectsNamesResponse, selectedSoftwaresResponse, adminsResponse] =
@@ -191,7 +187,8 @@ export default function CreateTicket({ getTickets }) {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
-        <Button>Create ticket</Button>
+        {/* <Button className="md:bg-blue-500 text-white hover:text-black"> */}
+        <Button variant="contained">Create ticket</Button>
       </Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Header>
@@ -202,9 +199,13 @@ export default function CreateTicket({ getTickets }) {
           </Dialog.Description>
         </Dialog.Header>
         <Dialog.Body>
-          <form onSubmit={createSubmitTicket} className="flex flex-col gap-4">
+          <form
+            onSubmit={createSubmitTicket}
+            className="flex flex-col gap-4"
+            id="createTicket"
+          >
             <fieldset className="flex flex-col">
-              <label className="Label" htmlFor="subject">
+              <label className="" htmlFor="subject">
                 Subject
               </label>
               <TextField
@@ -311,6 +312,7 @@ export default function CreateTicket({ getTickets }) {
               variant="contained"
               disabled={disableCreateButton}
               className="ml-auto"
+              form="createTicket"
             >
               Create Ticket
             </Button>
