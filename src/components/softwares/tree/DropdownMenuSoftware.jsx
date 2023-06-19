@@ -75,7 +75,7 @@ export default function DropdownMenuSoftware({ id, getSoftwareTree, node }) {
       <Dropdown>
         <Restricted to={["ADMINLEAD"]}>
           <Dropdown.Trigger>
-            <IconButton>
+            <IconButton >
               <AiOutlineMore />
             </IconButton>
           </Dropdown.Trigger>

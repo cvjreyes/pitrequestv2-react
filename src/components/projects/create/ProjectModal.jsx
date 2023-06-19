@@ -86,7 +86,7 @@ export default function ProjectModal({ getProjectTree }) {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger title="Create Project">
-        <IconButton size="md" className="mt-1">
+        <IconButton size="md" className="mt-1 shrink-0">
           <AiFillFolderAdd />
         </IconButton>
       </Dialog.Trigger>

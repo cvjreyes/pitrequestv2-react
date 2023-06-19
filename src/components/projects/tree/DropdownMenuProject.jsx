@@ -1,25 +1,23 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx, keyframes } from "@emotion/react";
-import "@radix-ui/colors/blackA.css";
-import "@radix-ui/colors/mauve.css";
-import "@radix-ui/colors/violet.css";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Dropdown, IconButton } from "@nachogonzalezv99/ui-library";
 import { useState } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { AiOutlineMore } from "react-icons/ai";
 import { useNotifications } from "reapop";
 
 import { client } from "../../../helpers/config";
 
-import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
-import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
-import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
-import CharterSettingsModal from "../create/CharterSettingsModal";
-import AdminChangeModal from "../edit/AdminChangeModal";
-import CharterEditModal from "../edit/CharterEditModal";
 import ProjectEditModal from "../edit/ProjectEditModal";
 
-export default function DropdownMenuProject({
+import CharterSettingsModal from "../create/CharterSettingsModal";
+import CharterEditModal from "../edit/CharterEditModal";
+
+import AddAdminSoftwareSettingsModal from "../create/AddAdminSoftwareSettingsModal";
+import AddSoftwareSettingsModal from "../create/AddSoftwareSettingsModal";
+
+import AdminChangeModal from "../edit/AdminChangeModal";
+
+import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
+
+export default function DropdownProject({
   id,
   adminId,
   softwareId,
@@ -93,81 +91,70 @@ export default function DropdownMenuProject({
 
   return (
     <div>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger asChild>
-          <button aria-label="Customise options">
-            <BsThreeDotsVertical className="icon" />
-          </button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Portal>
-          <DropdownMenu.Content css={dropdownMenuStyle} sideOffset={5}>
-            {/* Create and add actions */}
-            <DropdownMenu.Item className="DropdownMenuItem" asChild>
-              {node === "charterfolder" ? (
-                <button onClick={() => setOpenCharter(true)}>
-                  Add Charter
-                </button>
-              ) : node === "softwarefolder" ? (
-                <button onClick={() => setOpenSoftware(true)}>
-                  Add Software
-                </button>
-              ) : (
-                node === "adminfolder" && (
-                  <button onClick={() => setOpenAdmin(true)}>Add Admin</button>
-                )
-              )}
-            </DropdownMenu.Item>
-            {/* Edit actions */}
-            {node === "project" ? (
-              <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenEditProject(true)}>Edit</button>
-              </DropdownMenu.Item>
-            ) : node === "admin" ? (
-              <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenEditAdmin(true)}>
-                  Change Admin
-                </button>
-              </DropdownMenu.Item>
+      <Dropdown>
+        <Dropdown.Trigger>
+          <IconButton>
+            <AiOutlineMore />
+          </IconButton>
+        </Dropdown.Trigger>
+        <Dropdown.Menu>
+          {/* Create and add actions */}
+          <Dropdown.Item>
+            {node === "charterfolder" ? (
+              <button onClick={() => setOpenCharter(true)}>Add Charter</button>
+            ) : node === "softwarefolder" ? (
+              <button onClick={() => setOpenSoftware(true)}>
+                Add Software
+              </button>
             ) : (
-              node === "charter" && (
-                <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                  <button onClick={() => setOpenEditCharter(true)}>Edit</button>
-                </DropdownMenu.Item>
+              node === "adminfolder" && (
+                <button onClick={() => setOpenAdmin(true)}>Add Admin</button>
               )
             )}
-            {/* Delete actions */}
-            {node === "project" ? (
-              <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenDeleteProject(true)}>
-                  Delete
-                </button>
-              </DropdownMenu.Item>
-            ) : node === "software" ? (
-              <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenDeleteSoftware(true)}>
-                  Remove
-                </button>
-              </DropdownMenu.Item>
-            ) : node === "charter" ? (
-              <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                <button onClick={() => setOpenDeleteCharter(true)}>
-                  Delete
-                </button>
-              </DropdownMenu.Item>
-            ) : (
-              node === "admin" && (
-                <DropdownMenu.Item className="DropdownMenuItem" asChild>
-                  <button onClick={() => setOpenDeleteAdmin(true)}>
-                    Remove
-                  </button>
-                </DropdownMenu.Item>
-              )
-            )}
-            <DropdownMenu.Arrow className="DropdownMenuArrow" />
-          </DropdownMenu.Content>
-        </DropdownMenu.Portal>
-      </DropdownMenu.Root>
-      {/* Modales para crear y se separan para ocultar el dropdownMenu.Portal */}
+          </Dropdown.Item>
+          {/* Edit actions */}
+          {node === "project" ? (
+            <Dropdown.Item>
+              <button onClick={() => setOpenEditProject(true)}>Edit</button>
+            </Dropdown.Item>
+          ) : node === "admin" ? (
+            <Dropdown.Item>
+              <button onClick={() => setOpenEditAdmin(true)}>
+                Change Admin
+              </button>
+            </Dropdown.Item>
+          ) : (
+            node === "charter" && (
+              <Dropdown.Item>
+                <button onClick={() => setOpenEditCharter(true)}>Edit</button>
+              </Dropdown.Item>
+            )
+          )}
+          {/* Delete actions */}
+          {node === "project" ? (
+            <Dropdown.Item>
+              <button onClick={() => setOpenDeleteProject(true)}>Delete</button>
+            </Dropdown.Item>
+          ) : node === "software" ? (
+            <Dropdown.Item>
+              <button onClick={() => setOpenDeleteSoftware(true)}>
+                Remove
+              </button>
+            </Dropdown.Item>
+          ) : node === "charter" ? (
+            <Dropdown.Item>
+              <button onClick={() => setOpenDeleteCharter(true)}>Delete</button>
+            </Dropdown.Item>
+          ) : (
+            node === "admin" && (
+              <Dropdown.Item>
+                <button onClick={() => setOpenDeleteAdmin(true)}>Remove</button>
+              </Dropdown.Item>
+            )
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
+      {/* Modales para crear y se separan para ocultar el Dropdown.Portal */}
       <CharterSettingsModal
         id={id}
         getProjectTree={getProjectTree}
@@ -232,95 +219,3 @@ export default function DropdownMenuProject({
     </div>
   );
 }
-
-const slideUpAndFade = keyframes`
-from {
-  opacity: 0;
-  transform: translateY(2px);
-}
-to {
-  opacity: 1;
-  transform: translateY(0);
-}`;
-
-const slideRightAndFade = keyframes`
-from {
-  opacity: 0;
-  transform: translateX(-2px);
-}
-to {
-  opacity: 1;
-  transform: translateX(0);
-}`;
-
-const slideDownAndFade = keyframes`
-from {
-  opacity: 0;
-  transform: translateY(-2px);
-}
-to {
-  opacity: 1;
-  transform: translateY(0);
-}`;
-
-const slideLeftAndFade = keyframes`
-from {
-  opacity: 0;
-  transform: translateX(2px);
-}
-to {
-  opacity: 1;
-  transform: translateX(0);
-}`;
-
-const dropdownMenuStyle = {
-  minWidth: "auto",
-  backgroundColor: "white",
-  borderRadius: "6px",
-  padding: "5px",
-  boxShadow:
-    "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
-  animationDuration: "400ms",
-  animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-  willChange: "transform, opacity",
-  "&[data-side='top']": {
-    animationName: `${slideDownAndFade}`,
-  },
-  "&[data-side='right']": {
-    animationName: `${slideLeftAndFade}`,
-  },
-  "&[data-side='bottom']": {
-    animationName: `${slideUpAndFade}`,
-  },
-  "&[data-side='left']": {
-    animationName: `${slideRightAndFade}`,
-  },
-  ".DropdownMenuItem": {
-    width: "150px",
-    fontSize: "15px",
-    lineHeight: "1",
-    color: "var(--violet11)",
-    borderRadius: "3px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    height: "25px",
-    padding: "0 5px",
-    position: "relative",
-    userSelect: "none",
-    outline: "none",
-    margin: "5px 0",
-    "&[data-disabled]": {
-      color: "var(--violet1)",
-      backgroundColor: "var(--violet9)",
-    },
-    "&[data-highlighted]": {
-      color: "var(--violet1)",
-      backgroundColor: "var(--violet9)",
-    },
-  },
-  ".DropdownMenuArrow": {
-    fill: "white",
-  },
-};
