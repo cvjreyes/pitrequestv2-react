@@ -62,8 +62,6 @@ const AdminChangeModal = forwardRef(
       setDisableCloseButton(value === adminId);
     };
 
-    console.log(admins, adminId)
-
     return (
       <div ref={ref}>
         <Dialog open={open} onOpenChange={setOpen}>

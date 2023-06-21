@@ -1,36 +1,28 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
-import { Outlet } from "react-router-dom";
+import { IconButton, TextField } from "@nachogonzalezv99/ui-library";
+import React from "react";
+import { AiOutlinePlus } from "react-icons/ai";
+import { Link, Outlet } from "react-router-dom";
 
-import SoftwareTree from "./tree/SoftwareTree";
+import { SoftwareTreeView } from "./tree/SoftwareTreeView";
 
 export default function Softwares() {
-
   return (
-    <div css={softwareStyle}>
-      <h1>Softwares</h1>
-      <SoftwareTree />
-      <Outlet />
+    <div className="flex h-full flex-1">
+      <div className="relative border-r border-gray-300 p-5 shrink-0 overflow-y-auto">
+        <div className="flex gap-2 items-center mb-3">
+          <Link to={"/softwares/create"}>
+            <IconButton tooltip="Create new software">
+              <AiOutlinePlus />
+            </IconButton>
+          </Link>
+          <TextField id="search" className="h-10" />
+        </div>
+        {/* <SoftwareTree /> */}
+        <SoftwareTreeView />
+      </div>
+      <div className="p-5 flex-1 overflow-y-auto">
+        <Outlet />
+      </div>
     </div>
   );
 }
-
-const softwareStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  flexDirection: "column",
-  height: "85vh",
-  marginTop: "100px",
-  ".container-tree": {
-    overflow: "auto",
-    display: "flex",
-    flexDirection: "column",
-    flexGrow: 1,
-    padding: "20px",
-    alignItems: "flex-start",
-    marginTop: "25px",
-    width: "80vw",
-  },
-};

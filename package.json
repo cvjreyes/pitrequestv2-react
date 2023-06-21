@@ -16,12 +16,13 @@
     "@mui/styled-engine-sc": "^5.12.0",
     "@mui/x-data-grid": "^6.5.0",
     "@mui/x-data-grid-generator": "^6.5.0",
-    "@nachogonzalezv99/ui-library": "^1.1.24",
+    "@nachogonzalezv99/ui-library": "^1.1.29",
     "@radix-ui/colors": "^0.1.8",
     "@radix-ui/react-alert-dialog": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-select": "^1.2.1",
+    "@tanstack/react-query": "^4.29.14",
     "axios": "^1.4.0",
     "js-cookie": "^3.0.5",
     "moment": "^2.29.4",
@@ -35,7 +36,8 @@
     "react-router-dom": "^6.11.0",
     "react-select": "^5.7.3",
     "reapop": "^4.2.1",
-    "styled-components": "^5.3.10"
+    "styled-components": "^5.3.10",
+    "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
