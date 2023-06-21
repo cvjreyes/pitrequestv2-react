@@ -2,7 +2,7 @@ import { Button, Spinner, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
-import { useSubtask, useUpdateSubtask } from "../../../hooks/subtask";
+import { useSubtask, useUpdateSubtask } from "../hooks/subtask";
 
 function EditSubtaskForm() {
   const { taskId, subtaskId } = useParams();

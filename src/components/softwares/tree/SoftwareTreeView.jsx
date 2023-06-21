@@ -3,7 +3,7 @@ import React from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Link } from "react-router-dom";
 
-import { useSoftwareTree } from "../../../hooks/software";
+import { useSoftwareTree } from "../hooks/software";
 import SoftwareOptionsDropdown from "./SoftwareOptionsDropdown";
 
 function SoftwareTreeView() {

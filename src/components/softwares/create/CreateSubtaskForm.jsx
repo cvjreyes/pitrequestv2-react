@@ -2,7 +2,7 @@ import { Button, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useState } from "react";
 
 import { useParams } from "react-router-dom";
-import { useCreateSubtask } from "../../../hooks/subtask";
+import { useCreateSubtask } from "../hooks/subtask";
 
 function CreateSubtaskForm() {
   const createMutation = useCreateSubtask();

@@ -2,7 +2,7 @@ import { Button, Spinner, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useEffect, useState } from "react";
 
 import { useParams } from "react-router-dom";
-import { useSoftware, useUpdateSoftware } from "../../../hooks/software";
+import { useSoftware, useUpdateSoftware } from "../hooks/software";
 
 function EditSoftwareForm() {
   const { softwareId } = useParams();

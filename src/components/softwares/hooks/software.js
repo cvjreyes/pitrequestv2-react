@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { client } from "../helpers/config";
+import { client } from "../../../helpers/config";
 import { useNotifications } from "reapop";
 import { useNavigate } from "react-router-dom";
 import { softwareKeys } from "./keys";

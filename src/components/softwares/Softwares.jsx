@@ -17,7 +17,6 @@ export default function Softwares() {
           </Link>
           <TextField id="search" className="h-10" />
         </div>
-        {/* <SoftwareTree /> */}
         <SoftwareTreeView />
       </div>
       <div className="p-5 flex-1 overflow-y-auto">

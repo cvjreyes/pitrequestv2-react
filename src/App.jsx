@@ -24,7 +24,6 @@ import CheckLogin from "./components/authentication/CheckLogin";
 import Login from "./components/authentication/Login";
 import Signin from "./components/authentication/Signin";
 import Home from "./components/home/Home";
-import Projects from "./components/projects/Projects";
 import RequestDashboard from "./components/requestdashboard/RequestDashboard";
 import Softwares from "./components/softwares/Softwares";
 import { CreateSoftwareForm } from "./components/softwares/create/CreateSoftwareForm";
@@ -34,6 +33,8 @@ import { EditSoftwareForm } from "./components/softwares/edit/EditSoftwareForm";
 import { EditSubtaskForm } from "./components/softwares/edit/EditSubtaskForm";
 import { EditTaskForm } from "./components/softwares/edit/EditTaskForm";
 import Users from "./components/users/Users";
+import { CreateProjectForm } from "./components/projects/create/CreateProjectForm";
+import Projects from "./components/projects/Projects";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,11 +80,11 @@ export default function App() {
                   element={<RestrictedRoutes to={["ADMINTOOL", "ADMINLEAD"]} />}
                 >
                   <Route path="/softwares" element={<Softwares />}>
+                    <Route path="create" element={<CreateSoftwareForm />} />
                     <Route
                       path=":softwareId/edit"
                       element={<EditSoftwareForm />}
                     />
-                    <Route path="create" element={<CreateSoftwareForm />} />
                     <Route
                       path=":softwareId/task/create"
                       element={<CreateTaskForm />}
@@ -101,7 +102,9 @@ export default function App() {
                       element={<EditSubtaskForm />}
                     />
                   </Route>
-                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/projects" element={<Projects />}>
+                    <Route path="create" element={<CreateProjectForm />} />
+                  </Route>
                 </Route>
                 <Route path="/users" element={<Users />} />
                 <Route

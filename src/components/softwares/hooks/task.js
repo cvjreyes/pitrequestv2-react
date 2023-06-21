@@ -1,29 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useNotifications } from "reapop";
-import { client } from "../helpers/config";
+import { client } from "../../../helpers/config";
 import { softwareKeys } from "./keys";
 import { useNavigate } from "react-router-dom";
 
-export function useSubtask(id) {
+export function useTask(id) {
   const navigate = useNavigate();
   const results = useQuery({
-    queryKey: softwareKeys.subtask(id),
-    queryFn: () => client.get(`/subtasks/${id}`).then((res) => res.data),
+    queryKey: softwareKeys.task(id),
+    queryFn: () => client.get(`/tasks/${id}`).then((res) => res.data),
     onError: () => navigate("/softwares"),
   });
-  return { ...results, subtask: results.data };
+  return { ...results, task: results.data };
 }
 
-export function useCreateSubtask() {
+export function useCreateTask() {
   const queryClient = useQueryClient();
   const { notify } = useNotifications();
 
   const results = useMutation({
-    mutationFn: ({ name, taskId }) =>
-      client.post("/subtasks", { name, taskId }),
+    mutationFn: ({ name, softwareId }) =>
+      client.post("/tasks", { name, softwareId }),
     onSuccess: () => {
-      notify("Create Subtask successfully done", "success");
+      notify("Create Task successfully done", "success");
       queryClient.invalidateQueries({ queryKey: softwareKeys.all });
     },
     onError: (data) => {
@@ -34,15 +34,15 @@ export function useCreateSubtask() {
   return results;
 }
 
-export function useUpdateSubtask() {
+export function useUpdateTask() {
   const queryClient = useQueryClient();
   const { notify } = useNotifications();
 
   const results = useMutation({
-    mutationFn: ({ subtaskId, name, taskId }) =>
-      client.put(`/subtasks/${subtaskId}`, { name, taskId }),
+    mutationFn: ({ taskId, name, softwareId }) =>
+      client.put(`/tasks/${taskId}`, { name, softwareId }),
     onSuccess: () => {
-      notify("Edit Subtask successfully done", "success");
+      notify("Edit Task successfully done", "success");
       queryClient.invalidateQueries({ queryKey: softwareKeys.all });
     },
     onError: (data) => {
@@ -53,14 +53,14 @@ export function useUpdateSubtask() {
   return results;
 }
 
-export function useDeleteSubtask() {
+export function useDeleteTask() {
   const queryClient = useQueryClient();
   const { notify } = useNotifications();
 
   const results = useMutation({
-    mutationFn: ({ subtaskId }) => client.delete(`/subtasks/${subtaskId}`),
+    mutationFn: ({ taskId }) => client.delete(`/tasks/${taskId}`),
     onSuccess: () => {
-      notify("Deleted Subtask successfully", "success");
+      notify("Deleted Task successfully", "success");
       queryClient.invalidateQueries({ queryKey: softwareKeys.all });
     },
     onError: (data) => {

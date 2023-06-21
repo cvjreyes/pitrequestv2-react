@@ -4,9 +4,9 @@ import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { FiMoreVertical } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-import { useDeleteSoftware } from "../../../hooks/software";
-import { useDeleteSubtask } from "../../../hooks/subtask";
-import { useDeleteTask } from "../../../hooks/task";
+import { useDeleteSoftware } from "../hooks/software";
+import { useDeleteSubtask } from "../hooks/subtask";
+import { useDeleteTask } from "../hooks/task";
 import DeleteNodeTree from "../delete/DeleteNodeTree";
 
 export default function SoftwareOptionsDropdown({ softwareId, taskId, subtaskId }) {

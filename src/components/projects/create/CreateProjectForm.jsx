@@ -2,9 +2,9 @@ import { Button, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useState } from "react";
 
 import { useNotifications } from "reapop";
-import { useCreateSoftware } from "../hooks/software";
+import { useCreateSoftware } from "../../softwares/hooks/software";
 
-function CreateSoftwareForm() {
+function CreateProjectForm() {
   const createMutation = useCreateSoftware();
   const { notify } = useNotifications();
 
@@ -81,5 +81,5 @@ function CreateSoftwareForm() {
   );
 }
 
-export { CreateSoftwareForm };
+export { CreateProjectForm };
 

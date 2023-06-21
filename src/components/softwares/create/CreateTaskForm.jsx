@@ -2,7 +2,7 @@ import { Button, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useState } from "react";
 
 import { useParams } from "react-router-dom";
-import { useCreateTask } from "../../../hooks/task";
+import { useCreateTask } from "../hooks/task";
 
 function CreateTaskForm() {
   const createMutation = useCreateTask();
