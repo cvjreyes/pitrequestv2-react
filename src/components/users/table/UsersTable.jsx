@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDemoData } from "@mui/x-data-grid-generator";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
@@ -18,7 +18,7 @@ export default function UsersTable() {
   // Columns and headers
   let columns = [
     { field: "col1", headerName: "NAME", width: 250 },
-    { field: "col2", headerName: "EMAIL", width: 400 },
+    { field: "col2", headerName: "EMAIL", width: 500 },
     { field: "col3", headerName: "PROJECTS", width: 370 },
     { field: "col4", headerName: "ROLES", width: 300 },
   ];

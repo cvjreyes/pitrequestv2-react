@@ -29,8 +29,10 @@ export default function RequestDashboard() {
       col7: moment(ticket.created_at).format("DD-MM-YYYY"),
       col8: moment(ticket.updated_at).format("DD-MM-YYYY"),
       col9: ticket.Status.name,
+      col10: ticket.TicketsAttachment,
     }));
 
+    console.log(createRows);
     setRows(createRows);
   };
 
@@ -39,26 +41,28 @@ export default function RequestDashboard() {
   }, []);
 
   return (
-    <div css={requestDashboardStyle}>
+    <div className="flex justify-center items-center flex-col h-screen">
       <h1>Request Dashboard</h1>
-      <CreateTicket getTickets={getTickets} />
+      <div className="">
+        <CreateTicket getTickets={getTickets} />
+      </div>
       <RequestDashboardTable rows={rows} />
       <Outlet />
     </div>
   );
 }
 
-const requestDashboardStyle = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  flexDirection: "column",
-  height: "85vh",
-  marginTop: "100px",
-  ".container-table": {
-    flexGrow: 1,
-    marginTop: "25px",
-    width: "81vw",
-    maxHeight: "70vh",
-  },
-};
+// const requestDashboardStyle = {
+//   display: "flex",
+//   justifyContent: "center",
+//   alignItems: "center",
+//   flexDirection: "column",
+//   height: "85vh",
+//   marginTop: "100px",
+//   ".container-table": {
+//     flexGrow: 1,
+//     marginTop: "25px",
+//     width: "81vw",
+//     maxHeight: "70vh",
+//   },
+// };

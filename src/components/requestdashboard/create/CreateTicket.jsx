@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNotifications } from "reapop";
 
 import {
   Button,
   Dialog,
   Select,
+  TextArea,
   TextField,
   UploadFiles,
 } from "@nachogonzalezv99/ui-library";
@@ -182,7 +183,7 @@ export default function CreateTicket({ getTickets }) {
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
         {/* <Button className="md:bg-blue-500 text-white hover:text-black"> */}
-        <Button variant="contained">Create ticket</Button>
+        <Button variant="contained" className="my-5">Create ticket</Button>
       </Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Header>
@@ -216,7 +217,7 @@ export default function CreateTicket({ getTickets }) {
               <label className="" htmlFor="description">
                 Description
               </label>
-              <TextField
+              <TextArea
                 name="description"
                 placeholder="Description"
                 value={formTicket.description}

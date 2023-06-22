@@ -1,5 +1,7 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useDemoData } from "@mui/x-data-grid-generator";
+import React from "react";
+import Dialogattachment from "./DialogAttachment";
 
 export default function RequestDashboardTable({ rows }) {
   // Columns and headers
@@ -13,6 +15,12 @@ export default function RequestDashboardTable({ rows }) {
     { field: "col7", headerName: "CREATED DATE", width: 130 },
     { field: "col8", headerName: "LAST DATE", width: 130 },
     { field: "col9", headerName: "STATUS", width: 120 },
+    {
+      field: "col10",
+      headerName: "ATTACH",
+      width: 120,
+      renderCell: (params) => <Dialogattachment files={params.row.col10} />,
+    },
   ];
 
   const { data, loading } = useDemoData({
@@ -22,7 +30,7 @@ export default function RequestDashboardTable({ rows }) {
   });
 
   return (
-    <div className="container-table">
+    <div className="h-4/6 w-4/5">
       <DataGrid
         {...data}
         rows={rows}
