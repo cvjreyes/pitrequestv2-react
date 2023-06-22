@@ -1,41 +1,50 @@
 import { Button, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useState } from "react";
-
 import { useNotifications } from "reapop";
-import { useCreateSoftware } from "../../softwares/hooks/software";
+
+import { useCreateProject } from "../../projects/hooks/project";
+import { useAuth } from "../../../context/AuthContext";
 
 function CreateProjectForm() {
-  const createMutation = useCreateSoftware();
+  const createMutation = useCreateProject();
   const { notify } = useNotifications();
+  const { user } = useAuth();
 
   const [disableCloseButton, setDisableCloseButton] = useState(true);
   const [errorName, setErrorName] = useState(null);
   const [errorCode, setErrorCode] = useState(null);
+  const [errorEstimatedHours, setErrorEstimatedHours] = useState(null);
 
-  const [formSoftware, setFormSoftware] = useState({
+  const [formProject, setFormProject] = useState({
     name: "",
     code: "",
+    estimatedHours: 500,
+    userProjectId: user.id,
   });
 
   const CODE_MAX_LENGTH = 10;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formSoftware.name.trim() === "") {
+    if (formProject.name.trim() === "") {
       setErrorName("Required");
       setDisableCloseButton(true);
       return notify("Name is required", "error");
-    } else if (formSoftware.code.trim() === "") {
+    } else if (formProject.code.trim() === "") {
       setErrorCode("Required");
       setDisableCloseButton(true);
       return notify("Code is required", "error");
+    } else if (!formProject.estimatedHours) {
+      setErrorEstimatedHours("Required");
+      setDisableCloseButton(true);
+      return notify("Hours are required", "error");
     }
-    createMutation.mutate({ formCreateSoftware: formSoftware });
+    createMutation.mutate({ formCreateProject: formProject });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormSoftware((prev) => ({ ...prev, [name]: value }));
+    setFormProject((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCodeChange = (e) => {
@@ -46,35 +55,43 @@ function CreateProjectForm() {
     } else {
       setErrorCode(null);
       setDisableCloseButton(false);
-      setFormSoftware((prev) => ({ ...prev, code: newCode }));
+      setFormProject((prev) => ({ ...prev, code: newCode }));
     }
   };
 
   return (
     <div className="h-full relative">
-      <h1 className="text-xl font-medium mb-2">Create a software</h1>
+      <h1 className="text-xl font-medium mb-2">Create a Project</h1>
       <form className="mt-5 flex flex-col gap-3" onSubmit={handleSubmit}>
         <TextField
           id="name"
           label="Name"
           name="name"
-          value={formSoftware.name}
+          value={formProject.name}
           onChange={handleInputChange}
           error={errorName}
         />
         <TextField
-          value={formSoftware.code}
+          value={formProject.code}
           onChange={handleCodeChange}
           id="code"
           label="Code"
           error={errorCode}
+        />
+        <TextField
+          value={formProject.estimatedHours}
+          onChange={handleInputChange}
+          type="number"
+          id="estimatedHours"
+          label="Estimated Hours"
+          error={errorEstimatedHours}
         />
         <Button
           variant="contained"
           disabled={disableCloseButton}
           className="ml-auto"
         >
-          Create Software
+          Create Project
         </Button>
       </form>
     </div>
@@ -82,4 +99,3 @@ function CreateProjectForm() {
 }
 
 export { CreateProjectForm };
-
