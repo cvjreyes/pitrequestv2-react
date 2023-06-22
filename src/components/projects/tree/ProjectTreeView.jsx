@@ -7,12 +7,16 @@ import { useProjectTree, useRemoveSoftware } from "../hooks/project";
 
 import ProjectOptionsDropdown from "./ProjectOptionsDropdown";
 import DeleteNodeTree from "../../softwares/delete/DeleteNodeTree";
+import { useRemoveAdmin } from "../hooks/user";
 
 function ProjectTreeView() {
   const { projectTree } = useProjectTree();
 
   const [openRemoveSoftware, setOpenRemoveSoftware] = useState(false);
+  const [openRemoveAdmin, setOpenRemoveAdmin] = useState(false);
+
   const removeSoftwareMutation = useRemoveSoftware();
+  const removeAdminMutation = useRemoveAdmin();
 
   return (
     <TreeView>
@@ -129,6 +133,26 @@ function ProjectTreeView() {
                       <TreeView.Item
                         key={`admins-${admin.id}`}
                         label={admin.name}
+                        actions={[
+                          <DeleteNodeTree
+                            key={`admin-dropdown-${projectSoftware.software.id}`}
+                            deleteNode={() =>
+                              removeAdminMutation.mutate({
+                                projectId: project.id,
+                                softwareId: projectSoftware.software.id,
+                                adminId: admin.id
+                              })
+                            }
+                            open={openRemoveAdmin}
+                            setOpen={setOpenRemoveAdmin}
+                          />,
+                          <button
+                            onClick={() => setOpenRemoveAdmin(true)}
+                            key={`admin-remove-${projectSoftware.software.id}`}
+                          >
+                            <AiOutlineDelete />
+                          </button>,
+                        ]}
                       />
                     ))}
                   </TreeView.Item>

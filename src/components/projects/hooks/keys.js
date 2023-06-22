@@ -6,7 +6,7 @@ export const projectKeys = {
   software: (id) => [...projectKeys.all, "software", id],
   removeSoftware: (id, projectId) => [
     ...projectKeys.all,
-    "software",
+    "removeSoftware",
     { id, projectId },
   ],
   admins: () => [...projectKeys.all, "admins"],
@@ -15,5 +15,10 @@ export const projectKeys = {
     ...projectKeys.all,
     "unassignedAdmins",
     { projectId, softwareId },
+  ],
+  removeAdmin: (projectId, softwareId, adminId) => [
+    ...projectKeys.all,
+    "removeAdmin",
+    { projectId, softwareId, adminId },
   ],
 };
