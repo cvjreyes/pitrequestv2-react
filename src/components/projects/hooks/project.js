@@ -26,7 +26,10 @@ export function useUnselectedSoftwares(id) {
   const navigate = useNavigate();
   const results = useQuery({
     queryKey: projectKeys.software(id),
-    queryFn: () => client.get(`/projects/${id}/softwares/unselected`).then((res) => res.data),
+    queryFn: () =>
+      client
+        .get(`/projects/${id}/softwares/unselected`)
+        .then((res) => res.data),
     onError: () => navigate("/projects"),
   });
   return { ...results, unselectedSoftware: results.data };
@@ -62,7 +65,7 @@ export function useAddSoftwareToProject() {
     onSuccess: () => {
       notify("Software added successfully", "success");
       queryClient.invalidateQueries({ queryKey: projectKeys.tree() });
-      navigate("/projects")
+      navigate("/projects");
     },
     onError: (data) => {
       notify(data.response.data.error, "error");
@@ -100,6 +103,25 @@ export function useDeleteProject() {
     onSuccess: () => {
       notify("Deleted Project successfully", "success");
       queryClient.invalidateQueries({ queryKey: projectKeys.all });
+    },
+    onError: (data) => {
+      notify(data.response.data.error, "error");
+    },
+  });
+
+  return results;
+}
+
+export function useRemoveSoftware() {
+  const queryClient = useQueryClient();
+  const { notify } = useNotifications();
+
+  const results = useMutation({
+    mutationFn: ({ projectId, softwareId }) =>
+      client.delete(`/projects/${projectId}/softwares/${softwareId}`),
+    onSuccess: () => {
+      notify("Software removed successfully", "success");
+      queryClient.invalidateQueries({ queryKey: projectKeys.removeSoftware });
     },
     onError: (data) => {
       notify(data.response.data.error, "error");

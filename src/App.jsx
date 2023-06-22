@@ -39,6 +39,7 @@ import { EditSoftwareForm } from "./components/softwares/edit/EditSoftwareForm";
 import { EditSubtaskForm } from "./components/softwares/edit/EditSubtaskForm";
 import { EditTaskForm } from "./components/softwares/edit/EditTaskForm";
 import Users from "./components/users/Users";
+import { AddAdminToSoftwareForm } from "./components/projects/create/AddAdminToSoftwareForm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -123,6 +124,10 @@ export default function App() {
                     <Route
                       path=":projectId/software/add"
                       element={<AddSoftwareForm />}
+                    />
+                    <Route
+                      path=":projectId/software/:softwareId/admin/add"
+                      element={<AddAdminToSoftwareForm />}
                     />
                   </Route>
                 </Route>
