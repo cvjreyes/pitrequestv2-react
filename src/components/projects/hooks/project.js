@@ -22,6 +22,16 @@ export function useProject(id) {
   return { ...results, project: results.data };
 }
 
+export function useUnselectedSoftwares(id) {
+  const navigate = useNavigate();
+  const results = useQuery({
+    queryKey: projectKeys.software(id),
+    queryFn: () => client.get(`/projects/${id}/softwares/unselected`).then((res) => res.data),
+    onError: () => navigate("/projects"),
+  });
+  return { ...results, unselectedSoftware: results.data };
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient();
   const { notify } = useNotifications();
@@ -32,6 +42,27 @@ export function useCreateProject() {
     onSuccess: () => {
       notify("Create Project successfully done", "success");
       queryClient.invalidateQueries({ queryKey: projectKeys.tree() });
+    },
+    onError: (data) => {
+      notify(data.response.data.error, "error");
+    },
+  });
+
+  return results;
+}
+
+export function useAddSoftwareToProject() {
+  const queryClient = useQueryClient();
+  const { notify } = useNotifications();
+  const navigate = useNavigate();
+
+  const results = useMutation({
+    mutationFn: ({ formAddSoftware }) =>
+      client.post("/projects/softwares", formAddSoftware),
+    onSuccess: () => {
+      notify("Software added successfully", "success");
+      queryClient.invalidateQueries({ queryKey: projectKeys.tree() });
+      navigate("/projects")
     },
     onError: (data) => {
       notify(data.response.data.error, "error");

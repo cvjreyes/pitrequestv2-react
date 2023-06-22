@@ -1,4 +1,6 @@
-import { forwardRef, useEffect, useState } from "react";
+/* eslint-disable react/display-name */
+/* eslint-disable no-unused-vars */
+import React, { forwardRef, useEffect, useState } from "react";
 import { useNotifications } from "reapop";
 
 import { Button, Dialog, Select } from "@nachogonzalezv99/ui-library";
@@ -59,14 +61,6 @@ const AddSoftwareSettingsModal = forwardRef(
         notify(errorMessage, "error");
         getProjectTree();
       }
-    };
-
-    const handleChange = (event) => {
-      const { name, value } = event.target;
-      setFormAddSoftware((prev) => ({ ...prev, [name]: value }));
-      // Verificar si todos los campos están completos
-      const allFieldsFilled = !!value; // Verificar si el campo no está vacío
-      setDisableCloseButton(!allFieldsFilled); // Desactivar el botón si algún campo está vacío
     };
 
     return (

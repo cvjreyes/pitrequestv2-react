@@ -1,14 +1,15 @@
 import { IconButton, Spinner, TreeView } from "@nachogonzalezv99/ui-library";
 import React from "react";
-import { useProjectTree } from "../hooks/project";
-import ProjectOptionsDropdown from "./ProjectOptionsDropdown";
-import { Link } from "react-router-dom";
 import { AiOutlinePlus } from "react-icons/ai";
+import { Link } from "react-router-dom";
+
+import { useProjectTree } from "../hooks/project";
+
+import ProjectOptionsDropdown from "./ProjectOptionsDropdown";
 
 function ProjectTreeView() {
   const { projectTree } = useProjectTree();
 
-  // console.log(projectTree);
   return (
     <TreeView>
       {!projectTree ? (
@@ -56,14 +57,23 @@ function ProjectTreeView() {
             <TreeView.Item
               key={`softwares-folder-${project.id}`}
               label="Softwares"
+              actions={[
+                <Link
+                  to={`/projects/${project.id}/software/add`}
+                  key={`software-add-${project.id}`}
+                >
+                  <IconButton size="sm" tooltip="Add software">
+                    <AiOutlinePlus />
+                  </IconButton>
+                </Link>,
+              ]}
             >
               {project.ProjectSoftwares.map((projectSoftware) => (
-                // El problema esta en este div
-                <>
-                  <TreeView.Item
-                    key={`project-software-${projectSoftware.software.id}`}
-                    label={projectSoftware.software.name}
-                  >
+                <TreeView.Item
+                  key={`project-software-${projectSoftware.software.id}`}
+                  label={projectSoftware.software.name}
+                >
+                  <TreeView.Item label="View Tasks">
                     {projectSoftware.software.Task.map((taskSoftware) => (
                       <TreeView.Item
                         key={`task-${taskSoftware.id}`}
@@ -89,7 +99,7 @@ function ProjectTreeView() {
                       />
                     ))}
                   </TreeView.Item>
-                </>
+                </TreeView.Item>
               ))}
             </TreeView.Item>
           </TreeView.Item>
@@ -100,3 +110,4 @@ function ProjectTreeView() {
 }
 
 export { ProjectTreeView };
+
