@@ -11,9 +11,7 @@ function CreateProjectForm() {
   const { user } = useAuth();
 
   const [disableCloseButton, setDisableCloseButton] = useState(true);
-  const [errorName, setErrorName] = useState(null);
   const [errorCode, setErrorCode] = useState(null);
-  const [errorEstimatedHours, setErrorEstimatedHours] = useState(null);
 
   const [formProject, setFormProject] = useState({
     name: "",
@@ -26,18 +24,14 @@ function CreateProjectForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formProject.name.trim() === "") {
-      setErrorName("Required");
-      setDisableCloseButton(true);
-      return notify("Name is required", "error");
-    } else if (formProject.code.trim() === "") {
-      setErrorCode("Required");
-      setDisableCloseButton(true);
-      return notify("Code is required", "error");
-    } else if (!formProject.estimatedHours) {
-      setErrorEstimatedHours("Required");
-      setDisableCloseButton(true);
-      return notify("Hours are required", "error");
+    if (
+      formProject.name.trim() === "" ||
+      formProject.code.trim() === "" ||
+      !formProject.estimatedHours
+    ) {
+      // Mostrar un mensaje de error y no enviar el formulario si algún campo está vacío
+      notify("All fields are required", "error");
+      return;
     }
     createMutation.mutate({ formCreateProject: formProject });
   };
@@ -69,7 +63,6 @@ function CreateProjectForm() {
           name="name"
           value={formProject.name}
           onChange={handleInputChange}
-          error={errorName}
         />
         <TextField
           value={formProject.code}
@@ -84,7 +77,6 @@ function CreateProjectForm() {
           type="number"
           id="estimatedHours"
           label="Estimated Hours"
-          error={errorEstimatedHours}
         />
         <Button
           variant="contained"

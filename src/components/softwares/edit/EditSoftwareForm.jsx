@@ -61,7 +61,7 @@ function EditSoftwareForm() {
           />
           <Button
             variant="contained"
-            disabled={!formSoftware.name || !formSoftware.code}
+            disabled={!formSoftware.name.trim() || !formSoftware.code.trim()}
             className="ml-auto"
           >
             Edit Software
@@ -73,4 +73,3 @@ function EditSoftwareForm() {
 }
 
 export { EditSoftwareForm };
-

@@ -49,7 +49,7 @@ function EditSubtaskForm() {
           />
           <Button
             variant="contained"
-            // disabled={disableCloseButton}
+            disabled={!formSubtask.name}
             className="ml-auto"
           >
             Edit Task
