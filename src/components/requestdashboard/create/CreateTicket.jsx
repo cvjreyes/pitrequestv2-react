@@ -25,6 +25,7 @@ export default function CreateTicket({ getTickets }) {
   });
 
   const [projects, setProjects] = useState([]);
+  const [charters, setCharters] = useState([]);
   const [softwares, setSoftwares] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -33,6 +34,7 @@ export default function CreateTicket({ getTickets }) {
   const [formTicket, setFormTicket] = useState({
     raisedBy: user.id,
     projectId: undefined,
+    charterId: undefined,
     softwareId: undefined,
     adminId: undefined,
     subject: "",
@@ -41,15 +43,23 @@ export default function CreateTicket({ getTickets }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const [projectsNamesResponse, selectedSoftwaresResponse, adminsResponse] =
-        await Promise.all([
-          client.get("/projects/name"),
-          client.get(`/projects/${formTicket.projectId}/softwares/selected`),
-          client.get(
-            `/projects/${formTicket.projectId}/softwares/${formTicket.softwareId}/admins/assigned`
-          ),
-        ]);
+      const [
+        projectsNamesResponse,
+        chartersFromProject,
+        selectedSoftwaresResponse,
+        adminsResponse,
+      ] = await Promise.all([
+        client.get("/projects/name"),
+        client.get(`/charters/project/${formTicket.projectId}`),
+        client.get(`/projects/${formTicket.projectId}/softwares/selected`),
+        client.get(
+          `/projects/${formTicket.projectId}/softwares/${formTicket.softwareId}/admins/assigned`
+        ),
+      ]);
+
+      console.log(chartersFromProject.data);
       setProjects(projectsNamesResponse.data.Projects);
+      setCharters(chartersFromProject.data);
       setSoftwares(selectedSoftwaresResponse.data);
       setAdmins(adminsResponse.data.admins);
     };
@@ -107,6 +117,7 @@ export default function CreateTicket({ getTickets }) {
     // Agregar otros datos al objeto FormData
     formData.append("raisedBy", formTicket.raisedBy);
     formData.append("projectId", formTicket.projectId);
+    formData.append("charterId", formTicket.charterId);
     formData.append("softwareId", formTicket.softwareId);
     formData.append("adminId", formTicket.adminId);
     formData.append("subject", formTicket.subject);
@@ -121,6 +132,7 @@ export default function CreateTicket({ getTickets }) {
       setFormTicket({
         raisedBy: user.id,
         projectId: undefined,
+        charterId: undefined,
         softwareId: undefined,
         adminId: undefined,
         subject: "",
@@ -183,7 +195,9 @@ export default function CreateTicket({ getTickets }) {
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
         {/* <Button className="md:bg-blue-500 text-white hover:text-black"> */}
-        <Button variant="contained" className="my-5">Create ticket</Button>
+        <Button variant="contained" className="my-5">
+          Create ticket
+        </Button>
       </Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Header>
@@ -240,6 +254,24 @@ export default function CreateTicket({ getTickets }) {
                 {projects.map((project) => (
                   <Select.Item key={project.id} value={project.id}>
                     {project.name}
+                  </Select.Item>
+                ))}
+              </Select>
+            </fieldset>
+            <fieldset className="flex flex-col">
+              <label className="" htmlFor="charter">
+                Charter
+              </label>
+              <Select
+                placeholder="Select a Charter ..."
+                value={formTicket.charterId}
+                onValueChange={(value) =>
+                  setFormTicket((prev) => ({ ...prev, charterId: value }))
+                }
+              >
+                {charters.map((charter) => (
+                  <Select.Item key={charter.id} value={charter.id}>
+                    {charter.name}
                   </Select.Item>
                 ))}
               </Select>

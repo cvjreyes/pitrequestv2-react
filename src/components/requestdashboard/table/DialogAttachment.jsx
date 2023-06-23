@@ -23,8 +23,6 @@ export default function Dialogattachment({ files }) {
     });
   };
 
-  console.log(files)
-
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>

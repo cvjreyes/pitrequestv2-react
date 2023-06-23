@@ -23,10 +23,11 @@ export default function RequestDashboard() {
       col4: ticket.Admin.name,
       col5: ticket.subject,
       col6: ticket.description,
-      col7: moment(ticket.created_at).format("DD-MM-YYYY"),
-      col8: moment(ticket.updated_at).format("DD-MM-YYYY"),
-      col9: ticket.Status.name,
-      col10: ticket.TicketsAttachment,
+      col7: ticket.Charter?.name || "",
+      col8: moment(ticket.created_at).format("DD-MM-YYYY"),
+      col9: moment(ticket.updated_at).format("DD-MM-YYYY"),
+      col10: ticket.Status.name,
+      col11: ticket.TicketsAttachment,
     }));
 
     setRows(createRows);

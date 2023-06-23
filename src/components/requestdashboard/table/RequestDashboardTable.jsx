@@ -12,14 +12,15 @@ export default function RequestDashboardTable({ rows }) {
     { field: "col4", headerName: "ASSIGNED TO", width: 200 },
     { field: "col5", headerName: "SUBJECT", width: 200 },
     { field: "col6", headerName: "DESCRIPTION", width: 400 },
-    { field: "col7", headerName: "CREATED DATE", width: 130 },
-    { field: "col8", headerName: "LAST DATE", width: 130 },
-    { field: "col9", headerName: "STATUS", width: 120 },
+    { field: "col7", headerName: "CHARTER", width: 100 },
+    { field: "col8", headerName: "CREATED DATE", width: 130 },
+    { field: "col9", headerName: "LAST DATE", width: 130 },
+    { field: "col10", headerName: "STATUS", width: 120 },
     {
-      field: "col10",
+      field: "col11",
       headerName: "ATTACH",
       width: 120,
-      renderCell: (params) => <Dialogattachment files={params.row.col10} />,
+      renderCell: (params) => <Dialogattachment files={params.row.col11} />,
     },
   ];
 
@@ -30,7 +31,7 @@ export default function RequestDashboardTable({ rows }) {
   });
 
   return (
-    <div className="h-4/6 w-4/5">
+    <div className="h-4/6">
       <DataGrid
         {...data}
         rows={rows}
