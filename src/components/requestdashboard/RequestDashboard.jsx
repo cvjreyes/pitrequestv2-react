@@ -1,14 +1,11 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
 import moment from "moment/moment";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 
 import { client } from "../../helpers/config";
 
-import RequestDashboardTable from "./table/RequestDashboardTable";
 import CreateTicket from "./create/CreateTicket";
+import RequestDashboardTable from "./table/RequestDashboardTable";
 
 export default function RequestDashboard() {
   const [rows, setRows] = useState([]);
@@ -32,7 +29,6 @@ export default function RequestDashboard() {
       col10: ticket.TicketsAttachment,
     }));
 
-    console.log(createRows);
     setRows(createRows);
   };
 
@@ -51,18 +47,3 @@ export default function RequestDashboard() {
     </div>
   );
 }
-
-// const requestDashboardStyle = {
-//   display: "flex",
-//   justifyContent: "center",
-//   alignItems: "center",
-//   flexDirection: "column",
-//   height: "85vh",
-//   marginTop: "100px",
-//   ".container-table": {
-//     flexGrow: 1,
-//     marginTop: "25px",
-//     width: "81vw",
-//     maxHeight: "70vh",
-//   },
-// };

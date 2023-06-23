@@ -1,13 +1,30 @@
-import { IconButton, TextField } from "@nachogonzalezv99/ui-library";
+import { Dialog, IconButton } from "@nachogonzalezv99/ui-library";
 import React, { useState } from "react";
 import { AiOutlineFolderOpen } from "react-icons/ai";
-
-import { Dialog } from "@nachogonzalezv99/ui-library";
 
 export default function Dialogattachment({ files }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // console.log(files);
+  const downloadFile = async (filename) => {
+    fetch(
+      `http://${import.meta.env.VITE_SERVER}:${
+        import.meta.env.VITE_NODE_PORT
+      }/uploads/${filename}`
+    ).then((response) => {
+      response.blob().then((blob) => {
+        // Creating new object of PDF file
+        const fileURL = window.URL.createObjectURL(blob);
+        // Setting various property values
+        let alink = document.createElement("a");
+        alink.href = fileURL;
+        alink.download = filename;
+        alink.click();
+      });
+    });
+  };
+
+  console.log(files)
+
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
@@ -23,7 +40,12 @@ export default function Dialogattachment({ files }) {
           {files.map((file) => {
             return (
               <div key={file.id}>
-                <a>{file.url}</a>;
+                <a
+                  className="text-blue-600 underline cursor-pointer"
+                  onClick={() => downloadFile(file.url)}
+                >
+                  {file.url.split("/").pop()}
+                </a>
               </div>
             );
           })}
