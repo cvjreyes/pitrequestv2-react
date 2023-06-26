@@ -1,6 +1,5 @@
 import { Button, TextField } from "@nachogonzalezv99/ui-library";
 import React, { useEffect, useState } from "react";
-
 import { useParams } from "react-router-dom";
 import { useProject, useUpdateProject } from "../hooks/project";
 
@@ -13,25 +12,33 @@ function EditProjectForm() {
   const [error, setError] = useState(null);
 
   const [formProject, setFormProject] = useState({
-    name: "",
-    code: "",
-    estimatedHours: 0,
+    name: project?.name,
+    code: project?.code,
+    estimatedHours: project?.estimatedHours,
   });
 
   const CODE_MAX_LENGTH = 10;
 
   useEffect(() => {
-    if (project)
+    if (project) {
       setFormProject({
-        name: project.name,
-        code: project.code,
+        name: project.name || "",
+        code: project.code || "",
         estimatedHours: project.estimatedHours,
       });
+    }
   }, [project]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateMutation.mutate({ projectId, formUpdateProject: formProject });
+    const updatedProject = {};
+    if (formProject.name !== project.name) {
+      updatedProject.name = formProject.name;
+    }
+    if (formProject.code !== project.code) {
+      updatedProject.code = formProject.code;
+    }
+    updateMutation.mutate({ projectId, formUpdateProject: updatedProject });
   };
 
   return (
@@ -42,13 +49,13 @@ function EditProjectForm() {
           id="name"
           label="Name"
           name="name"
-          value={formProject.name}
+          value={formProject.name || ""}
           onChange={(e) =>
             setFormProject((prev) => ({ ...prev, name: e.target.value }))
           }
         />
         <TextField
-          value={formProject.code}
+          value={formProject.code || ""}
           onChange={(e) => {
             const newCode = e.target.value;
             if (newCode.length > CODE_MAX_LENGTH) {
@@ -63,22 +70,22 @@ function EditProjectForm() {
           error={error}
         />
         <TextField
-          value={formProject.estimatedHours}
+          value={formProject.estimatedHours || ""}
           onChange={(e) =>
-            setFormProject((prev) => ({ ...prev, name: e.target.value }))
+            setFormProject((prev) => ({
+              ...prev,
+              estimatedHours: e.target.value,
+            }))
           }
           type="number"
           id="estimatedHours"
           label="Estimated Hours"
           error={error}
         />
+
         <Button
           variant="contained"
-          disabled={
-            !formProject.name ||
-            !formProject.code ||
-            !formProject.estimatedHours
-          }
+          disabled={!formProject.name || !formProject.code}
           className="ml-auto"
         >
           Edit Project
@@ -89,3 +96,4 @@ function EditProjectForm() {
 }
 
 export { EditProjectForm };
+

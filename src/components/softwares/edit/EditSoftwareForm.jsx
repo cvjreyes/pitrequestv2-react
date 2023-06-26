@@ -12,24 +12,37 @@ function EditSoftwareForm() {
 
   const [error, setError] = useState(null);
 
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+
   const [formSoftware, setFormSoftware] = useState({
-    name: "",
-    code: "",
+    name: software?.name,
+    code: software?.code,
   });
 
   const CODE_MAX_LENGTH = 10;
 
   useEffect(() => {
-    if (software) setFormSoftware({ name: software.name, code: software.code });
+    if (software) {
+      setName(software.name);
+      setCode(software.code);
+    }
   }, [software]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateMutation.mutate({ softwareId, formUpdateSoftware: formSoftware });
+    const updatedSoftware = {};
+    if (formSoftware.name !== software.name) {
+      updatedSoftware.name = formSoftware.name;
+    }
+    if (formSoftware.code !== software.code) {
+      updatedSoftware.code = formSoftware.code;
+    }
+    updateMutation.mutate({ softwareId, formUpdateSoftware: updatedSoftware });
   };
 
   return (
-    <div className="h-full relative ">
+    <div className="h-full relative">
       <h1 className="text-xl font-medium mb-2">Edit a software</h1>
       {!software ? (
         <Spinner size="md" />
@@ -39,13 +52,14 @@ function EditSoftwareForm() {
             id="name"
             label="Name"
             name="name"
-            value={formSoftware.name}
-            onChange={(e) =>
-              setFormSoftware((prev) => ({ ...prev, name: e.target.value }))
-            }
+            value={name}
+            onChange={(e) => {
+              setFormSoftware((prev) => ({ ...prev, name: e.target.value }));
+              setName(e.target.value);
+            }}
           />
           <TextField
-            value={formSoftware.code}
+            value={code}
             onChange={(e) => {
               const newCode = e.target.value;
               if (newCode.length > CODE_MAX_LENGTH) {
@@ -53,6 +67,7 @@ function EditSoftwareForm() {
               } else {
                 setError(null);
                 setFormSoftware((prev) => ({ ...prev, code: newCode }));
+                setCode(e.target.value);
               }
             }}
             id="code"
@@ -61,7 +76,7 @@ function EditSoftwareForm() {
           />
           <Button
             variant="contained"
-            disabled={!formSoftware.name.trim() || !formSoftware.code.trim()}
+            disabled={!name || !code}
             className="ml-auto"
           >
             Edit Software
