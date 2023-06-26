@@ -14,14 +14,13 @@ export default function CheckLogin() {
   useEffect(() => {
     const validateCredentials = async () => {
       try {
-        const res = await client.post("/auth/validate_credentials", {
+        const res = await client.post("/auth/validate-credentials", {
           user_id,
           token,
         });
         notify(res.data.email, "success");
         login(res.data);
       } catch (err) {
-        console.log(err);
         notify(err.response.data, "info");
         navigate("/login");
       }

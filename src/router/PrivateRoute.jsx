@@ -7,9 +7,11 @@ import Navbar from "../components/navbar/Navbar";
 const PrivateRoute = () => {
   const { user } = useAuth();
   return user ? (
-    <Navbar>
-      <Outlet />
-    </Navbar>
+    <div className="h-screen overflow-hidden">
+      <Navbar>
+        <Outlet />
+      </Navbar>
+    </div>
   ) : (
     <Navigate replace to="/login" />
   );

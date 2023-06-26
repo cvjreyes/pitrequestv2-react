@@ -4,16 +4,14 @@ import { AiOutlineCaretDown } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { Button } from "../general";
 import { useAuth } from "../../context/AuthContext";
+import { Avatar } from "@nachogonzalezv99/ui-library";
 
 function ProfileNavbar() {
   const { user, logout } = useAuth();
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
-        <button className="dropdownTrigger">
-          <CgProfile fontSize="30px" />
-          <AiOutlineCaretDown />
-        </button>
+        <Avatar name={user.name}/>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content

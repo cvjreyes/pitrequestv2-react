@@ -1,4 +1,3 @@
-
 import Cookies from "js-cookie";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -19,15 +18,15 @@ export const AuthProvider = ({ children }) => {
 
   const getUserInfo = async () => {
     setIsLoading(true);
-    const res = await client.get("/auth/get_user_info");
+    const res = await client.get("/auth/user");
     setIsLoading(false);
     return res.data.user;
   };
 
   const updateUserInfo = async () => {
-    const res = await getUserInfo();
-    delete res.token;
-    setUser(res);
+    const resUser = await getUserInfo();
+    delete resUser.token;
+    setUser(resUser);
   };
 
   useEffect(() => {
@@ -35,14 +34,24 @@ export const AuthProvider = ({ children }) => {
       try {
         const access_token = Cookies.get("access_token"); // get token
         if (!access_token) return logout();
-        client.defaults.headers.common["Authorization"] = access_token; // set token for all api calls
+        client.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${access_token}`; // set token for all api calls
         const res = await getUserInfo();
-        if (res) return login({ ...res, token: access_token });
+        if (res) {
+          if (res.token === access_token) {
+            // check if tokens match
+            return login({ ...res, token: access_token });
+          } else {
+            return logout();
+          }
+        }
       } catch (err) {
         console.error(err);
         return err;
       }
     };
+
     checkAuthCookie();
   }, []);
 
@@ -51,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     delete receivedUser.token;
     setUser(receivedUser);
     Cookies.set("access_token", token);
-    client.defaults.headers.common["Authorization"] = token; // set token for all api calls
+    client.defaults.headers.common["Authorization"] = `Bearer ${token}`; // set token for all api calls
   };
 
   const logout = () => {
@@ -60,11 +69,36 @@ export const AuthProvider = ({ children }) => {
     Cookies.remove("access_token");
   };
 
+  // Esto es para que haga un logout cuando haga una accion no autorizada
+  client.interceptors.response.use(
+    async (response) => {
+      return response;
+    },
+
+    async (error) => {
+      // console.log("error:", error);
+      if (error.response.status === 403 || error.response.status === 401) {
+        if (user) {
+          logout();
+          window.location.assign(window.location);
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
 
   if (isLoading) return <Loading />;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUserInfo }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        roles: user ? user.roles : [], // Acceder a 'user.roles' solo si 'user' no es nulo
+        login,
+        logout,
+        updateUserInfo,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,98 +1,68 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-import { jsx } from "@emotion/react";
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { twJoin } from "tailwind-merge";
+import Restricted from "../authentication/Restricted";
 import { ProfileNavbar } from "./ProfileNavbar";
 
 export default function Navbar() {
   return (
-    <>
-      <div css={navbarStyle}>
-        <div className="containerNavbar">
-          <div className="menu">
+    <div className="flex flex-col h-full">
+      <div className="flex px-5 py-2 items-center justify-between border-b border-gray-300">
+        <div className="flex items-center gap-5">
           <NavLink
-              to="/"
-              style={({ isActive }) => (isActive ? { color: "white" } : null)}
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/softwares"
-              style={({ isActive }) => (isActive ? { color: "white" } : null)}
-            >
-              Softwares
-            </NavLink>
-            <NavLink
-              to="/requestdashboard"
-              style={({ isActive }) => (isActive ? { color: "white" } : null)}
-            >
-              Request Dashboard
-            </NavLink>
-          </div>
-          <ProfileNavbar />
+            to="/"
+            className={({ isActive }) =>
+              twJoin("text-gray-600", isActive && "text-blue-600")
+            }
+          >
+            Home
+          </NavLink>
+          <Restricted to={["ADMINTOOL", "ADMINLEAD"]}>
+            <React.Fragment>
+              <div>
+                <NavLink
+                  to="/softwares"
+                  className={({ isActive }) =>
+                    twJoin("text-gray-600", isActive && "text-blue-600")
+                  }
+                >
+                  Softwares
+                </NavLink>
+              </div>
+              <div>
+                <NavLink
+                  to="/projects"
+                  className={({ isActive }) =>
+                    twJoin("text-gray-600", isActive && "text-blue-600")
+                  }
+                >
+                  Projects
+                </NavLink>
+              </div>
+            </React.Fragment>
+          </Restricted>
+          <NavLink
+            to="/users"
+            className={({ isActive }) =>
+              twJoin("text-gray-600", isActive && "text-blue-600")
+            }
+          >
+            Users
+          </NavLink>
+          <NavLink
+            to="/requestdashboard"
+            className={({ isActive }) =>
+              twJoin("text-gray-600", isActive && "text-blue-600")
+            }
+          >
+            Request Dashboard
+          </NavLink>
         </div>
+        <ProfileNavbar />
       </div>
-      <Outlet />
-    </>
+      <div className="flex-1 h-full w-full">
+        <Outlet />
+      </div>
+    </div>
   );
 }
-
-const navbarStyle = {
-  ".a": {
-    backgroundColor: "red",
-  },
-  zIndex: 10,
-  width: "100%",
-  backgroundColor: "#0054B3",
-  color: "#C3C3C3",
-  position: "fixed",
-  top: 0,
-  ".containerNavbar": {
-    maxWidth: "100rem",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "50px",
-    padding: "0 5vw",
-    margin: "auto",
-  },
-  a: {
-    transition: "color 0.2s ease-in-out",
-    ":hover": {
-      color: "lightgray",
-    },
-  },
-  ".menu": {
-    display: "flex",
-    gap: "1.1rem",
-    alignItems: "center",
-  },
-  ".buttonLink": {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.4rem",
-  },
-  ".dropdownTrigger": {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    cursor: "pointer",
-    color: "white",
-    ".imgContainer": {
-      width: "2.3rem",
-      height: "2.3rem",
-    },
-    img: {
-      borderRadius: "100%",
-      height: "100%",
-      width: "100%",
-      objectFit: "cover",
-    },
-  },
-  ".dropdownContent": {
-    backgroundColor: "white",
-    border: "1px solid black!important",
-    color: "red",
-  },
-};
