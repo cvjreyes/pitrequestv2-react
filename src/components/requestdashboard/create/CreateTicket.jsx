@@ -57,7 +57,6 @@ export default function CreateTicket({ getTickets }) {
         ),
       ]);
 
-      console.log(chartersFromProject.data);
       setProjects(projectsNamesResponse.data.Projects);
       setCharters(chartersFromProject.data);
       setSoftwares(selectedSoftwaresResponse.data);
