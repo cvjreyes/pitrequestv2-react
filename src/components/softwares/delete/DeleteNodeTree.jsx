@@ -1,6 +1,7 @@
+import React, { forwardRef } from "react";
 import { AlertDialog, Button } from "@nachogonzalezv99/ui-library";
-import { forwardRef } from "react";
 
+// eslint-disable-next-line react/display-name
 const DeleteNodeTree = forwardRef(({ deleteNode, open, setOpen }, ref) => {
   return (
     <div ref={ref}>

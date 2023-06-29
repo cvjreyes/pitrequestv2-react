@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNotifications } from "reapop";
 
 import {
@@ -11,9 +11,9 @@ import {
 } from "@nachogonzalezv99/ui-library";
 
 import { useAuth } from "../../../context/AuthContext";
-import { client } from "../../../helpers/config";
+import { getAllKeysTicket, useCreateTicket } from "../hooks/ticket";
 
-export default function CreateTicket({ getTickets }) {
+export default function CreateTicket() {
   const { notify } = useNotifications();
   const { user } = useAuth();
 
@@ -24,12 +24,7 @@ export default function CreateTicket({ getTickets }) {
     description: false,
   });
 
-  const [projects, setProjects] = useState([]);
-  const [charters, setCharters] = useState([]);
-  const [softwares, setSoftwares] = useState([]);
-  const [admins, setAdmins] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formTicket, setFormTicket] = useState({
     raisedBy: user.id,
@@ -41,49 +36,13 @@ export default function CreateTicket({ getTickets }) {
     description: "",
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [
-        projectsNamesResponse,
-        chartersFromProject,
-        selectedSoftwaresResponse,
-        adminsResponse,
-      ] = await Promise.all([
-        client.get("/projects/name"),
-        client.get(`/charters/project/${formTicket.projectId}`),
-        client.get(`/projects/${formTicket.projectId}/softwares/selected`),
-        client.get(
-          `/projects/${formTicket.projectId}/softwares/${formTicket.softwareId}/admins/assigned`
-        ),
-      ]);
+  // Get Keys from Tickets - React Query
+  const { data } = getAllKeysTicket(
+    formTicket.projectId,
+    formTicket.softwareId
+  );
 
-      setProjects(projectsNamesResponse.data.Projects);
-      setCharters(chartersFromProject.data);
-      setSoftwares(selectedSoftwaresResponse.data);
-      setAdmins(adminsResponse.data.admins);
-    };
-
-    fetchData();
-  }, [formTicket.projectId, formTicket.softwareId]);
-
-  useEffect(() => {
-    if (formTicket.projectId) {
-      setFormTicket((prevState) => ({
-        ...prevState,
-        softwareId: undefined,
-        adminId: undefined,
-      }));
-    }
-  }, [formTicket.projectId]);
-
-  useEffect(() => {
-    if (formTicket.softwareId && formTicket.adminId) {
-      setFormTicket((prevState) => ({
-        ...prevState,
-        adminId: undefined,
-      }));
-    }
-  }, [formTicket.softwareId]);
+  const createTicket = useCreateTicket();
 
   const createSubmitTicket = async (event) => {
     event.preventDefault();
@@ -106,6 +65,19 @@ export default function CreateTicket({ getTickets }) {
       );
     }
 
+    function resetForm() {
+      setFormTicket({
+        raisedBy: user.id,
+        subject: "",
+        description: "",
+        projectId: undefined,
+        charterId: undefined,
+        softwareId: undefined,
+        adminId: undefined,
+      });
+      setSelectedFiles([]); //
+    }
+
     const formData = new FormData();
 
     // Agregar los archivos seleccionados al objeto FormData
@@ -122,24 +94,9 @@ export default function CreateTicket({ getTickets }) {
     formData.append("subject", formTicket.subject);
     formData.append("description", formTicket.description);
 
-    try {
-      await client.post("/tickets/", formData);
-      notify("Ticket created successfully", "success");
-      getTickets();
-      setSelectedFiles([]);
-      setIsModalOpen(false);
-      setFormTicket({
-        raisedBy: user.id,
-        projectId: undefined,
-        charterId: undefined,
-        softwareId: undefined,
-        adminId: undefined,
-        subject: "",
-        description: "",
-      }); // Reset the form
-    } catch (error) {
-      notify("Failed to create ticket", "error");
-    }
+    createTicket.mutate(formData);
+    setIsModalOpen(false);
+    resetForm();
   };
 
   const handleChange = (event) => {
@@ -193,7 +150,6 @@ export default function CreateTicket({ getTickets }) {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <Dialog.Trigger>
-        {/* <Button className="md:bg-blue-500 text-white hover:text-black"> */}
         <Button variant="contained" className="my-5">
           Create ticket
         </Button>
@@ -210,8 +166,7 @@ export default function CreateTicket({ getTickets }) {
           <form
             onSubmit={createSubmitTicket}
             className="flex flex-col gap-4"
-            id="createTicket"
-          >
+            id="createTicket">
             <fieldset className="flex flex-col">
               <label className="" htmlFor="subject">
                 Subject
@@ -248,9 +203,8 @@ export default function CreateTicket({ getTickets }) {
                 value={formTicket.projectId}
                 onValueChange={(value) =>
                   setFormTicket((prev) => ({ ...prev, projectId: value }))
-                }
-              >
-                {projects.map((project) => (
+                }>
+                {data?.projects.map((project) => (
                   <Select.Item key={project.id} value={project.id}>
                     {project.name}
                   </Select.Item>
@@ -263,12 +217,12 @@ export default function CreateTicket({ getTickets }) {
               </label>
               <Select
                 placeholder="Select a Charter ..."
+                disabled={!formTicket.projectId}
                 value={formTicket.charterId}
                 onValueChange={(value) =>
                   setFormTicket((prev) => ({ ...prev, charterId: value }))
-                }
-              >
-                {charters.map((charter) => (
+                }>
+                {data?.charters.map((charter) => (
                   <Select.Item key={charter.id} value={charter.id}>
                     {charter.name}
                   </Select.Item>
@@ -287,7 +241,7 @@ export default function CreateTicket({ getTickets }) {
                 placeholder="Select a software ..."
                 disabled={!formTicket.projectId} // Desactivar el campo si no hay proyecto seleccionado
               >
-                {softwares.map((software) => (
+                {data?.softwares.map((software) => (
                   <Select.Item key={software.id} value={software.id}>
                     {software.name}
                   </Select.Item>
@@ -306,7 +260,7 @@ export default function CreateTicket({ getTickets }) {
                 placeholder="Select an admin ..."
                 disabled={!formTicket.softwareId} // Desactivar el campo si no hay software seleccionado
               >
-                {admins.map((admin) => (
+                {data?.admins.map((admin) => (
                   <Select.Item key={admin.id} value={admin.id}>
                     {admin.name}
                   </Select.Item>
@@ -318,7 +272,6 @@ export default function CreateTicket({ getTickets }) {
                 Attach
               </label>
 
-              {/* <FileUploader onFileUpload={handleFileUpload} name="tickets" /> */}
               <UploadFiles
                 maxFiles={3}
                 files={selectedFiles}
@@ -338,8 +291,7 @@ export default function CreateTicket({ getTickets }) {
               variant="contained"
               disabled={disableCreateButton}
               className="ml-auto"
-              form="createTicket"
-            >
+              form="createTicket">
               Create Ticket
             </Button>
           </div>
