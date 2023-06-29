@@ -1,21 +1,16 @@
 import moment from "moment/moment";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
-
-import { client } from "../../helpers/config";
-
 import CreateTicket from "./create/CreateTicket";
+import { getAllTickets } from "./hooks/ticket";
 import RequestDashboardTable from "./table/RequestDashboardTable";
 
 export default function RequestDashboard() {
-  const [rows, setRows] = useState([]);
+  const { tickets } = getAllTickets();
 
   // Create the rows for the request dashboard table
-  const getTickets = async () => {
-    const response = await client.get("/tickets/");
-    const tickets = response.data;
-
-    const createRows = tickets.map((ticket) => ({
+  const rows =
+    tickets?.map((ticket) => ({
       id: ticket.id,
       col1: ticket.code,
       col2: ticket.Project.code,
@@ -28,20 +23,13 @@ export default function RequestDashboard() {
       col9: moment(ticket.updated_at).format("DD-MM-YYYY"),
       col10: ticket.Status.name,
       col11: ticket.TicketsAttachment,
-    }));
-
-    setRows(createRows);
-  };
-
-  useEffect(() => {
-    getTickets();
-  }, []);
+    })) || [];
 
   return (
     <div className="flex justify-center items-center flex-col h-screen">
       <h1>Request Dashboard</h1>
       <div className="">
-        <CreateTicket getTickets={getTickets} />
+        <CreateTicket getTickets={tickets} />
       </div>
       <RequestDashboardTable rows={rows} />
       <Outlet />

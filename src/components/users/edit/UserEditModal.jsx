@@ -17,11 +17,11 @@ import makeAnimated from "react-select/animated";
 import { client } from "../../../helpers/config";
 import { useAuth } from "../../../context/AuthContext";
 import Restricted from "../../authentication/Restricted";
+import { useUpdateUser } from "../hooks/user";
 
 export default function UserEditModal({
   users,
   email,
-  getUsers,
   id,
   userProjects,
   userRoles,
@@ -38,6 +38,8 @@ export default function UserEditModal({
     projectIds: [],
     roleIds: [],
   });
+
+  const updateUser = useUpdateUser();
 
   const [projectOptions, setProjectOptions] = useState([]);
   const [selectedProjects, setSelectedProjects] = useState([]);
@@ -66,6 +68,7 @@ export default function UserEditModal({
         projectIds: selectedProjectIds,
       }));
     };
+
     const getRoles = async () => {
       const response = await client.get("/roles/noUser");
       const options = response.data.roles.map((role) => ({
@@ -106,13 +109,18 @@ export default function UserEditModal({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      // Actualizar proyectos y roles del usuario
-      await client.put("/users/projects/roles", formUser);
+      // Actualizar proyectos y roles del usuario con RQ
+      const response = await updateUser.mutateAsync({
+        userId: formUser.userId,
+        email: formUser.email,
+        projectIds: formUser.projectIds,
+        roleIds: formUser.roleIds,
+      });
+
+      console.log(response);
 
       // Actualizar la lista de usuarios
-      getUsers();
       updateUserInfo();
 
       notify({
@@ -130,6 +138,7 @@ export default function UserEditModal({
         status: "error",
         dismissible: true,
       });
+      console.log(error);
     }
   };
 
@@ -178,14 +187,12 @@ export default function UserEditModal({
                 display: "flex",
                 marginTop: 25,
                 justifyContent: "flex-end",
-              }}
-            >
+              }}>
               <Dialog.Close asChild>
                 <button
                   onClick={handleSubmit}
                   className="Button green"
-                  aria-label="Close"
-                >
+                  aria-label="Close">
                   Save Changes
                 </button>
               </Dialog.Close>
